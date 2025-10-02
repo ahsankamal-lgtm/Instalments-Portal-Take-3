@@ -70,9 +70,23 @@ def resequence_ids():
         conn.commit()
         cursor.close()
         conn.close()
-        st.success("✅ IDs resequenced successfully!")
+        return True
     except Exception as e:
         st.error(f"❌ Failed to resequence IDs: {e}")
+        return False
+
+def delete_applicant(applicant_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM data WHERE id = %s", (applicant_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+    except Exception as e:
+        st.error(f"❌ Failed to delete applicant: {e}")
+        return False
 
 # -----------------------------
 # Utility Functions (Scoring Criteria)
@@ -294,7 +308,6 @@ with tabs[2]:
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, bike_price, net_salary)
 
-            # Age rejection case
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
@@ -364,6 +377,7 @@ with tabs[2]:
                                 "bike_price": bike_price,
                             })
                             st.success("✅ Applicant information saved to database successfully!")
+                            st.experimental_rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to save applicant: {e}")
         else:
@@ -375,32 +389,24 @@ with tabs[2]:
 with tabs[3]:
     st.subheader("📂 Applicants Database")
 
-    if st.button("🔄 Refresh Data"):
-        resequence_ids()
-        st.session_state.refresh = True
-
-    def delete_applicant(applicant_id: int):
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM data WHERE id = %s", (applicant_id,))
-            conn.commit()
-            cursor.close()
-            conn.close()
-            st.success(f"✅ Applicant with ID {applicant_id} deleted successfully!")
-        except Exception as e:
-            st.error(f"❌ Failed to delete applicant: {e}")
+    if st.button("🔄 Refresh & Resequence IDs"):
+        if resequence_ids():
+            st.success("✅ IDs resequenced successfully!")
+            st.experimental_rerun()  # Auto-refresh table
 
     try:
         df = fetch_all_applicants()
         if not df.empty:
             st.dataframe(df, use_container_width=True)
 
-            # Select Applicant to Delete
             delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
             if st.button("🗑️ Delete Applicant"):
                 if delete_id in df["id"].values:
-                    delete_applicant(delete_id)
+                    if delete_applicant(delete_id):
+                        st.success(f"✅ Applicant with ID {delete_id} deleted successfully!")
+                        if resequence_ids():
+                            st.success("✅ IDs resequenced after deletion!")
+                        st.experimental_rerun()
                 else:
                     st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
 
