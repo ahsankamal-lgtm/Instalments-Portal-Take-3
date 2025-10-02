@@ -332,10 +332,30 @@ with tabs[3]:
     if st.button("🔄 Refresh Data"):
         st.session_state.refresh = True
 
+    def delete_applicant(applicant_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM data WHERE id = %s", (applicant_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            st.success(f"✅ Applicant with ID {applicant_id} deleted successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to delete applicant: {e}")
+
     try:
         df = fetch_all_applicants()
         if not df.empty:
             st.dataframe(df, use_container_width=True)
+
+            # Select Applicant to Delete
+            delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
+            if st.button("🗑️ Delete Applicant"):
+                if delete_id in df["id"].values:
+                    delete_applicant(delete_id)
+                else:
+                    st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
 
             # 📥 Download Excel Button
             output = BytesIO()
