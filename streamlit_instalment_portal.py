@@ -193,19 +193,10 @@ with tabs[0]:
     if phone_number and not validate_phone(phone_number):
         st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
-    # 🔹 Gender moved here before Guarantors
-    gender = st.radio("Gender", ["M", "F"])
-
-    # Guarantors after Gender
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
     if guarantors == "Yes":
         female_guarantor = st.radio("At least one Female Guarantor?", ["Yes", "No"])
-
-    # 🔹 Electricity Bill moved here after Guarantors
-    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
-    if electricity_bill == "No":
-        st.error("🚫 Application Rejected: Electricity bill not available.")
 
     # Address fields
     street_address = st.text_input("Street Address")
@@ -229,6 +220,12 @@ with tabs[0]:
             st.components.v1.html(js, height=0, width=0)
         else:
             st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
+
+    gender = st.radio("Gender", ["M", "F"])
+
+    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
+    if electricity_bill == "No":
+        st.error("🚫 Application Rejected: Electricity bill not available.")
 
     guarantor_valid = (guarantors == "Yes")
     female_guarantor_valid = (female_guarantor == "Yes") if guarantors == "Yes" else True
@@ -293,3 +290,133 @@ with tabs[2]:
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
             ag = age_score(age)
+            dep = dependents_score(dependents)
+            res = residence_score(residence)
+            dti, ratio = dti_score(outstanding, bike_price, net_salary)
+
+            # Age rejection case
+            if ag == -1:
+                st.subheader("❌ Rejected: Applicant is under 18 years old.")
+            else:
+                final = (
+                    inc * 0.40 + bal * 0.30 + sal * 0.04 + emp * 0.04 +
+                    job * 0.04 + ag * 0.04 + dep * 0.04 + res * 0.05 + dti * 0.05
+                )
+
+                if final >= 75:
+                    decision = "✅ Approve"
+                elif final >= 60:
+                    decision = "🟡 Review"
+                else:
+                    decision = "❌ Reject"
+
+                st.markdown("### 🔹 Detailed Scores")
+                st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
+                st.write(f"**Bank Balance Score (vs. 3× EMI):** {bal:.1f}")
+                st.write(f"**Salary Consistency Score:** {sal:.1f}")
+                st.write(f"**Employer Type Score:** {emp:.1f}")
+                st.write(f"**Job Tenure Score:** {job:.1f}")
+                st.write(f"**Age Score:** {ag:.1f}")
+                st.write(f"**Dependents Score:** {dep:.1f}")
+                st.write(f"**Residence Score:** {res:.1f}")
+                st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
+                st.write(f"**Debt-to-Income Score:** {dti:.1f}")
+                st.write(f"**Final Score:** {final:.1f}")
+                st.subheader(f"🏆 Decision: {decision}")
+
+                st.markdown("### 📌 Decision Reasons")
+                reasons = []
+                if inc < 60:
+                    reasons.append("• Moderate to low income level.")
+                if bal >= 100:
+                    reasons.append("• Bank balance fully meets requirement (≥ 3× EMI).")
+                else:
+                    reasons.append("• Bank balance below recommended 3× EMI.")
+                if dti < 70:
+                    reasons.append("• High debt-to-income ratio, risky.")
+                if final >= 75:
+                    reasons.append("• Profile fits approval criteria.")
+                for r in reasons:
+                    st.write(r)
+
+                if decision == "✅ Approve":
+                    if st.button("💾 Save Applicant to Database"):
+                        try:
+                            save_to_db({
+                                "first_name": first_name,
+                                "last_name": last_name,
+                                "cnic": cnic,
+                                "license_no": license_number,
+                                "guarantors": guarantors,
+                                "female_guarantor": female_guarantor if female_guarantor else "No",
+                                "phone_number": phone_number,
+                                "street_address": street_address,
+                                "area_address": area_address,
+                                "city": city,
+                                "state_province": state_province,
+                                "postal_code": postal_code,
+                                "country": country,
+                                "gender": gender,
+                                "electricity_bill": electricity_bill,
+                                "net_salary": net_salary,
+                                "emi": emi,
+                                "bike_type": bike_type,
+                                "bike_price": bike_price,
+                            })
+                            st.success("✅ Applicant information saved to database successfully!")
+                        except Exception as e:
+                            st.error(f"❌ Failed to save applicant: {e}")
+        else:
+            st.warning("⚠️ Complete Evaluation inputs first")
+
+# -----------------------------
+# Page 4: Applicants
+# -----------------------------
+with tabs[3]:
+    st.subheader("📂 Applicants Database")
+
+    if st.button("🔄 Refresh Data"):
+        resequence_ids()
+        st.session_state.refresh = True
+
+    def delete_applicant(applicant_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM data WHERE id = %s", (applicant_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            st.success(f"✅ Applicant with ID {applicant_id} deleted successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to delete applicant: {e}")
+
+    try:
+        df = fetch_all_applicants()
+        if not df.empty:
+            st.dataframe(df, use_container_width=True)
+
+            # Select Applicant to Delete
+            delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
+            if st.button("🗑️ Delete Applicant"):
+                if delete_id in df["id"].values:
+                    delete_applicant(delete_id)
+                else:
+                    st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
+
+            # 📥 Download Excel Button
+            output = BytesIO()
+            with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+                df.to_excel(writer, index=False, sheet_name="Applicants")
+            excel_data = output.getvalue()
+
+            st.download_button(
+                label="📥 Download Excel",
+                data=excel_data,
+                file_name="applicants.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        else:
+            st.info("ℹ️ No applicants found in the database yet.")
+    except Exception as e:
+        st.error(f"❌ Failed to load applicants: {e}")
