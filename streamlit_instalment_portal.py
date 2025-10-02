@@ -198,6 +198,12 @@ with tabs[0]:
     if guarantors == "Yes":
         female_guarantor = st.radio("At least one Female Guarantor?", ["Yes", "No"])
 
+    # 🔹 Gender and Electricity Bill moved here
+    gender = st.radio("Gender", ["M", "F"])
+    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
+    if electricity_bill == "No":
+        st.error("🚫 Application Rejected: Electricity bill not available.")
+
     # Address fields
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
@@ -220,12 +226,6 @@ with tabs[0]:
             st.components.v1.html(js, height=0, width=0)
         else:
             st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
-
-    gender = st.radio("Gender", ["M", "F"])
-
-    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
-    if electricity_bill == "No":
-        st.error("🚫 Application Rejected: Electricity bill not available.")
 
     guarantor_valid = (guarantors == "Yes")
     female_guarantor_valid = (female_guarantor == "Yes") if guarantors == "Yes" else True
