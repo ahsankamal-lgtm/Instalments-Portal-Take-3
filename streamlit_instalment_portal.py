@@ -59,8 +59,23 @@ def fetch_all_applicants():
     conn.close()
     return df
 
+def resequence_ids():
+    """ Re-sequence IDs after deletion and reset AUTO_INCREMENT """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SET @count = 0;")
+        cursor.execute("UPDATE data SET id = (@count := @count + 1)")
+        cursor.execute("ALTER TABLE data AUTO_INCREMENT = 1")
+        conn.commit()
+        cursor.close()
+        conn.close()
+        st.success("✅ IDs resequenced successfully!")
+    except Exception as e:
+        st.error(f"❌ Failed to resequence IDs: {e}")
+
 # -----------------------------
-# Utility Functions (Updated Criteria)
+# Utility Functions (Scoring Criteria)
 # -----------------------------
 def validate_cnic(cnic: str) -> bool:
     return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
@@ -361,6 +376,7 @@ with tabs[3]:
     st.subheader("📂 Applicants Database")
 
     if st.button("🔄 Refresh Data"):
+        resequence_ids()
         st.session_state.refresh = True
 
     def delete_applicant(applicant_id: int):
