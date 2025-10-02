@@ -173,12 +173,7 @@ st.title("⚡ Electric Bike Finance Portal")
 
 tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
-# -----------------------------
-# Page 1: Applicant Info
-# -----------------------------
-with tabs[0]:
-    st.subheader("Applicant Information")
-
+    # --- Applicant Info Tab (adjusted layout) ---
     first_name = st.text_input("First Name")
     last_name = st.text_input("Last Name")
 
@@ -193,12 +188,19 @@ with tabs[0]:
     if phone_number and not validate_phone(phone_number):
         st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
+    # ✅ Order adjusted here
+    gender = st.radio("Gender", ["M", "F"])
+
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
     if guarantors == "Yes":
         female_guarantor = st.radio("At least one Female Guarantor?", ["Yes", "No"])
 
-    # Address fields
+    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
+    if electricity_bill == "No":
+        st.error("🚫 Application Rejected: Electricity bill not available.")
+
+    # Address fields (moved after electricity bill)
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -221,34 +223,6 @@ with tabs[0]:
         else:
             st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
 
-    gender = st.radio("Gender", ["M", "F"])
-
-    electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
-    if electricity_bill == "No":
-        st.error("🚫 Application Rejected: Electricity bill not available.")
-
-    guarantor_valid = (guarantors == "Yes")
-    female_guarantor_valid = (female_guarantor == "Yes") if guarantors == "Yes" else True
-
-    if not guarantor_valid:
-        st.error("🚫 Application Rejected: No guarantor available.")
-    elif guarantors == "Yes" and not female_guarantor_valid:
-        st.error("🚫 Application Rejected: At least one female guarantor is required.")
-
-    info_complete = all([
-        first_name, last_name, validate_cnic(cnic), license_suffix,
-        guarantor_valid, female_guarantor_valid,
-        phone_number and validate_phone(phone_number),
-        street_address, area_address, city, state_province, country,
-        gender, electricity_bill == "Yes"
-    ])
-
-    st.session_state.applicant_valid = info_complete
-
-    if info_complete:
-        st.success("✅ Applicant Information completed. Proceed to Evaluation tab.")
-    else:
-        st.warning("⚠️ Please complete all required fields before proceeding.")
 
 # -----------------------------
 # Page 2: Evaluation
