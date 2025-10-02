@@ -1,6 +1,7 @@
 streamlit
 pandas
-sqlalchemy
-openpyxl
+mysql-connector-python
+xlsxwriter
+
 
 
