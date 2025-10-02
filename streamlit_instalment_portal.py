@@ -240,7 +240,7 @@ with tabs[1]:
         net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
         emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
         bank_balance = st.number_input("Average 6M Bank Balance", min_value=0, step=1000, format="%i")
-        salary_consistency = st.number_input("Months with Salary Credit (0–12)", min_value=0, max_value=12, step=1)
+        salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1, format="%i")
         age = st.number_input("Age", min_value=18, max_value=70, step=1, format="%i")
