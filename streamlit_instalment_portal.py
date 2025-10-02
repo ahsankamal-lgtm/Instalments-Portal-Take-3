@@ -24,19 +24,19 @@ def save_to_db(data: dict):
     INSERT INTO data (
         first_name, last_name, cnic, license_no,
         guarantors, female_guarantor, phone_number,
-        street_address, area_address, city, state_province, postal_code, country,
-        gender, electricity_bill,
+        qualifications, street_address, area_address, city, state_province, postal_code, country,
+        gender, electricity_bill, post_dated_cheques, guarantor_affidavit,
         net_salary, emi, bike_type, bike_price
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     values = (
         data["first_name"], data["last_name"], data["cnic"], data["license_no"],
         data["guarantors"], data["female_guarantor"], data["phone_number"],
-        data["street_address"], data["area_address"], data["city"], data["state_province"],
+        data["qualifications"], data["street_address"], data["area_address"], data["city"], data["state_province"],
         data["postal_code"], data["country"],
-        data["gender"], data["electricity_bill"],
+        data["gender"], data["electricity_bill"], data["post_dated_cheques"], data["guarantor_affidavit"],
         data["net_salary"], data["emi"], data["bike_type"], data["bike_price"]
     )
 
@@ -50,8 +50,8 @@ def fetch_all_applicants():
     query = """
     SELECT id, first_name, last_name, cnic, license_no,
            guarantors, female_guarantor, phone_number,
-           street_address, area_address, city, state_province, postal_code, country,
-           gender, electricity_bill,
+           qualifications, street_address, area_address, city, state_province, postal_code, country,
+           gender, electricity_bill, post_dated_cheques, guarantor_affidavit,
            net_salary, emi, bike_type, bike_price
     FROM data
     """
@@ -193,8 +193,10 @@ with tabs[0]:
     if phone_number and not validate_phone(phone_number):
         st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
-    # ✅ Order adjusted here
+    # ✅ Order adjusted
     gender = st.radio("Gender", ["M", "F"])
+
+    qualifications = st.text_area("Applicant Qualifications (Education / Skills)")
 
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
@@ -205,7 +207,10 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    # Address fields (after electricity bill)
+    post_dated_cheques = st.radio("Is applicant willing to provide post dated cheques?", ["Yes", "No"])
+    guarantor_affidavit = st.radio("Is guarantor's affidavit available?", ["Yes", "No"])
+
+    # Address fields
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -241,7 +246,8 @@ with tabs[0]:
         guarantor_valid, female_guarantor_valid,
         phone_number and validate_phone(phone_number),
         street_address, area_address, city, state_province, country,
-        gender, electricity_bill == "Yes"
+        gender, electricity_bill == "Yes",
+        post_dated_cheques, guarantor_affidavit, qualifications
     ])
 
     st.session_state.applicant_valid = info_complete
@@ -325,21 +331,6 @@ with tabs[2]:
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision}")
 
-                st.markdown("### 📌 Decision Reasons")
-                reasons = []
-                if inc < 60:
-                    reasons.append("• Moderate to low income level.")
-                if bal >= 100:
-                    reasons.append("• Bank balance fully meets requirement (≥ 3× EMI).")
-                else:
-                    reasons.append("• Bank balance below recommended 3× EMI.")
-                if dti < 70:
-                    reasons.append("• High debt-to-income ratio, risky.")
-                if final >= 75:
-                    reasons.append("• Profile fits approval criteria.")
-                for r in reasons:
-                    st.write(r)
-
                 if decision == "✅ Approve":
                     if st.button("💾 Save Applicant to Database"):
                         try:
@@ -351,6 +342,7 @@ with tabs[2]:
                                 "guarantors": guarantors,
                                 "female_guarantor": female_guarantor if female_guarantor else "No",
                                 "phone_number": phone_number,
+                                "qualifications": qualifications,
                                 "street_address": street_address,
                                 "area_address": area_address,
                                 "city": city,
@@ -359,6 +351,8 @@ with tabs[2]:
                                 "country": country,
                                 "gender": gender,
                                 "electricity_bill": electricity_bill,
+                                "post_dated_cheques": post_dated_cheques,
+                                "guarantor_affidavit": guarantor_affidavit,
                                 "net_salary": net_salary,
                                 "emi": emi,
                                 "bike_type": bike_type,
