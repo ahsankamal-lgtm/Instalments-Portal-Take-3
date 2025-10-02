@@ -193,13 +193,13 @@ with tabs[0]:
     if phone_number and not validate_phone(phone_number):
         st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
+     gender = st.radio("Gender", ["M", "F"])
+
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
     if guarantors == "Yes":
         female_guarantor = st.radio("At least one Female Guarantor?", ["Yes", "No"])
 
-    # 🔹 Gender and Electricity Bill moved here
-    gender = st.radio("Gender", ["M", "F"])
     electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
