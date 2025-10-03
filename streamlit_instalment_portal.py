@@ -192,18 +192,26 @@ def show_landing_page():
     st.markdown(
         """
         <style>
+        /* Remove Streamlit's default padding/margins */
+        .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            margin-top: 0rem !important;
+            margin-bottom: 0rem !important;
+        }
+
         /* Page background */
         .stApp {
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
-        /* Center everything */
+        /* Main container that fills the viewport */
         .landing-container {
-            min-height: 100vh;                /* take full screen height */
+            height: 100vh;  /* exactly viewport height */
             display: flex;
             flex-direction: column;
-            justify-content: center;          /* vertical center */
-            align-items: center;              /* horizontal center */
+            justify-content: center; /* vertical center */
+            align-items: center;     /* horizontal center */
             text-align: center;
         }
 
@@ -211,7 +219,7 @@ def show_landing_page():
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -219,54 +227,44 @@ def show_landing_page():
 
         /* Subtitle */
         .landing-subtitle {
-            font-size: 1.15rem;
-            margin-bottom: 32px;
+            font-size: 1.25rem;
+            margin-bottom: 50px;
+            font-weight: 400;
             color: #444;
-            max-width: 760px;
         }
 
-        /* Button wrapper */
+        /* Button styling */
         div.stButton > button {
-            min-width: 200px;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            border-radius: 30px;
-            padding: 12px 32px;
+            border-radius: 12px;
+            padding: 14px 36px;
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
             border: none;
-            box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
-            transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+            box-shadow: 0px 6px 18px rgba(0,0,0,0.25);
+            transition: all 0.2s ease-in-out;
         }
 
         div.stButton > button:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
-        }
-
-        /* Mobile tweaks */
-        @media (max-width: 600px) {
-            .landing-title { font-size: 2.2rem; }
-            .landing-subtitle { font-size: 1rem; margin-bottom: 20px; }
-            div.stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
+            transform: scale(1.05);
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
         }
         </style>
+
+        <div class="landing-container">
+            <div class="landing-title">Electric Bike Finance Portal</div>
+            <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
+        </div>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
-    # HTML wrapper to group content
-    st.markdown('<div class="landing-container">', unsafe_allow_html=True)
-
-    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
-    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
-
-    # The button stays inside container
+    # Button centered using markdown container
+    st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
-
-    st.markdown('</div>', unsafe_allow_html=True)  # close container
-
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # Landing page state control (keep this immediately after the function)
 if "show_landing" not in st.session_state:
