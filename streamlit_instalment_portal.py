@@ -386,6 +386,7 @@ with tabs[2]:
                                 "residence": residence, 
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
+                                "decision": decision 
                             })
                             st.success("✅ Applicant information saved to database successfully!")
                         except Exception as e:
