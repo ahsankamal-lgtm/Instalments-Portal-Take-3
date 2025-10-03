@@ -188,8 +188,10 @@ def dti_score(outstanding, bike_price, net_salary):
 
 import streamlit as st
 
+import streamlit as st
+
 # -----------------------------
-# Final Landing Page (button truly centered)
+# Final Landing Page (everything vertically + horizontally centered)
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -200,13 +202,21 @@ def show_landing_page():
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
+        /* Fullscreen flex container */
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* vertical center */
+            align-items: center;     /* horizontal center */
+            height: 100vh;           /* full viewport height */
+            text-align: center;
+        }
+
         /* Title */
         .landing-title {
-            text-align: center;
             font-size: 3rem;
             font-weight: 800;
-            margin-top: 18vh;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -214,20 +224,18 @@ def show_landing_page():
 
         /* Subtitle */
         .landing-subtitle {
-            text-align: center;
             font-size: 1.25rem;
-            margin-bottom: 36px;
+            margin-bottom: 40px;
             font-weight: 400;
             color: #444;
         }
 
-        /* Center the button wrapper */
+        /* Button wrapper */
         div.stButton {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100% !important;
-            text-align: center !important;
         }
 
         /* Button styling */
@@ -251,8 +259,8 @@ def show_landing_page():
 
         /* Mobile tweaks */
         @media (max-width: 600px) {
-            .landing-title { font-size: 2.2rem; margin-top: 12vh; }
-            .landing-subtitle { font-size: 1rem; margin-bottom: 22px; }
+            .landing-title { font-size: 2.2rem; }
+            .landing-subtitle { font-size: 1rem; margin-bottom: 25px; }
             div.stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
         }
         </style>
@@ -260,11 +268,18 @@ def show_landing_page():
         unsafe_allow_html=True
     )
 
-    # Title + subtitle
-    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
-    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
+    # Container with centered content
+    st.markdown(
+        """
+        <div class="landing-container">
+            <div class="landing-title">Electric Bike Finance Portal</div>
+            <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    # Button (centered)
+    # Button (still centered below subtitle)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
 
