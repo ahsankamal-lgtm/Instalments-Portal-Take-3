@@ -22,52 +22,24 @@ def save_to_db(data: dict):
 
     query = """
     INSERT INTO data (
-        name, cnic, license_no, phone_number, gender,
-        guarantors, female_guarantor, electricity_bill,
-        education, occupation,
-        address, city, state_province, postal_code, country,
-        net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
-        employer_type, age, residence,
-        bike_type, bike_price, decision
+        first_name, last_name, cnic, license_no,
+        guarantors, female_guarantor, phone_number,
+        street_address, area_address, city, state_province, postal_code, country,
+        gender, electricity_bill, education, occupation,
+        net_salary, emi, bike_type, bike_price, guarantor_bank_balance
     )
-    VALUES (%s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s,
-            %s, %s, %s,
-            %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    # 👇 Concatenate name + address
-    full_name = f"{data['first_name']} {data['last_name']}"
-    full_address = f"{data['street_address']}, {data['area_address']}"
-
     values = (
-        full_name,
-        data["cnic"],
-        data["license_no"],
-        data["phone_number"],
-        data["gender"],
-        data["guarantors"],
-        data["female_guarantor"],
-        data["electricity_bill"],
-        data.get("education"),   # optional
-        data.get("occupation"),  # optional
-        full_address,
-        data["city"],
-        data["state_province"],
-        data["postal_code"],
-        data["country"],
-        data["net_salary"],
-        data["emi"],
-        data["bank_balance"],
-        data.get("guarantor_bank_balance"),  # optional
-        data["employer_type"],
-        data["age"],
-        data["residence"],
-        data["bike_type"],
-        data["bike_price"],
-        data["decision"]
+        data["first_name"], data["last_name"], data["cnic"], data["license_no"],
+        data["guarantors"], data["female_guarantor"], data["phone_number"],
+        data["street_address"], data["area_address"], data["city"], data["state_province"],
+        data["postal_code"], data["country"],
+        data["gender"], data["electricity_bill"],
+        data.get("education"), data.get("occupation"),
+        data["net_salary"], data["emi"], data["bike_type"], data["bike_price"],
+        data.get("guarantor_bank_balance")
     )
 
     cursor.execute(query, values)
@@ -77,7 +49,14 @@ def save_to_db(data: dict):
 
 def fetch_all_applicants():
     conn = get_db_connection()
-    query = "SELECT * FROM data"
+    query = """
+    SELECT id, first_name, last_name, cnic, license_no,
+           guarantors, female_guarantor, phone_number,
+           street_address, area_address, city, state_province, postal_code, country,
+           gender, electricity_bill, education, occupation,
+           net_salary, emi, bike_type, bike_price, guarantor_bank_balance
+    FROM data
+    """
     df = pd.read_sql(query, conn)
     conn.close()
     return df
@@ -125,17 +104,10 @@ def income_score(net_salary, gender):
         base *= 1.1
     return min(base, 100)
 
-def bank_balance_score(balance, emi):
+def bank_balance_score(balance, emi, is_guarantor=False):
     if emi <= 0:
         return 0
-    threshold = emi * 3
-    score = (balance / threshold) * 100
-    return min(score, 100)
-
-def guarantor_balance_score(balance, emi):
-    if emi <= 0:
-        return 0
-    threshold = emi * 6
+    threshold = emi * (6 if is_guarantor else 3)
     score = (balance / threshold) * 100
     return min(score, 100)
 
@@ -160,7 +132,7 @@ def job_tenure_score(years):
 
 def age_score(age):
     if age < 18:
-        return -1
+        return -1  # reject
     elif age <= 25:
         return 80
     elif age <= 30:
@@ -204,7 +176,7 @@ st.title("⚡ Electric Bike Finance Portal")
 tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
-# Applicant Info Tab
+# Page 1: Applicant Info
 # -----------------------------
 with tabs[0]:
     st.subheader("Applicant Information")
@@ -216,23 +188,34 @@ with tabs[0]:
     if cnic and not validate_cnic(cnic):
         st.error("❌ Invalid CNIC format. Use XXXXX-XXXXXXX-X")
 
-    license_suffix = st.number_input("Enter last 3 digits for License Number", min_value=0, max_value=999, step=1, format="%03d")
+    # ✅ Strict numeric license suffix
+    license_suffix = st.number_input(
+        "Enter last 3 digits for License Number (#XXX)",
+        min_value=0, max_value=999, step=1, format="%03d"
+    )
     license_number = f"{cnic}#{license_suffix}" if validate_cnic(cnic) else ""
 
     phone_number = st.text_input("Phone Number (11–12 digits)")
     if phone_number and not validate_phone(phone_number):
-        st.error("❌ Invalid Phone Number")
+        st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
     gender = st.radio("Gender", ["M", "F"])
+
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
     if guarantors == "Yes":
         female_guarantor = st.radio("At least one Female Guarantor?", ["Yes", "No"])
 
     electricity_bill = st.radio("Is Electricity Bill Available?", ["Yes", "No"])
-    education = st.text_input("Education (Optional)")
-    occupation = st.text_input("Occupation (Optional)")
+    if electricity_bill == "No":
+        st.error("🚫 Application Rejected: Electricity bill not available.")
 
+    # Qualifications (Optional)
+    with st.expander("🎓 Qualifications (Optional)"):
+        education = st.selectbox("Education", ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"])
+        occupation = st.text_input("Occupation")
+
+    # Address fields
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -240,11 +223,31 @@ with tabs[0]:
     postal_code = st.text_input("Postal Code (Optional)")
     country = st.text_input("Country")
 
+    if st.button("📍 View Location"):
+        if street_address and area_address and city and state_province and country:
+            full_address = f"{street_address}, {area_address}, {city}, {state_province}, {country} {postal_code or ''}"
+            encoded = urllib.parse.quote_plus(full_address)
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={encoded}"
+
+            js = f"""
+            <script>
+            window.open("{maps_url}", "_blank").focus();
+            </script>
+            """
+            st.components.v1.html(js, height=0, width=0)
+        else:
+            st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
+
     guarantor_valid = (guarantors == "Yes")
     female_guarantor_valid = (female_guarantor == "Yes") if guarantors == "Yes" else True
 
+    if not guarantor_valid:
+        st.error("🚫 Application Rejected: No guarantor available.")
+    elif guarantors == "Yes" and not female_guarantor_valid:
+        st.error("🚫 Application Rejected: At least one female guarantor is required.")
+
     info_complete = all([
-        first_name, last_name, validate_cnic(cnic), license_suffix,
+        first_name, last_name, validate_cnic(cnic),
         guarantor_valid, female_guarantor_valid,
         phone_number and validate_phone(phone_number),
         street_address, area_address, city, state_province, country,
@@ -255,13 +258,15 @@ with tabs[0]:
 
     if info_complete:
         st.success("✅ Applicant Information completed. Proceed to Evaluation tab.")
+    else:
+        st.warning("⚠️ Please complete all required fields before proceeding.")
 
 # -----------------------------
-# Evaluation Tab
+# Page 2: Evaluation
 # -----------------------------
 with tabs[1]:
     if not st.session_state.get("applicant_valid", False):
-        st.error("🚫 Complete Applicant Information first.")
+        st.error("🚫 Please complete Applicant Information first.")
     else:
         st.subheader("Evaluation Inputs")
 
@@ -279,23 +284,29 @@ with tabs[1]:
         bike_price = st.number_input("Bike Price", min_value=0, step=1000, format="%i")
         outstanding = st.number_input("Other Loans (Outstanding)", min_value=0, step=1000, format="%i")
 
+        st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
+
 # -----------------------------
-# Results Tab
+# Page 3: Results
 # -----------------------------
 with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
-        st.error("🚫 Complete Applicant Information first.")
+        st.error("🚫 Please complete Applicant Information first.")
     else:
         st.subheader("📊 Results Summary")
 
-        if net_salary > 0 and emi > 0:
+        if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
             inc = income_score(net_salary, gender)
 
-            # ✅ Use applicant or guarantor balance
-            if guarantor_bank_balance > bank_balance:
-                bal = guarantor_balance_score(guarantor_bank_balance, emi)
+            # Choose higher of applicant vs guarantor bank balance
+            if guarantor_bank_balance and guarantor_bank_balance > bank_balance:
+                bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
+                used_balance = guarantor_bank_balance
+                bal_source = "Guarantor"
             else:
-                bal = bank_balance_score(bank_balance, emi)
+                bal = bank_balance_score(bank_balance, emi, is_guarantor=False)
+                used_balance = bank_balance
+                bal_source = "Applicant"
 
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
@@ -305,8 +316,9 @@ with tabs[2]:
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, bike_price, net_salary)
 
+            # Age rejection case
             if ag == -1:
-                st.subheader("❌ Rejected: Applicant under 18.")
+                st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
                 final = (
                     inc * 0.40 + bal * 0.30 + sal * 0.04 + emp * 0.04 +
@@ -314,52 +326,76 @@ with tabs[2]:
                 )
 
                 if final >= 75:
-                    decision = "Approved"
+                    decision = "✅ Approve"
                 elif final >= 60:
-                    decision = "Review"
+                    decision = "🟡 Review"
                 else:
-                    decision = "Reject"
+                    decision = "❌ Reject"
 
+                st.markdown("### 🔹 Detailed Scores")
+                st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
+                st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
+                st.write(f"**Salary Consistency Score:** {sal:.1f}")
+                st.write(f"**Employer Type Score:** {emp:.1f}")
+                st.write(f"**Job Tenure Score:** {job:.1f}")
+                st.write(f"**Age Score:** {ag:.1f}")
+                st.write(f"**Dependents Score:** {dep:.1f}")
+                st.write(f"**Residence Score:** {res:.1f}")
+                st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
+                st.write(f"**Debt-to-Income Score:** {dti:.1f}")
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision}")
 
-                if st.button("💾 Save Applicant to Database"):
-                    try:
-                        save_to_db({
-                            "first_name": first_name,
-                            "last_name": last_name,
-                            "cnic": cnic,
-                            "license_no": license_number,
-                            "phone_number": phone_number,
-                            "gender": gender,
-                            "guarantors": guarantors,
-                            "female_guarantor": female_guarantor if female_guarantor else "No",
-                            "electricity_bill": electricity_bill,
-                            "education": education,
-                            "occupation": occupation,
-                            "street_address": street_address,
-                            "area_address": area_address,
-                            "city": city,
-                            "state_province": state_province,
-                            "postal_code": postal_code,
-                            "country": country,
-                            "net_salary": net_salary,
-                            "emi": emi,
-                            "bank_balance": bank_balance,
-                            "guarantor_bank_balance": guarantor_bank_balance,
-                            "employer_type": employer_type,
-                            "age": age,
-                            "residence": residence,
-                            "bike_type": bike_type,
-                            "bike_price": bike_price,
-                            "decision": decision
-                        })
-                        st.success("✅ Applicant saved to database!")
-                    except Exception as e:
-                        st.error(f"❌ Failed to save applicant: {e}")
+                st.markdown("### 📌 Decision Reasons")
+                reasons = []
+                if inc < 60:
+                    reasons.append("• Moderate to low income level.")
+                if bal >= 100:
+                    reasons.append(f"• {bal_source} bank balance fully meets requirement.")
+                else:
+                    reasons.append(f"• {bal_source} bank balance below recommended threshold.")
+                if dti < 70:
+                    reasons.append("• High debt-to-income ratio, risky.")
+                if final >= 75:
+                    reasons.append("• Profile fits approval criteria.")
+                for r in reasons:
+                    st.write(r)
+
+                if decision == "✅ Approve":
+                    if st.button("💾 Save Applicant to Database"):
+                        try:
+                            save_to_db({
+                                "first_name": first_name,
+                                "last_name": last_name,
+                                "cnic": cnic,
+                                "license_no": license_number,
+                                "guarantors": guarantors,
+                                "female_guarantor": female_guarantor if female_guarantor else "No",
+                                "phone_number": phone_number,
+                                "street_address": street_address,
+                                "area_address": area_address,
+                                "city": city,
+                                "state_province": state_province,
+                                "postal_code": postal_code,
+                                "country": country,
+                                "gender": gender,
+                                "electricity_bill": electricity_bill,
+                                "education": education,
+                                "occupation": occupation,
+                                "net_salary": net_salary,
+                                "emi": emi,
+                                "bike_type": bike_type,
+                                "bike_price": bike_price,
+                                "guarantor_bank_balance": guarantor_bank_balance
+                            })
+                            st.success("✅ Applicant information saved to database successfully!")
+                        except Exception as e:
+                            st.error(f"❌ Failed to save applicant: {e}")
+        else:
+            st.warning("⚠️ Complete Evaluation inputs first")
 
 # -----------------------------
-# Applicants Tab
+# Page 4: Applicants
 # -----------------------------
 with tabs[3]:
     st.subheader("📂 Applicants Database")
@@ -368,6 +404,18 @@ with tabs[3]:
         resequence_ids()
         st.session_state.refresh = True
 
+    def delete_applicant(applicant_id: int):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM data WHERE id = %s", (applicant_id,))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            st.success(f"✅ Applicant with ID {applicant_id} deleted successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to delete applicant: {e}")
+
     try:
         df = fetch_all_applicants()
         if not df.empty:
@@ -375,16 +423,10 @@ with tabs[3]:
 
             delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
             if st.button("🗑️ Delete Applicant"):
-                try:
-                    conn = get_db_connection()
-                    cursor = conn.cursor()
-                    cursor.execute("DELETE FROM data WHERE id = %s", (delete_id,))
-                    conn.commit()
-                    cursor.close()
-                    conn.close()
-                    st.success(f"✅ Applicant ID {delete_id} deleted!")
-                except Exception as e:
-                    st.error(f"❌ Delete failed: {e}")
+                if delete_id in df["id"].values:
+                    delete_applicant(delete_id)
+                else:
+                    st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
 
             output = BytesIO()
             with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
@@ -398,6 +440,6 @@ with tabs[3]:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         else:
-            st.info("ℹ️ No applicants found yet.")
+            st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
         st.error(f"❌ Failed to load applicants: {e}")
