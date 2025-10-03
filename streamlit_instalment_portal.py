@@ -186,81 +186,108 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Clean Landing Page
+# Beautiful Final Landing Page
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
-        /* Page background */
+        /* Background gradient */
         .stApp {
-            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            background: linear-gradient(135deg, #f8fbff, #e0f7fa);
         }
 
-        /* Title */
-        .landing-title {
+        /* Container */
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            font-size: 3rem;
+            padding: 60px 20px;
+            height: 100vh;
+        }
+
+        /* Title with gradient text */
+        .landing-title {
+            font-size: 3.2rem;
             font-weight: 800;
-            margin-top: 120px;
-            margin-bottom: 15px;
-            background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         /* Subtitle */
         .landing-subtitle {
-            text-align: center;
-            font-size: 1.3rem;
-            margin-bottom: 50px;
+            font-size: 1.25rem;
             font-weight: 400;
-            color: #444;
+            color: #333;
+            max-width: 600px;
+            margin-bottom: 50px;
+            line-height: 1.5;
+        }
+
+        /* Illustration placeholder */
+        .landing-illustration {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 35px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00c6ff, #0072ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
         /* Button */
-        .landing-button button {
-            display: block;
-            margin: 0 auto;
-            font-size: 1.2rem !important;
-            font-weight: bold !important;
-            border-radius: 14px !important;
-            padding: 14px 36px !important;
-            background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
-            color: white !important;
-            border: none !important;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.25) !important;
-            transition: transform 0.2s ease-in-out;
+        div.stButton > button {
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            transition: all 0.2s ease-in-out;
         }
 
-        .landing-button button:hover {
-            transform: scale(1.05);
+        div.stButton > button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .landing-title { font-size: 2.2rem; }
+            .landing-subtitle { font-size: 1rem; margin-bottom: 35px; }
+            .landing-illustration { width: 140px; height: 140px; font-size: 2.2rem; }
+            div.stButton > button { font-size: 1rem; padding: 12px 28px; }
         }
         </style>
+
+        <div class="landing-container">
+            <div class="landing-illustration">🚲</div>
+            <div class="landing-title">Electric Bike Finance Portal</div>
+            <div class="landing-subtitle">
+                Fast • Transparent • Smart financing solutions tailored for your electric vehicle journey.  
+                Empowering you to ride into the future with ease and confidence.
+            </div>
+        </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Title
-    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+    # Centered button below the block
+    _, col, _ = st.columns([1,2,1])
+    with col:
+        if st.button("Enter Portal", key="enter_portal"):
+            st.session_state["show_landing"] = False
 
-    # Subtitle
-    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
-
-    # Button
-    if st.button("🚀 Enter Portal", key="enter_portal"):
-        st.session_state["show_landing"] = False
-
-
-# -----------------------------
-# Landing Page State Control
-# -----------------------------
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()  # ✅ This ensures the rest of the app won't render
 
 # -----------------------------
 # Tabs (Main App Starts Here)
