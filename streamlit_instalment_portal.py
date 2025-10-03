@@ -198,21 +198,12 @@ def show_landing_page():
             background: linear-gradient(135deg, #e0f7fa, #ffffff);
         }
 
-        /* Landing card */
-        .landing-container {
-            text-align: center;
-            padding: 80px 40px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
-            margin: 60px auto;
-            max-width: 800px;
-        }
-
         /* Title */
         .landing-title {
+            text-align: center;
             font-size: 3rem;
             font-weight: 800;
+            margin-top: 120px;
             margin-bottom: 15px;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
@@ -221,14 +212,17 @@ def show_landing_page():
 
         /* Subtitle */
         .landing-subtitle {
+            text-align: center;
             font-size: 1.3rem;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             font-weight: 400;
             color: #444;
         }
 
         /* Button */
         .landing-button button {
+            display: block;
+            margin: 0 auto;
             font-size: 1.2rem !important;
             font-weight: bold !important;
             border-radius: 14px !important;
@@ -248,29 +242,15 @@ def show_landing_page():
         unsafe_allow_html=True
     )
 
-    # Single clean card block (no empty bar!)
-    st.markdown('<div class="landing-container">', unsafe_allow_html=True)
-
     # Title
     st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
 
     # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button
+    # Button (centered)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# Initialize session state for landing page
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()
 
 # -----------------------------
 # Tabs (Main App Starts Here)
