@@ -185,79 +185,67 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 # -----------------------------
-# FINAL EXPERT-DESIGNED LANDING PAGE
-# (Perfectly Centered and Styled)
+# FINAL EXPERT-DESIGNED LANDING PAGE (Dark Mode: High-Tech Focus)
 # -----------------------------
 def show_landing_page():
-    # --- 1. Expert CSS for Professional Look and Typography ---
+    # --- 1. Expert CSS for Dark Theme and Typography ---
     st.markdown(
         """
         <style>
-        /* Apply a deep, professional Indigo-Violet gradient background */
+        /* Apply a dark, charcoal background for a professional, high-tech look */
         .stApp {
-            background: linear-gradient(135deg, #3f005a, #5a006c); 
-            background-size: 400% 400%;
-            animation: gradient-shift 15s ease infinite; 
-            color: white; /* Default text color */
+            background-color: #1a1a1a; 
+            color: white; 
         }
 
-        /* Define the gradient animation for a smooth look */
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Container for Centering (Must fill the viewport vertically) */
+        /* Container for Centering (Vertical and Horizontal) */
         .landing-page-v-center {
-            /* Flex properties for perfect vertical and horizontal centering */
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Vertical center */
-            align-items: center;    /* Horizontal center */
+            justify-content: center; 
+            align-items: center;    
             text-align: center;
-            height: 100vh; /* Use 100vh to ensure it covers the full screen */
+            height: 100vh; 
             padding: 20px;
         }
 
-        /* Title: Bold, high contrast, and perfectly wrapped */
+        /* Title: Primary focus with a clean digital glow */
         .landing-title-text {
             font-size: 4.5rem;
             font-weight: 800;
             margin-bottom: 5px; 
-            line-height: 1.05; /* Tighten line spacing */
-            text-shadow: 0px 4px 8px rgba(0,0,0,0.5); /* Strong, clean shadow */
-            letter-spacing: 1px;
+            line-height: 1.05; 
             color: white;
+            /* Subtle neon glow effect */
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
         }
 
-        /* Subtitle: Clean and informative */
+        /* Subtitle: Clean and secondary */
         .landing-subtitle-text {
             font-size: 1.6rem;
             font-weight: 300;
             margin-top: 15px; 
-            margin-bottom: 50px; /* Space before the button */
-            opacity: 0.9;
-            color: #d1c4e9; /* Light purple for elegance */
+            margin-bottom: 50px; 
+            color: #b0c4de; /* Light slate blue for readability */
         }
         
-        /* Button styling: Energetic and high contrast */
+        /* Button styling: High-tech, sharp cyan accent */
         div.stButton > button {
             font-size: 1.5rem !important;
             font-weight: 700 !important;
-            border-radius: 12px !important;
+            border-radius: 8px !important; /* Sharper corners */
             padding: 15px 50px !important;
-            background-color: #1affc6 !important; /* Bright Mint Green */
-            color: #000000 !important; /* Black text for max contrast */
+            background-color: #00ffff !important; /* Bright Cyan/Aqua */
+            color: #000000 !important; 
             border: none !important;
-            /* Sharp, distinct box shadow */
-            box-shadow: 0px 8px 20px rgba(26, 255, 198, 0.7); 
+            /* Sharp, distinct box shadow/glow */
+            box-shadow: 0px 0px 20px rgba(0, 255, 255, 0.8), 0 0 5px rgba(0, 255, 255, 0.5); 
             transition: all 0.3s ease-in-out !important;
         }
 
         div.stButton > button:hover {
-            background-color: #00e6b2 !important;
-            transform: translateY(-2px); /* Slight lift on hover */
+            background-color: #00e0e0 !important;
+            transform: translateY(-2px); 
         }
         </style>
         """,
@@ -265,45 +253,12 @@ def show_landing_page():
     )
 
     # --- 2. Guaranteed Centering Logic ---
-    # Use Streamlit containers to force content into the vertical center
+    # The content is wrapped in a V-centering container
     with st.container():
-        # Use HTML/CSS for the content block which handles V-centering (landing-page-v-center)
         st.markdown(
             """
             <div class="landing-page-v-center">
-                <div class="landing-title-text">EV Finance Portal</div>
-                
-                <div class="landing-subtitle-text">Next-Generation Installment Scoring.</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    # --- 3. The Button (Pixel-Perfect Alignment) ---
-    # We use columns to create space around the centered button, but only for horizontal padding, 
-    # relying on the CSS for V-centering.
-    col_l, col_c, col_r = st.columns([1, 3, 1])
-
-    with col_c:
-        # Use CSS text-align: center via markdown for the button wrapper 
-        # to ensure it is centered within the middle column (col_c).
-        st.markdown("<div style='text-align: center; margin-top: -300px;'>", unsafe_allow_html=True)
-        
-        # Crucial Fix: Use negative margin on the button container to pull it up 
-        # into the correct position relative to the V-centered text block.
-        if st.button("Begin Evaluation 🚀", key="perfect_start"):
-            st.session_state["show_landing"] = False
-            
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-# Landing page state control (keep this immediately after the function)
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()
+                <div class="landing-title-text">EV FINTECH SCORE</div>
 
 # -----------------------------
 # Tabs (Main App Starts Here)
