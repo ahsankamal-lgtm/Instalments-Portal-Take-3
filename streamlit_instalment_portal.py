@@ -189,7 +189,6 @@ def dti_score(outstanding, bike_price, net_salary):
 # Streamlit App
 # -----------------------------
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-st.title("⚡ Electric Bike Finance Portal")
 
 # -----------------------------
 # Redesigned Landing Page
