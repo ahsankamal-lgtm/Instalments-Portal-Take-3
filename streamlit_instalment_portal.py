@@ -4,11 +4,6 @@ import urllib.parse
 import mysql.connector
 import pandas as pd
 from io import BytesIO
-import base64
-
-logo_base64 = """
-<BIG-BASE64-STRING>
-"""
 
 # -----------------------------
 # Database Connection
@@ -193,47 +188,10 @@ def dti_score(outstanding, bike_price, net_salary):
 # -----------------------------
 # Streamlit App
 # -----------------------------
-# -----------------------------
-# Landing Page
-# -----------------------------
-if "landing_done" not in st.session_state:
-    st.session_state.landing_done = False
+st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+st.title("⚡ Electric Bike Finance Portal")
 
-if not st.session_state.landing_done:
-    st.set_page_config(page_title="⚡ EV Bike Finance Portal", layout="centered")
-
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-
-    # ✅ Logo shows from base64
-    st.markdown(
-        f"""
-        <div style="text-align:center;">
-            <img src="data:image/png;base64,{logo_base64}" width="220">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        "<h2 style='color:#1E90FF; font-family:Helvetica; font-weight:600;'>"
-        "Let’s continue to the EV Bike Finance Portal, shall we?"
-        "</h2>",
-        unsafe_allow_html=True,
-    )
-
-    if st.button("🚀 Yes, Let's Go!", use_container_width=True):
-        st.session_state.landing_done = True
-        st.rerun()
-
-else:
-    # -----------------------------
-    # Your Existing App (Tabs etc.)
-    # -----------------------------
-    st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-    st.title("⚡ Electric Bike Finance Portal")
-
-    tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
-    # your existing Page 1, Page 2, Page 3, Page 4 code continues...
+tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
@@ -515,4 +473,3 @@ with tabs[3]:
             st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
         st.error(f"❌ Failed to load applicants: {e}")
-
