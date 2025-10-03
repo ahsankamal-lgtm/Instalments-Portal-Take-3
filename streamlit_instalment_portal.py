@@ -22,17 +22,20 @@ def save_to_db(data: dict):
 
     query = """
     INSERT INTO data (
-        first_name, last_name, cnic, license_no,
+        name, cnic, license_no,
         guarantors, female_guarantor, phone_number,
         street_address, area_address, city, state_province, postal_code, country,
         gender, electricity_bill, education, occupation,
         net_salary, emi, bike_type, bike_price, guarantor_bank_balance
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
+    # ✅ Merge first_name + last_name into a single field
+    full_name = f"{data['first_name']} {data['last_name']}".strip()
+
     values = (
-        data["first_name"], data["last_name"], data["cnic"], data["license_no"],
+        full_name, data["cnic"], data["license_no"],
         data["guarantors"], data["female_guarantor"], data["phone_number"],
         data["street_address"], data["area_address"], data["city"], data["state_province"],
         data["postal_code"], data["country"],
@@ -50,7 +53,7 @@ def save_to_db(data: dict):
 def fetch_all_applicants():
     conn = get_db_connection()
     query = """
-    SELECT id, first_name, last_name, cnic, license_no,
+    SELECT id, name, cnic, license_no,
            guarantors, female_guarantor, phone_number,
            street_address, area_address, city, state_province, postal_code, country,
            gender, electricity_bill, education, occupation,
