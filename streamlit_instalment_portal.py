@@ -184,118 +184,12 @@ def dti_score(outstanding, bike_price, net_salary):
         return 70, ratio
     else:
         return 40, ratio
-# -----------------------------
-# FINAL ROBUST EXPERT-DESIGNED LANDING PAGE (Single-Container Fix)
-# -----------------------------
-def show_landing_page():
-    # --- 1. Expert CSS (Dark Mode, Retained for Aesthetics) ---
-    st.markdown(
-        """
-        <style>
-        /* Apply a dark, charcoal background for a professional, high-tech look */
-        .stApp {
-            background-color: #1a1a1a; 
-            color: white; 
-        }
-
-        /* GUARANTEED CENTERING FIX: This container holds ALL content and is centered */
-        .content-block-center {
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Vertical center */
-            align-items: center;    /* Horizontal center */
-            text-align: center;
-            height: 100vh; /* Ensures content is centered on the whole page */
-            padding: 20px;
-        }
-
-        /* Title: Primary focus with a clean digital glow */
-        .landing-title-text {
-            font-size: 4.5rem;
-            font-weight: 800;
-            margin-bottom: 5px; 
-            line-height: 1.05; 
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-
-        /* Subtitle: Clean and secondary */
-        .landing-subtitle-text {
-            font-size: 1.6rem;
-            font-weight: 300;
-            margin-top: 15px; 
-            /* REDUCED GAP: Tight spacing before the button */
-            margin-bottom: 30px; 
-            color: #b0c4de; 
-        }
-        
-        /* Button styling: High-tech, sharp cyan accent */
-        div.stButton > button {
-            font-size: 1.5rem !important;
-            font-weight: 700 !important;
-            border-radius: 8px !important; 
-            padding: 15px 50px !important;
-            background-color: #00ffff !important; 
-            color: #000000 !important; 
-            border: none !important;
-            box-shadow: 0px 0px 20px rgba(0, 255, 255, 0.8), 0 0 5px rgba(0, 255, 255, 0.5); 
-            transition: all 0.3s ease-in-out !important;
-            /* Ensures the button is centered *if* placed outside the main block */
-            display: block; 
-            margin: 0 auto; 
-        }
-
-        div.stButton > button:hover {
-            background-color: #00e0e0 !important;
-            transform: translateY(-2px); 
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # --- 2. Guaranteed Centering Logic (All elements inside one HTML block) ---
-    # By placing the button INSIDE the main flex container, we rely entirely on 
-    # the 'align-items: center' of the CSS block for alignment.
-    st.markdown(
-        """
-        <div class="content-block-center">
-            <div class="landing-title-text">EV FINTECH SCORE</div>
-            
-            <div class="landing-subtitle-text">The Intelligent Platform for Electric Vehicle Finance Decisions.</div>
-
-            </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # 3. The Streamlit button is placed here, and since the text above already filled the screen, 
-    # we need to manually place the button using Streamlit's structural method.
-    
-    # Use a narrow column block to position the button horizontally
-    col_l, col_c, col_r = st.columns([1, 4, 1])
-
-    with col_c:
-        # Use an empty markdown block to pull the subsequent st.button into a previous vertical block
-        # This is a robust Streamlit-specific trick for centering a button horizontally 
-        # and getting it close to the main text block.
-        st.markdown("<div style='margin-top: -300px; text-align: center;'>", unsafe_allow_html=True)
-        if st.button("Start New Assessment", key="final_perfect_start"):
-            st.session_state["show_landing"] = False
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-# Landing page state control (keep this immediately after the function)
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()
 
 # -----------------------------
-# Tabs (Main App Starts Here)
+# Streamlit App
 # -----------------------------
+st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+st.title("⚡ Electric Bike Finance Portal")
 
 tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
@@ -354,6 +248,7 @@ with tabs[0]:
             <script>
             window.open("{maps_url}", "_blank").focus();
             </script>
+            """
             st.components.v1.html(js, height=0, width=0)
         else:
             st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
