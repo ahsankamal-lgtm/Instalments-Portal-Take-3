@@ -220,8 +220,6 @@ def show_landing_page():
 
         /* Button */
         div.stButton > button {
-            display: block;
-            margin: 0 auto;
             font-size: 1.2rem;
             font-weight: 600;
             border-radius: 12px;
@@ -248,9 +246,11 @@ def show_landing_page():
     # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button
+    # Button (centered)
+    st.markdown('<div style="text-align: center; margin-top: 20px;">', unsafe_allow_html=True)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # -----------------------------
