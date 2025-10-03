@@ -186,24 +186,21 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final landing page — guaranteed centered button (replace previous landing block)
-# -----------------------------
-# -----------------------------
-# Final landing page — guaranteed centered button (replace previous landing block)
+# Final landing page (Minimalist Version)
 # -----------------------------
 def show_landing_page():
-    # --- Expert CSS for a Modern Look ---
+    # --- Minimalist CSS for Focus and Speed ---
     st.markdown(
         """
         <style>
-        /* General Page Styling (Keep it clean) */
+        /* Reset background for clean white look */
         .stApp {
-            background-color: #f8f9fa; /* Light grey background */
+            background-color: white; 
         }
         
-        /* Main container for centering content */
+        /* Main container for perfect vertical/horizontal centering */
         .landing-container {
-            height: 80vh; /* Adjust for better vertical centering */
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -212,118 +209,73 @@ def show_landing_page():
             padding: 20px;
         }
 
-        /* Hero Title */
+        /* Hero Title - Bold and concise */
         .landing-title {
             font-size: 3.5rem;
             font-weight: 900;
-            margin-bottom: 5px;
-            color: #007bff; /* Primary Blue Color */
+            margin-bottom: 8px;
+            color: #1a1a1a; /* Dark text for contrast */
             line-height: 1.1;
         }
 
-        /* Tagline */
+        /* Tagline - Simple and informative */
         .landing-subtitle {
-            font-size: 1.4rem;
-            margin-bottom: 40px;
+            font-size: 1.25rem;
+            margin-bottom: 50px;
             font-weight: 300;
-            color: #495057;
+            color: #6c757d; /* Soft grey text */
         }
         
-        /* Feature Cards/Blocks */
-        .feature-block {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            height: 100%;
-            text-align: left;
-            border-left: 5px solid #007bff; /* Accent border */
-        }
-        
-        .feature-block h4 {
-            color: #007bff;
-            margin-top: 0;
-            font-weight: 700;
-        }
-
-        /* Button styling for a distinct call-to-action */
+        /* Button styling - Primary focus color */
         div.stButton > button {
-            font-size: 1.3rem !important;
-            font-weight: 700 !important;
-            border-radius: 15px !important;
-            padding: 15px 40px !important;
-            background-color: #28a745 !important; /* Green for GO/Enter */
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            padding: 12px 30px !important;
+            background-color: #007bff !important; /* Standard primary blue */
             color: white !important;
             border: none !important;
-            box-shadow: 0px 8px 18px rgba(40, 167, 69, 0.4) !important;
-            transition: all 0.3s ease-in-out !important;
+            box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.3) !important;
+            transition: all 0.2s ease-in-out !important;
         }
 
         div.stButton > button:hover {
-            background-color: #218838 !important;
-            transform: translateY(-2px);
-            box-shadow: 0px 10px 20px rgba(40, 167, 69, 0.5) !important;
+            background-color: #0056b3 !important;
+            transform: translateY(-1px);
+            box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.4) !important;
         }
-
         </style>
         """,
         unsafe_allow_html=True
     )
 
     # --- Header and Main Title ---
+    # Everything is placed inside the vertically centered container
     st.markdown(
         f"""
         <div class="landing-container">
-            <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
-            <div class="landing-title">EV Finance Scoring Portal</div>
-            <div class="landing-subtitle">The Smart Way to Approve Installment Applications for Electric Vehicles.</div>
+            <div style="font-size: 4rem; color: #007bff; margin-bottom: 20px;">⚡</div>
+            <div class="landing-title">EV Finance Scoring</div>
+            <div class="landing-subtitle">Approve or Review EV installment applications efficiently.</div>
+            
+            <div style='height: 30px;'></div> <div style='text-align:center;'> 
+                <div class="stButton">
+                    <button type="button" key="enter_portal_minimal">
+                        Start Evaluation
+                    </button>
+                </div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True
     )
     
-    # --- Feature Section (using Streamlit columns) ---
-    st.markdown("### Key Advantages", unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
+    # Use the programmatic button logic to handle the state change
+    # Note: Streamlit's actual st.button needs to be outside the large markdown block
+    # We hide the HTML button and use a simpler st.button right after
+    if st.button("Start Evaluation", key="enter_portal", help="Click to begin a new application"):
+        st.session_state["show_landing"] = False
 
-    with col1:
-        st.markdown(
-            """
-            <div class="feature-block">
-                <h4>🚀 Instant Scoring</h4>
-                <p>Automated evaluation based on proprietary financial and demographic criteria.</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-
-    with col2:
-        st.markdown(
-            """
-            <div class="feature-block">
-                <h4>🔒 Data Integrity</h4>
-                <p>Securely save applicant data, evaluation scores, and final decisions to the database.</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-
-    with col3:
-        st.markdown(
-            """
-            <div class="feature-block">
-                <h4>✅ Transparent Decisions</h4>
-                <p>A weighted scoring model provides a clear, defensible 'Approve', 'Review', or 'Reject' outcome.</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-
-    st.markdown("---")
-    
-    # --- Centered Call-to-Action Button ---
-    col_center = st.columns([1, 2, 1]) # Use columns to push the button into the center third
-    with col_center[1]:
-        if st.button("Start New Application", key="enter_portal"):
-            st.session_state["show_landing"] = False
 
 # Landing page state control (keep this immediately after the function)
 if "show_landing" not in st.session_state:
@@ -332,15 +284,6 @@ if "show_landing" not in st.session_state:
 if st.session_state["show_landing"]:
     show_landing_page()
     st.stop()
-# Landing page state control (keep this immediately after the function)
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()
-
-
 
 # -----------------------------
 # Tabs (Main App Starts Here)
