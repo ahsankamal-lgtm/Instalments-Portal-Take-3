@@ -46,7 +46,7 @@ def save_to_db(data: dict):
         data["guarantors"], data["female_guarantor"], data["electricity_bill"],
         data.get("education"), data.get("occupation"),
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
-        data["net_salary"], data["emi"], data["bank_balance"], data.get("guarantor_bank_balance"),
+        data["net_salary"], data["emi"], data["applicant_bank_balance"], data.get("guarantor_bank_balance"),
         data["employer_type"], data["age"], data["residence"],
         data["bike_type"], data["bike_price"], data["decision"]
     )
@@ -281,7 +281,7 @@ with tabs[1]:
 
         net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
         emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
-        bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
+        applicant_bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
         guarantor_bank_balance = st.number_input("Guarantor's Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
@@ -307,13 +307,13 @@ with tabs[2]:
         if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
             inc = income_score(net_salary, gender)
 
-            if guarantor_bank_balance and guarantor_bank_balance > bank_balance:
+            if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
                 bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
                 used_balance = guarantor_bank_balance
                 bal_source = "Guarantor"
             else:
-                bal = bank_balance_score(bank_balance, emi, is_guarantor=False)
-                used_balance = bank_balance
+                bal = bank_balance_score(applicant_bank_balance, emi, is_guarantor=False)
+                used_balance = applicant_bank_balance
                 bal_source = "Applicant"
 
             sal = salary_consistency_score(salary_consistency)
@@ -375,7 +375,7 @@ with tabs[2]:
                                 "country": country,
                                 "gender": gender,
                                 "electricity_bill": electricity_bill,
-                                "education": education,
+                                "education": education,                               
                                 "occupation": occupation,
                                 "net_salary": net_salary,
                                 "emi": emi,
