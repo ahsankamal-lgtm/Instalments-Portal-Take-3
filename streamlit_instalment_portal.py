@@ -231,7 +231,7 @@ def show_landing_page():
         /* 2) Subtitle/Tagline - Reduced bottom margin */
         .landing-subtitle {
             font-size: 1.5rem;
-            margin-bottom: 0px; /* Set to zero to control spacing with <br> tags below */
+            margin-bottom: 20px; /* Set to zero to control spacing with <br> tags below */
             font-weight: 300;
             opacity: 0.9;
         }
