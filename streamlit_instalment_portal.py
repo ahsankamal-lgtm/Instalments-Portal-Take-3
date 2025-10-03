@@ -185,15 +185,13 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
-
 # -----------------------------
-# Final Clean Landing Page (Centered)
+# Final Clean Landing Page (Centered + Works with Session State)
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
-        /* Full viewport flex container */
         .landing-container {
             height: 100vh;
             display: flex;
@@ -221,19 +219,21 @@ def show_landing_page():
             max-width: 700px;
         }
 
-        .enter-button {
-            display: inline-block;
+        /* Center Streamlit button wrapper */
+        div.stButton > button {
+            min-width: 220px;
             font-size: 1.2rem;
             font-weight: 600;
-            padding: 14px 36px;
             border-radius: 12px;
+            padding: 14px 36px;
             background: linear-gradient(135deg, #00c6ff, #0072ff);
-            color: white !important;
-            text-decoration: none;
+            color: white;
+            border: none;
             box-shadow: 0px 6px 18px rgba(0,0,0,0.25);
             transition: all 0.2s ease-in-out;
         }
-        .enter-button:hover {
+
+        div.stButton > button:hover {
             transform: scale(1.05);
             box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
         }
@@ -242,18 +242,14 @@ def show_landing_page():
         <div class="landing-container">
             <div class="landing-title">Electric Bike Finance Portal</div>
             <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
-            <form action="/" method="get">
-                <button type="submit" name="enter" class="enter-button">🚀 Enter Portal</button>
-            </form>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    # ✅ Use new Streamlit query_params API
-    if "enter" in st.query_params:
+    # ✅ Use normal Streamlit button so session state updates correctly
+    if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
-        st.query_params.clear()  # clear URL params after click
 
 
 # -----------------------------
