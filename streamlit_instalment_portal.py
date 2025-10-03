@@ -185,9 +185,8 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
-
 # -----------------------------
-# Clean Final Landing Page
+# Clean Landing Page
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -248,9 +247,20 @@ def show_landing_page():
     # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button (centered)
+    # Button
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
+
+
+# -----------------------------
+# Landing Page State Control
+# -----------------------------
+if "show_landing" not in st.session_state:
+    st.session_state["show_landing"] = True
+
+if st.session_state["show_landing"]:
+    show_landing_page()
+    st.stop()  # ✅ This ensures the rest of the app won't render
 
 # -----------------------------
 # Tabs (Main App Starts Here)
