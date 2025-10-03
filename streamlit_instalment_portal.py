@@ -207,15 +207,15 @@ if not st.session_state.landing_done:
     # Centered layout
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
 
-    # Logo
-  st.markdown(
-    f"""
-    <div style="text-align:center;">
-        <img src="data:image/png;base64,{logo_base64}" width="220">
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    # Logo (base64 embedded)
+    st.markdown(
+        f"""
+        <div style="text-align:center;">
+            <img src="data:image/png;base64,{logo_base64}" width="220">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Welcome message
     st.markdown(
