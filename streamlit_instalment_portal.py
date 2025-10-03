@@ -186,16 +186,25 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final landing page (Minimalist Version)
+# Final landing page (Blue Gradient Minimalist Version)
 # -----------------------------
 def show_landing_page():
-    # --- Minimalist CSS for Focus and Speed ---
+    # --- Expert CSS for a Blue Gradient Background and Centering ---
     st.markdown(
         """
         <style>
-        /* Reset background for clean white look */
+        /* Apply a dynamic blue gradient background to the entire app */
         .stApp {
-            background-color: white; 
+            background: linear-gradient(135deg, #1e90ff, #00bfff); /* Dodger Blue to Deep Sky Blue */
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite; /* Subtle animation */
+        }
+
+        /* Define the gradient animation for a smooth look */
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         /* Main container for perfect vertical/horizontal centering */
@@ -206,75 +215,68 @@ def show_landing_page():
             justify-content: center;
             align-items: center;
             text-align: center;
+            color: white; /* All text should be white on the blue background */
             padding: 20px;
         }
 
-        /* Hero Title - Bold and concise */
+        /* 1) Main Title */
         .landing-title {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin-bottom: 8px;
-            color: #1a1a1a; /* Dark text for contrast */
-            line-height: 1.1;
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
         }
 
-        /* Tagline - Simple and informative */
+        /* 2) Subtitle/Tagline */
         .landing-subtitle {
-            font-size: 1.25rem;
-            margin-bottom: 50px;
+            font-size: 1.5rem;
+            margin-bottom: 60px; /* Increased spacing before the button */
             font-weight: 300;
-            color: #6c757d; /* Soft grey text */
+            opacity: 0.9;
         }
         
-        /* Button styling - Primary focus color */
+        /* 3) Button styling - High contrast to gradient */
         div.stButton > button {
-            font-size: 1.1rem !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            padding: 12px 30px !important;
-            background-color: #007bff !important; /* Standard primary blue */
-            color: white !important;
+            font-size: 1.4rem !important;
+            font-weight: 700 !important;
+            border-radius: 12px !important;
+            padding: 15px 45px !important;
+            background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
+            color: #1a1a1a !important; /* Dark text on bright button */
             border: none !important;
-            box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.3) !important;
+            box-shadow: 0px 8px 18px rgba(255, 193, 7, 0.5) !important;
             transition: all 0.2s ease-in-out !important;
         }
 
         div.stButton > button:hover {
-            background-color: #0056b3 !important;
-            transform: translateY(-1px);
-            box-shadow: 0px 6px 15px rgba(0, 123, 255, 0.4) !important;
+            background-color: #e0a800 !important;
+            transform: scale(1.05);
+            box-shadow: 0px 12px 25px rgba(255, 193, 7, 0.6) !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # --- Header and Main Title ---
-    # Everything is placed inside the vertically centered container
+    # --- Centered Content (The three elements) ---
     st.markdown(
         f"""
         <div class="landing-container">
-            <div style="font-size: 4rem; color: #007bff; margin-bottom: 20px;">⚡</div>
-            <div class="landing-title">EV Finance Scoring</div>
-            <div class="landing-subtitle">Approve or Review EV installment applications efficiently.</div>
-            
-            <div style='height: 30px;'></div> <div style='text-align:center;'> 
-                <div class="stButton">
-                    <button type="button" key="enter_portal_minimal">
-                        Start Evaluation
-                    </button>
-                </div>
-            </div>
+            <div class="landing-title">Welcome to EV Finance Portal</div>
+            <div class="landing-subtitle">Approve or Review EV Instalment Applications Efficiently</div>
         </div>
         """,
         unsafe_allow_html=True
     )
     
-    # Use the programmatic button logic to handle the state change
-    # Note: Streamlit's actual st.button needs to be outside the large markdown block
-    # We hide the HTML button and use a simpler st.button right after
-    if st.button("Start Evaluation", key="enter_portal", help="Click to begin a new application"):
-        st.session_state["show_landing"] = False
+    # --- 3) The Button (Lets Streamlit handle centering via columns) ---
+    # Use columns to push the button into the center third of the screen
+    col_center = st.columns([1, 2, 1]) 
+    with col_center[1]:
+        # The key ensures the button is distinct from any others used elsewhere
+        if st.button("Let's Start! 🚀", key="start_portal_final"):
+            st.session_state["show_landing"] = False
 
 
 # Landing page state control (keep this immediately after the function)
