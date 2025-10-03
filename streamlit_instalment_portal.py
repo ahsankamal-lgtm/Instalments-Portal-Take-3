@@ -240,7 +240,7 @@ def show_landing_page():
         div.stButton > button {
             font-size: 1.4rem !important;
             font-weight: 700 !important;
-            border-radius: 12px !important;
+            border-radius: 20px !important;
             padding: 15px 45px !important;
             background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
             color: #1a1a1a !important; 
