@@ -191,32 +191,47 @@ def dti_score(outstanding, bike_price, net_salary):
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 
 # -----------------------------
-# Clean & Modern Landing Page
+# Professional Modern Landing Page
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
+        /* Overall page background */
+        .stApp {
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+        }
+
+        /* Landing card */
         .landing-container {
             text-align: center;
-            padding: 80px 30px;
-            background: #ffffff;
+            padding: 80px 40px;
+            background: white;
             border-radius: 20px;
-            box-shadow: 0px 8px 25px rgba(0,0,0,0.15);
-            margin-top: 50px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
+            margin: 60px auto;
+            max-width: 800px;
         }
+
+        /* Title styling */
         .landing-title {
-            font-size: 3.2rem;
+            font-size: 3rem;
             font-weight: 800;
             margin-bottom: 15px;
-            color: #0072ff;
+            background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        /* Subtitle styling */
         .landing-subtitle {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 40px;
             font-weight: 400;
-            color: #444;
+            color: #555;
         }
+
+        /* Button styling */
         .landing-button button {
             font-size: 1.2rem !important;
             font-weight: bold !important;
@@ -226,6 +241,11 @@ def show_landing_page():
             color: white !important;
             border: none !important;
             box-shadow: 0px 5px 15px rgba(0,0,0,0.25) !important;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .landing-button button:hover {
+            transform: scale(1.05);
         }
         </style>
         """,
@@ -235,13 +255,13 @@ def show_landing_page():
     with st.container():
         st.markdown('<div class="landing-container">', unsafe_allow_html=True)
 
-        # Main title with bike + lightning emojis
-        st.markdown('<div class="landing-title">⚡🚴 Electric Bike Finance Portal 🚴⚡</div>', unsafe_allow_html=True)
+        # Clean title
+        st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
 
         # Subtitle
         st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-        # Center button
+        # Centered button
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             if st.button("🚀 Enter Portal", key="enter_portal", use_container_width=True):
