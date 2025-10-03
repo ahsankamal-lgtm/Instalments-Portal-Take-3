@@ -192,7 +192,7 @@ st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="center
 st.title("⚡ Electric Bike Finance Portal")
 
 # -----------------------------
-# Landing Page
+# Redesigned Landing Page
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -200,34 +200,36 @@ def show_landing_page():
         <style>
         .landing-container {
             text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            padding: 70px 20px;
+            background: linear-gradient(135deg, #1f4037, #99f2c8);
             color: white;
             border-radius: 20px;
             box-shadow: 0px 6px 20px rgba(0,0,0,0.3);
+            margin-top: 30px;
         }
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             background: -webkit-linear-gradient(#00c6ff, #0072ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .landing-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            font-weight: 400;
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            font-weight: 500;
+            color: #f1f1f1;
         }
         .landing-button button {
-            font-size: 1.1rem !important;
+            font-size: 1.2rem !important;
             font-weight: bold !important;
-            border-radius: 12px !important;
-            padding: 12px 28px !important;
+            border-radius: 14px !important;
+            padding: 14px 32px !important;
             background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
             color: white !important;
             border: none !important;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.2) !important;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.25) !important;
         }
         </style>
         """,
@@ -236,14 +238,21 @@ def show_landing_page():
 
     with st.container():
         st.markdown('<div class="landing-container">', unsafe_allow_html=True)
-        st.markdown('<div class="landing-title">⚡ Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+
+        # Main title with bike + lightning emoji
+        st.markdown('<div class="landing-title">⚡🚴 Electric Bike Finance Portal 🚴⚡</div>', unsafe_allow_html=True)
+
+        # Subtitle
         st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
+        # Button centered
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             if st.button("🚀 Enter Portal", key="enter_portal", use_container_width=True):
                 st.session_state["show_landing"] = False
+
         st.markdown('</div>', unsafe_allow_html=True)
+
 
 # Initialize session state for landing page
 if "show_landing" not in st.session_state:
