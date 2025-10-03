@@ -26,7 +26,7 @@ def save_to_db(data: dict):
         guarantors, female_guarantor, phone_number,
         street_address, area_address, city, state_province, postal_code, country,
         gender, electricity_bill, education, occupation,
-        net_salary, emi, bank_balance, guarantor_balance, bike_type, bike_price
+        net_salary, emi, bike_type, bike_price, guarantor_bank_balance
     )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
@@ -36,9 +36,10 @@ def save_to_db(data: dict):
         data["guarantors"], data["female_guarantor"], data["phone_number"],
         data["street_address"], data["area_address"], data["city"], data["state_province"],
         data["postal_code"], data["country"],
-        data["gender"], data["electricity_bill"], data["education"], data["occupation"],
-        data["net_salary"], data["emi"], data["bank_balance"], data["guarantor_balance"],
-        data["bike_type"], data["bike_price"]
+        data["gender"], data["electricity_bill"],
+        data.get("education"), data.get("occupation"),
+        data["net_salary"], data["emi"], data["bike_type"], data["bike_price"],
+        data.get("guarantor_bank_balance")
     )
 
     cursor.execute(query, values)
@@ -53,7 +54,7 @@ def fetch_all_applicants():
            guarantors, female_guarantor, phone_number,
            street_address, area_address, city, state_province, postal_code, country,
            gender, electricity_bill, education, occupation,
-           net_salary, emi, bank_balance, guarantor_balance, bike_type, bike_price
+           net_salary, emi, bike_type, bike_price, guarantor_bank_balance
     FROM data
     """
     df = pd.read_sql(query, conn)
@@ -103,23 +104,12 @@ def income_score(net_salary, gender):
         base *= 1.1
     return min(base, 100)
 
-def balance_score(app_balance, guar_balance, emi):
-    """
-    Decide whether to use applicant's or guarantor's balance.
-    Applicant → threshold = 3× EMI
-    Guarantor → threshold = 6× EMI
-    """
+def bank_balance_score(balance, emi, is_guarantor=False):
     if emi <= 0:
-        return 0, "No EMI"
-    # If guarantor balance is provided and greater than applicant
-    if guar_balance and guar_balance > app_balance:
-        threshold = emi * 6
-        score = (guar_balance / threshold) * 100
-        return min(score, 100), "Guarantor"
-    else:
-        threshold = emi * 3
-        score = (app_balance / threshold) * 100
-        return min(score, 100), "Applicant"
+        return 0
+    threshold = emi * (6 if is_guarantor else 3)
+    score = (balance / threshold) * 100
+    return min(score, 100)
 
 def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
@@ -198,8 +188,12 @@ with tabs[0]:
     if cnic and not validate_cnic(cnic):
         st.error("❌ Invalid CNIC format. Use XXXXX-XXXXXXX-X")
 
-    license_suffix = st.text_input("Enter last 3 digits for License Number (#XXX)")
-    license_number = f"{cnic}#{license_suffix}" if validate_cnic(cnic) and license_suffix else ""
+    # ✅ Strict numeric license suffix
+    license_suffix = st.number_input(
+        "Enter last 3 digits for License Number (#XXX)",
+        min_value=0, max_value=999, step=1, format="%03d"
+    )
+    license_number = f"{cnic}#{license_suffix}" if validate_cnic(cnic) else ""
 
     phone_number = st.text_input("Phone Number (11–12 digits)")
     if phone_number and not validate_phone(phone_number):
@@ -216,17 +210,12 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    # ✅ Qualifications Panel
-    st.markdown("### 🎓 Qualifications (Optional)")
-    education = st.selectbox(
-        "Education Level (Optional)",
-        ["None", "Primary", "Middle", "Matric", "Intermediate", "Bachelors", "Masters", "PhD"],
-        index=0
-    )
-    occupation = st.text_input("Occupation (Optional)")
+    # Qualifications (Optional)
+    with st.expander("🎓 Qualifications (Optional)"):
+        education = st.selectbox("Education", ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"])
+        occupation = st.text_input("Occupation")
 
     # Address fields
-    st.markdown("### 🏠 Address Information")
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -258,7 +247,7 @@ with tabs[0]:
         st.error("🚫 Application Rejected: At least one female guarantor is required.")
 
     info_complete = all([
-        first_name, last_name, validate_cnic(cnic), license_suffix,
+        first_name, last_name, validate_cnic(cnic),
         guarantor_valid, female_guarantor_valid,
         phone_number and validate_phone(phone_number),
         street_address, area_address, city, state_province, country,
@@ -283,8 +272,8 @@ with tabs[1]:
 
         net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
         emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
-        bank_balance = st.number_input("Applicant Average 6M Bank Balance", min_value=0, step=1000, format="%i")
-        guarantor_balance = st.number_input("Guarantor Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
+        bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
+        guarantor_bank_balance = st.number_input("Guarantor's Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1, format="%i")
@@ -306,9 +295,19 @@ with tabs[2]:
     else:
         st.subheader("📊 Results Summary")
 
-        if 'net_salary' in locals() and net_salary > 0 and 'emi' in locals() and emi > 0:
+        if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
             inc = income_score(net_salary, gender)
-            bal, source = balance_score(bank_balance, guarantor_balance, emi)
+
+            # Choose higher of applicant vs guarantor bank balance
+            if guarantor_bank_balance and guarantor_bank_balance > bank_balance:
+                bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
+                used_balance = guarantor_bank_balance
+                bal_source = "Guarantor"
+            else:
+                bal = bank_balance_score(bank_balance, emi, is_guarantor=False)
+                used_balance = bank_balance
+                bal_source = "Applicant"
+
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
@@ -317,6 +316,7 @@ with tabs[2]:
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, bike_price, net_salary)
 
+            # Age rejection case
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
@@ -334,8 +334,7 @@ with tabs[2]:
 
                 st.markdown("### 🔹 Detailed Scores")
                 st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
-                st.write(f"**Bank Balance Used:** {source}")
-                st.write(f"**Bank Balance Score:** {bal:.1f}")
+                st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
                 st.write(f"**Salary Consistency Score:** {sal:.1f}")
                 st.write(f"**Employer Type Score:** {emp:.1f}")
                 st.write(f"**Job Tenure Score:** {job:.1f}")
@@ -352,9 +351,9 @@ with tabs[2]:
                 if inc < 60:
                     reasons.append("• Moderate to low income level.")
                 if bal >= 100:
-                    reasons.append(f"• {source} bank balance fully meets requirement.")
+                    reasons.append(f"• {bal_source} bank balance fully meets requirement.")
                 else:
-                    reasons.append(f"• {source} bank balance below recommended threshold.")
+                    reasons.append(f"• {bal_source} bank balance below recommended threshold.")
                 if dti < 70:
                     reasons.append("• High debt-to-income ratio, risky.")
                 if final >= 75:
@@ -385,10 +384,9 @@ with tabs[2]:
                                 "occupation": occupation,
                                 "net_salary": net_salary,
                                 "emi": emi,
-                                "bank_balance": bank_balance,
-                                "guarantor_balance": guarantor_balance,
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
+                                "guarantor_bank_balance": guarantor_bank_balance
                             })
                             st.success("✅ Applicant information saved to database successfully!")
                         except Exception as e:
@@ -442,6 +440,6 @@ with tabs[3]:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         else:
-            st.info("ℹ️ No applicants found in database.")
+            st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
-        st.error(f"❌ Failed to fetch applicants: {e}")
+        st.error(f"❌ Failed to load applicants: {e}")
