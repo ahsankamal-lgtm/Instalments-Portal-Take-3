@@ -185,8 +185,11 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
+
+import streamlit as st
+
 # -----------------------------
-# Final Clean Landing Page (Visible + Centered Button)
+# Final Clean Landing Page (Perfectly Centered Button)
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -218,6 +221,13 @@ def show_landing_page():
             color: #444;
         }
 
+        /* Center button wrapper */
+        .center-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         /* Button styling */
         div.stButton > button {
             font-size: 1.2rem;
@@ -246,11 +256,11 @@ def show_landing_page():
     # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button perfectly centered with columns
-    col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        if st.button("🚀 Enter Portal", key="enter_portal"):
-            st.session_state["show_landing"] = False
+    # Button wrapped in a centered div
+    st.markdown('<div class="center-button">', unsafe_allow_html=True)
+    if st.button("🚀 Enter Portal", key="enter_portal"):
+        st.session_state["show_landing"] = False
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # -----------------------------
@@ -261,7 +271,7 @@ if "show_landing" not in st.session_state:
 
 if st.session_state["show_landing"]:
     show_landing_page()
-    st.stop()   # 👈 ensures other pages don’t load until button clicked
+    st.stop()
 
 
 # -----------------------------
