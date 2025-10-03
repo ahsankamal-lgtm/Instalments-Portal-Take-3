@@ -224,14 +224,14 @@ if st.session_state.show_landing:
     st.markdown("<h1>Electric Bike Finance Portal</h1>", unsafe_allow_html=True)
     st.markdown("<h2>Simplifying finance for your next ride 🚴‍♂️</h2>", unsafe_allow_html=True)
 
-    if st.button("🚀 Enter App"):
+if st.button("🚀 Enter App"):
         st.session_state.show_landing = False
         st.rerun()
 
     st.markdown("<div class='footer'>© 2025 Your Company | Designed with Streamlit</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-  else:
+else:
     st.title("⚡ Electric Bike Finance Portal")
     tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
