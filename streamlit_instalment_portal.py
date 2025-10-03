@@ -186,32 +186,32 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 
-import streamlit as st
-
-import streamlit as st
-
 # -----------------------------
-# Final landing page — everything truly centered
+# Robust landing page — everything truly centered (replace existing landing block)
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
-        /* Page background */
-        .stApp {
+        /* Background */
+        .stApp, body, main {
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
-        /* Make Streamlit's main content area a full-height flex container.
-           This ensures Streamlit-rendered widgets (like st.button) are included. */
-        div.block-container {
-            min-height: 100vh;                 /* fill viewport */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;          /* vertical center */
-            align-items: center;              /* horizontal center */
-            padding-top: 0;                    /* reduce default top padding */
-            padding-bottom: 0;
+        /* Try multiple wrapper selectors used across Streamlit versions.
+           Make the main content wrapper a full-viewport flex container so
+           Streamlit-rendered widgets (like st.button) participate in the same flow. */
+        main > div.block-container,
+        div.block-container,
+        section.main > div.block-container,
+        .reportview-container .main {
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important; /* vertical center */
+            align-items: center !important;     /* horizontal center */
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
         /* Title */
@@ -234,16 +234,22 @@ def show_landing_page():
             max-width: 760px;
         }
 
-        /* Ensure Streamlit's button wrapper centers the button */
-        div.stButton {
+        /* Ensure Streamlit's button wrapper centers the button.
+           Use several selectors for robustness. */
+        div.stButton,
+        .stButton,
+        div.row-widget.stButton {
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
             width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        /* Button styling */
-        div.stButton > button {
+        /* Style the button itself */
+        div.stButton > button,
+        .stButton > button {
             min-width: 220px;
             font-size: 1.15rem;
             font-weight: 600;
@@ -254,44 +260,44 @@ def show_landing_page():
             border: none;
             box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
             transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
-            margin: 0; /* remove any unexpected offset */
+            margin: 0; /* remove unexpected offset */
         }
 
-        div.stButton > button:hover {
+        div.stButton > button:hover,
+        .stButton > button:hover {
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
         }
 
-        /* Mobile tweaks */
+        /* Mobile adjustments */
         @media (max-width: 600px) {
             .landing-title { font-size: 2.2rem; }
             .landing-subtitle { font-size: 1rem; margin-bottom: 20px; }
-            div.stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
+            div.stButton > button, .stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # Render title + subtitle (these AND the st.button below will be inside div.block-container)
+    # Render title/subtitle as Streamlit markdown so they live inside the same flow
     st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Normal Streamlit button — now part of the same flex container and will be centered
+    # Normal st.button — now it will be inside the same full-height flex container and centered
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
 
 
-
-# -----------------------------
-# Landing Page State Control
-# -----------------------------
+# Landing page state control (keep this immediately after the function)
 if "show_landing" not in st.session_state:
     st.session_state["show_landing"] = True
 
 if st.session_state["show_landing"]:
     show_landing_page()
     st.stop()
+
+
 
 
 # -----------------------------
