@@ -4,6 +4,11 @@ import urllib.parse
 import mysql.connector
 import pandas as pd
 from io import BytesIO
+# -----------------------------
+# Landing Page Logic
+# -----------------------------
+if "show_landing" not in st.session_state:
+    st.session_state.show_landing = True
 
 # -----------------------------
 # Database Connection
@@ -189,9 +194,46 @@ def dti_score(outstanding, bike_price, net_salary):
 # Streamlit App
 # -----------------------------
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-st.title("⚡ Electric Bike Finance Portal")
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+# -----------------------------
+# Landing Page
+# -----------------------------
+if st.session_state.show_landing:
+    st.markdown("""
+        <style>
+            .main { text-align: center; padding-top: 60px; }
+            h1 { font-size: 3em; font-weight: 700; margin-bottom: 0.2em; }
+            h2 { color: #555; font-weight: 400; margin-bottom: 1.5em; }
+            .button {
+                background-color: #0072ff;
+                color: white;
+                padding: 0.75em 2em;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 1.1em;
+                transition: 0.3s;
+            }
+            .button:hover { background-color: #0059cc; }
+            .footer { margin-top: 3em; font-size: 0.9em; color: #888; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<div class='main'>", unsafe_allow_html=True)
+
+    st.image("https://cdn-icons-png.flaticon.com/512/3069/3069172.png", width=120)  # Replace with your logo
+    st.markdown("<h1>Electric Bike Finance Portal</h1>", unsafe_allow_html=True)
+    st.markdown("<h2>Simplifying finance for your next ride 🚴‍♂️</h2>", unsafe_allow_html=True)
+
+    if st.button("🚀 Enter App"):
+        st.session_state.show_landing = False
+        st.rerun()
+
+    st.markdown("<div class='footer'>© 2025 Your Company | Designed with Streamlit</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+else:
+    st.title("⚡ Electric Bike Finance Portal")
+    tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
