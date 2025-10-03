@@ -187,7 +187,7 @@ def dti_score(outstanding, bike_price, net_salary):
 
 
 # -----------------------------
-# Robust landing page — everything truly centered (replace existing landing block)
+# Final Clean Landing Page (Centered)
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -242,30 +242,29 @@ def show_landing_page():
         <div class="landing-container">
             <div class="landing-title">Electric Bike Finance Portal</div>
             <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
-            <form action="#" method="post">
-                <button name="enter" class="enter-button">🚀 Enter Portal</button>
+            <form action="/" method="get">
+                <button type="submit" name="enter" class="enter-button">🚀 Enter Portal</button>
             </form>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Capture the HTML form submit in Python:
-    # (Streamlit puts POST form submits into query params.)
-    if "enter" in st.experimental_get_query_params():
+    # ✅ Use new Streamlit query_params API
+    if "enter" in st.query_params:
         st.session_state["show_landing"] = False
-        st.experimental_set_query_params()  # clear param
+        st.query_params.clear()  # clear URL params after click
 
 
-# Landing page state control (keep this immediately after the function)
+# -----------------------------
+# Landing Page State Control
+# -----------------------------
 if "show_landing" not in st.session_state:
     st.session_state["show_landing"] = True
 
 if st.session_state["show_landing"]:
     show_landing_page()
     st.stop()
-
-
 
 
 # -----------------------------
