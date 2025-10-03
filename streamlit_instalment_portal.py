@@ -26,9 +26,10 @@ def save_to_db(data: dict):
         guarantors, female_guarantor, phone_number,
         street_address, area_address, city, state_province, postal_code, country,
         gender, electricity_bill,
-        net_salary, emi, bike_type, bike_price
+        net_salary, emi, bike_type, bike_price,
+        education, occupation
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     values = (
@@ -37,7 +38,8 @@ def save_to_db(data: dict):
         data["street_address"], data["area_address"], data["city"], data["state_province"],
         data["postal_code"], data["country"],
         data["gender"], data["electricity_bill"],
-        data["net_salary"], data["emi"], data["bike_type"], data["bike_price"]
+        data["net_salary"], data["emi"], data["bike_type"], data["bike_price"],
+        data["education"], data["occupation"]
     )
 
     cursor.execute(query, values)
@@ -52,7 +54,8 @@ def fetch_all_applicants():
            guarantors, female_guarantor, phone_number,
            street_address, area_address, city, state_province, postal_code, country,
            gender, electricity_bill,
-           net_salary, emi, bike_type, bike_price
+           net_salary, emi, bike_type, bike_price,
+           education, occupation
     FROM data
     """
     df = pd.read_sql(query, conn)
@@ -205,7 +208,21 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    # Address fields (after electricity bill)
+    # -----------------------------
+    # Qualifications (Optional Panel)
+    # -----------------------------
+    st.markdown("### 🎓 Qualifications (Optional)")
+    education = st.selectbox(
+        "Education Level (optional)",
+        ["None", "Primary", "Middle", "Matric", "Intermediate", "Bachelors", "Masters", "PhD"],
+        index=0
+    )
+    occupation = st.text_input("Occupation (optional)")
+
+    # -----------------------------
+    # Address fields (after qualifications)
+    # -----------------------------
+    st.markdown("### 🏠 Address")
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -363,6 +380,8 @@ with tabs[2]:
                                 "emi": emi,
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
+                                "education": education,
+                                "occupation": occupation
                             })
                             st.success("✅ Applicant information saved to database successfully!")
                         except Exception as e:
