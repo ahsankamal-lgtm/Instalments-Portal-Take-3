@@ -185,14 +185,18 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
+# -----------------------------
+# Final landing page (Expert-Fixed Version)
+# -----------------------------
 def show_landing_page():
-    # --- Expert CSS for a Blue Gradient Background and Centering ---
+    # --- Expert CSS for a Clean, Centered Look ---
     st.markdown(
         """
         <style>
         /* Apply a dynamic blue gradient background to the entire app */
         .stApp {
-            background: linear-gradient(135deg, #1e90ff, #00bfff); /* Dodger Blue to Deep Sky Blue */
+            /* Using a static blue color from the image and a slightly darker gradient */
+            background: linear-gradient(135deg, #1e90ff, #0099ff); /* Adjusted Blue Gradient */
             background-size: 400% 400%;
             animation: gradient-shift 15s ease infinite; 
         }
@@ -204,35 +208,43 @@ def show_landing_page():
             100% { background-position: 0% 50%; }
         }
         
-        /* Main container for perfect vertical/horizontal centering */
+        /* Main container: Now only controls the tightly grouped content */
         .landing-container {
+            /* Use padding-top to visually center the content block */
+            padding-top: 25vh; /* Increased vertical push for perfect center */
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             color: white; 
-            padding-top: 20vh; /* Push content down from the top */
+            width: 100%; /* Ensure it spans full width for centering */
         }
 
         /* 1) Main Title */
         .landing-title {
-            font-size: 3.8rem;
+            font-size: 4rem; /* Slightly larger */
             font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 5px; /* Reduced gap below the main title part */
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.4); /* Stronger shadow for pop */
             letter-spacing: 1px;
+            line-height: 1.1; /* Tighter line height for multiline text */
         }
-
-        /* 2) Subtitle/Tagline - Tight spacing */
+        
+        /* 2) Subtitle/Tagline - Tighter spacing */
         .landing-subtitle {
-            font-size: 1.5rem;
+            font-size: 1.3rem; /* Adjusted for better hierarchy */
             font-weight: 300;
-            opacity: 0.9;
+            opacity: 0.95;
             margin-bottom: 0px; 
             padding-bottom: 0px;
         }
         
-        /* 3) Button styling - High contrast to gradient */
+        /* Button container alignment override */
+        div[data-testid="stVerticalBlock"] > div:nth-child(2) {
+            align-items: center;
+        }
+
+        /* 3) Button styling - High contrast and refined shadow */
         div.stButton > button {
             font-size: 1.4rem !important;
             font-weight: 700 !important;
@@ -241,14 +253,14 @@ def show_landing_page():
             background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
             color: #1a1a1a !important; 
             border: none !important;
-            box-shadow: 0px 8px 18px rgba(255, 193, 7, 0.5) !important;
+            /* Cleaner, sharper box shadow */
+            box-shadow: 0px 6px 20px rgba(255, 193, 7, 0.6), 0 0 10px rgba(255, 193, 7, 0.3); 
             transition: all 0.2s ease-in-out !important;
         }
 
         div.stButton > button:hover {
             background-color: #e0a800 !important;
-            transform: scale(1.05);
-            box-shadow: 0px 12px 25px rgba(255, 193, 7, 0.6) !important;
+            transform: scale(1.03); /* Subtle scale effect */
         }
         </style>
         """,
@@ -259,17 +271,20 @@ def show_landing_page():
     st.markdown(
         f"""
         <div class="landing-container">
-            <div class="landing-title">Welcome to EV Finance Portal</div>
+            <div class="landing-title">Welcome to EV Finance<br>Portal</div>
+            <div style='height: 30px;'></div> 
             <div class="landing-subtitle">Approve or Review EV Instalment Applications Efficiently</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Add the minimal spacing lines below the subtitle
-    st.markdown("<br><br>", unsafe_allow_html=True) 
+    # FIX: Use minimal spacing <br> elements after the subtitle
+    st.markdown("<br><br><br>", unsafe_allow_html=True) 
     
-    # --- 3) The Button (Centered using CSS for perfect alignment) ---
+    # --- 3) The Button (Perfectly Centered) ---
+    # FIX: Using native Streamlit centering methods (st.columns is unnecessary here)
+    # The div below ensures the button itself is centered horizontally
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     if st.button("Let's Start! 🚀", key="start_portal_final"):
         st.session_state["show_landing"] = False
