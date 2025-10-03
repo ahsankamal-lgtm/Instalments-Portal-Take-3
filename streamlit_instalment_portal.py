@@ -189,7 +189,7 @@ def dti_score(outstanding, bike_price, net_salary):
 import streamlit as st
 
 # -----------------------------
-# Final Clean Landing Page (Perfectly Centered Button)
+# Final Clean Landing Page (button truly centered)
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -206,7 +206,7 @@ def show_landing_page():
             font-size: 3rem;
             font-weight: 800;
             margin-top: 18vh;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -216,51 +216,60 @@ def show_landing_page():
         .landing-subtitle {
             text-align: center;
             font-size: 1.25rem;
-            margin-bottom: 50px;
+            margin-bottom: 28px;
             font-weight: 400;
             color: #444;
         }
 
-        /* Center button wrapper */
-        .center-button {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Make Streamlit's button-wrapper full width and center its contents */
+        div.stButton {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin-top: 8px;
         }
 
-        /* Button styling */
+        /* Style the button itself (keeps it compact and centered) */
         div.stButton > button {
-            font-size: 1.2rem;
+            min-width: 220px;
+            max-width: 420px;
+            width: auto;
+            font-size: 1.15rem;
             font-weight: 600;
             border-radius: 12px;
-            padding: 14px 36px;
+            padding: 12px 36px;
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
             border: none;
-            box-shadow: 0px 6px 18px rgba(0,0,0,0.25);
-            transition: all 0.2s ease-in-out;
+            box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
+            transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+            margin: 0; /* ensure no extra offset */
         }
 
         div.stButton > button:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .landing-title { font-size: 2.2rem; margin-top: 12vh; }
+            .landing-subtitle { font-size: 1rem; margin-bottom: 22px; }
+            div.stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
         }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # Title
+    # Title + subtitle
     st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
-
-    # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button wrapped in a centered div
-    st.markdown('<div class="center-button">', unsafe_allow_html=True)
+    # The button (Streamlit's button will now be perfectly centered by the CSS above)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # -----------------------------
