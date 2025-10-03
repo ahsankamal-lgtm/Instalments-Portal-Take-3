@@ -191,7 +191,67 @@ def dti_score(outstanding, bike_price, net_salary):
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 st.title("⚡ Electric Bike Finance Portal")
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+# -----------------------------
+# Landing Page
+# -----------------------------
+def show_landing_page():
+    st.markdown(
+        """
+        <style>
+        .landing-container {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0px 6px 20px rgba(0,0,0,0.3);
+        }
+        .landing-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: -webkit-linear-gradient(#00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .landing-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+        .landing-button button {
+            font-size: 1.1rem !important;
+            font-weight: bold !important;
+            border-radius: 12px !important;
+            padding: 12px 28px !important;
+            background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
+            color: white !important;
+            border: none !important;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    with st.container():
+        st.markdown('<div class="landing-container">', unsafe_allow_html=True)
+        st.markdown('<div class="landing-title">⚡ Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+        st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🚀 Enter Portal", key="enter_portal", use_container_width=True):
+                st.session_state["show_landing"] = False
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# Initialize session state for landing page
+if "show_landing" not in st.session_state:
+    st.session_state["show_landing"] = True
+
+if st.session_state["show_landing"]:
+    show_landing_page()
+    st.stop()
 
 # -----------------------------
 # Page 1: Applicant Info
