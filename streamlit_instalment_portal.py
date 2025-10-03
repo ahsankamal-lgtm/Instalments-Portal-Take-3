@@ -191,13 +191,13 @@ def dti_score(outstanding, bike_price, net_salary):
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 
 # -----------------------------
-# Professional Modern Landing Page
+# Clean Final Landing Page
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
-        /* Overall page background */
+        /* Page background */
         .stApp {
             background: linear-gradient(135deg, #e0f7fa, #ffffff);
         }
@@ -213,7 +213,7 @@ def show_landing_page():
             max-width: 800px;
         }
 
-        /* Title styling */
+        /* Title */
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
@@ -223,15 +223,15 @@ def show_landing_page():
             -webkit-text-fill-color: transparent;
         }
 
-        /* Subtitle styling */
+        /* Subtitle */
         .landing-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 40px;
             font-weight: 400;
-            color: #555;
+            color: #444;
         }
 
-        /* Button styling */
+        /* Button */
         .landing-button button {
             font-size: 1.2rem !important;
             font-weight: bold !important;
@@ -252,22 +252,20 @@ def show_landing_page():
         unsafe_allow_html=True
     )
 
-    with st.container():
-        st.markdown('<div class="landing-container">', unsafe_allow_html=True)
+    # Single clean card block (no empty bar!)
+    st.markdown('<div class="landing-container">', unsafe_allow_html=True)
 
-        # Clean title
-        st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+    # Title
+    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
 
-        # Subtitle
-        st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
+    # Subtitle
+    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-        # Centered button
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🚀 Enter Portal", key="enter_portal", use_container_width=True):
-                st.session_state["show_landing"] = False
+    # Button
+    if st.button("🚀 Enter Portal", key="enter_portal"):
+        st.session_state["show_landing"] = False
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # Initialize session state for landing page
