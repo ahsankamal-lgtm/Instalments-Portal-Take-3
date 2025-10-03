@@ -188,9 +188,6 @@ def dti_score(outstanding, bike_price, net_salary):
 
 import streamlit as st
 
-# -----------------------------
-# Final Clean Landing Page (button truly centered)
-# -----------------------------
 def show_landing_page():
     st.markdown(
         """
@@ -216,25 +213,23 @@ def show_landing_page():
         .landing-subtitle {
             text-align: center;
             font-size: 1.25rem;
-            margin-bottom: 28px;
+            margin-bottom: 36px;
             font-weight: 400;
             color: #444;
         }
 
-        /* Make Streamlit's button-wrapper full width and center its contents */
+        /* Force Streamlit button wrapper to center contents */
         div.stButton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            margin-top: 8px;
+            text-align: center !important;
         }
 
-        /* Style the button itself (keeps it compact and centered) */
+        /* Style the button itself */
         div.stButton > button {
             min-width: 220px;
-            max-width: 420px;
-            width: auto;
             font-size: 1.15rem;
             font-weight: 600;
             border-radius: 12px;
@@ -244,7 +239,6 @@ def show_landing_page():
             border: none;
             box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
             transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
-            margin: 0; /* ensure no extra offset */
         }
 
         div.stButton > button:hover {
@@ -267,20 +261,9 @@ def show_landing_page():
     st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # The button (Streamlit's button will now be perfectly centered by the CSS above)
+    # Button (perfectly centered now)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
-
-
-# -----------------------------
-# Landing Page State Control
-# -----------------------------
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()
 
 
 # -----------------------------
