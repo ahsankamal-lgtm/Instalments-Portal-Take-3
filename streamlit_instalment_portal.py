@@ -186,7 +186,7 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final Clean Landing Page (Truly Centered Button)
+# Final Clean Landing Page (Perfectly Centered Button)
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -218,6 +218,12 @@ def show_landing_page():
             color: #444;
         }
 
+        /* Centering the button */
+        .center-container {
+            display: flex;
+            justify-content: center;
+        }
+
         /* Button styling */
         div.stButton > button {
             font-size: 1.2rem;
@@ -246,21 +252,12 @@ def show_landing_page():
     # Subtitle
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button (centered with columns)
-    col1, col2, col3 = st.columns([1,2,1])  # middle column is double width
-    with col2:
-        if st.button("🚀 Enter Portal", key="enter_portal"):
-            st.session_state["show_landing"] = False
+    # Button (force centered with flexbox wrapper)
+    st.markdown('<div class="center-container">', unsafe_allow_html=True)
+    if st.button("🚀 Enter Portal", key="enter_portal"):
+        st.session_state["show_landing"] = False
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# -----------------------------
-# Landing Page State Control
-# -----------------------------
-if "show_landing" not in st.session_state:
-    st.session_state["show_landing"] = True
-
-if st.session_state["show_landing"]:
-    show_landing_page()
-    st.stop()   
 
 # -----------------------------
 # Tabs (Main App Starts Here)
