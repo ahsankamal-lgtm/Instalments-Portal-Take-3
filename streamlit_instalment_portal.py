@@ -191,7 +191,7 @@ import streamlit as st
 import streamlit as st
 
 # -----------------------------
-# Final Landing Page (everything vertically + horizontally centered)
+# Final landing page — everything truly centered
 # -----------------------------
 def show_landing_page():
     st.markdown(
@@ -202,39 +202,43 @@ def show_landing_page():
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
-        /* Fullscreen flex container */
-        .landing-container {
+        /* Make Streamlit's main content area a full-height flex container.
+           This ensures Streamlit-rendered widgets (like st.button) are included. */
+        div.block-container {
+            min-height: 100vh;                 /* fill viewport */
             display: flex;
             flex-direction: column;
-            justify-content: center; /* vertical center */
-            align-items: center;     /* horizontal center */
-            height: 100vh;           /* full viewport height */
-            text-align: center;
+            justify-content: center;          /* vertical center */
+            align-items: center;              /* horizontal center */
+            padding-top: 0;                    /* reduce default top padding */
+            padding-bottom: 0;
         }
 
         /* Title */
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 15px;
+            margin: 0 0 12px 0;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-align: center;
         }
 
         /* Subtitle */
         .landing-subtitle {
-            font-size: 1.25rem;
-            margin-bottom: 40px;
-            font-weight: 400;
+            font-size: 1.15rem;
+            margin: 0 0 28px 0;
             color: #444;
+            text-align: center;
+            max-width: 760px;
         }
 
-        /* Button wrapper */
+        /* Ensure Streamlit's button wrapper centers the button */
         div.stButton {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
             width: 100% !important;
         }
 
@@ -250,6 +254,7 @@ def show_landing_page():
             border: none;
             box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
             transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+            margin: 0; /* remove any unexpected offset */
         }
 
         div.stButton > button:hover {
@@ -260,28 +265,22 @@ def show_landing_page():
         /* Mobile tweaks */
         @media (max-width: 600px) {
             .landing-title { font-size: 2.2rem; }
-            .landing-subtitle { font-size: 1rem; margin-bottom: 25px; }
+            .landing-subtitle { font-size: 1rem; margin-bottom: 20px; }
             div.stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
-    # Container with centered content
-    st.markdown(
-        """
-        <div class="landing-container">
-            <div class="landing-title">Electric Bike Finance Portal</div>
-            <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # Render title + subtitle (these AND the st.button below will be inside div.block-container)
+    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button (still centered below subtitle)
+    # Normal Streamlit button — now part of the same flex container and will be centered
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
+
 
 
 # -----------------------------
