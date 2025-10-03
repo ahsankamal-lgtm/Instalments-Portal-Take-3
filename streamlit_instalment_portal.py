@@ -382,6 +382,7 @@ with tabs[2]:
                                 "applicant_bank_balance": applicant_bank_balance,
                                 "guarantor_bank_balance": guarantor_bank_balance,
                                 "employer_type": employer_type,
+                                "age": age, 
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
                             })
