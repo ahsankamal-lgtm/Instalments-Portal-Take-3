@@ -254,6 +254,12 @@ if st.session_state["show_landing"]:
     st.stop()
 
 # -----------------------------
+# Tabs (Main App Starts Here)
+# -----------------------------
+
+tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+
+# -----------------------------
 # Page 1: Applicant Info
 # -----------------------------
 with tabs[0]:
