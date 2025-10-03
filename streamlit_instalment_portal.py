@@ -379,9 +379,10 @@ with tabs[2]:
                                 "occupation": occupation,
                                 "net_salary": net_salary,
                                 "emi": emi,
+                                "applicant_bank_balance": applicant_bank_balance,
+                                "guarantor_bank_balance": guarantor_bank_balance
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
-                                "guarantor_bank_balance": guarantor_bank_balance
                             })
                             st.success("✅ Applicant information saved to database successfully!")
                         except Exception as e:
