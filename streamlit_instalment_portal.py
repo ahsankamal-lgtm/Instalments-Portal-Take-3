@@ -231,9 +231,16 @@ if st.session_state.show_landing:
     st.markdown("<div class='footer'>© 2025 Your Company | Designed with Streamlit</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-else:
+  else:
     st.title("⚡ Electric Bike Finance Portal")
     tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+
+# -----------------------------
+# Page 1: Applicant Info
+# -----------------------------
+with tabs[0]:
+    ...
+
 
 # -----------------------------
 # Page 1: Applicant Info
