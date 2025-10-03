@@ -235,12 +235,6 @@ else:
     st.title("⚡ Electric Bike Finance Portal")
     tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
-# -----------------------------
-# Page 1: Applicant Info
-# -----------------------------
-with tabs[0]:
-    ...
-
 
 # -----------------------------
 # Page 1: Applicant Info
@@ -362,7 +356,7 @@ with tabs[2]:
         if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
             inc = income_score(net_salary, gender)
 
-            if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
+        if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
                 bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
                 used_balance = guarantor_bank_balance
                 bal_source = "Guarantor"
