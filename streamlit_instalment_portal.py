@@ -34,10 +34,8 @@ def save_to_db(data: dict):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    # ✅ Merge first_name + last_name into a single field
     full_name = f"{data['first_name']} {data['last_name']}".strip()
 
-    # ✅ Concatenate street + area into one address field
     full_address = f"{data['street_address']}, {data['area_address']}"
 
     values = (
