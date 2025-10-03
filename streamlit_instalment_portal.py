@@ -185,9 +185,6 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
-# -----------------------------
-# Final landing page (Fixed Spacing Version)
-# -----------------------------
 def show_landing_page():
     # --- Expert CSS for a Blue Gradient Background and Centering ---
     st.markdown(
@@ -207,9 +204,8 @@ def show_landing_page():
             100% { background-position: 0% 50%; }
         }
         
-        /* 💡 CHANGE 1: Remove height: 100vh and use flex for centering */
+        /* Main container for perfect vertical/horizontal centering */
         .landing-container {
-            /* We rely on Streamlit's native centering for this to work */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -227,7 +223,7 @@ def show_landing_page():
             letter-spacing: 1px;
         }
 
-        /* 2) Subtitle/Tagline - 💡 CHANGE 2: Add negative margin to pull the next element up */
+        /* 2) Subtitle/Tagline - Tight spacing */
         .landing-subtitle {
             font-size: 1.5rem;
             font-weight: 300;
@@ -240,7 +236,7 @@ def show_landing_page():
         div.stButton > button {
             font-size: 1.4rem !important;
             font-weight: 700 !important;
-            border-radius: 20px !important;
+            border-radius: 12px !important;
             padding: 15px 45px !important;
             background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
             color: #1a1a1a !important; 
@@ -251,7 +247,7 @@ def show_landing_page():
 
         div.stButton > button:hover {
             background-color: #e0a800 !important;
-            transform: scale(3.05);
+            transform: scale(1.05);
             box-shadow: 0px 12px 25px rgba(255, 193, 7, 0.6) !important;
         }
         </style>
@@ -259,7 +255,7 @@ def show_landing_page():
         unsafe_allow_html=True
     )
 
-    # --- Centered Content (The three elements) ---
+    # --- Centered Content (Title & Subtitle) ---
     st.markdown(
         f"""
         <div class="landing-container">
@@ -270,14 +266,14 @@ def show_landing_page():
         unsafe_allow_html=True
     )
 
-    # 💡 CHANGE 3: Add only the required <br> tags immediately before the button columns
-    st.markdown("<br><br>", unsafe_allow_html=True) # Two <br> tags for minimal space
+    # Add the minimal spacing lines below the subtitle
+    st.markdown("<br><br>", unsafe_allow_html=True) 
     
-    # --- 3) The Button (Lets Streamlit handle centering via columns) ---
-    col_center = st.columns([1, 2, 1]) 
-    with col_center[1]:
-        if st.button("Let's Start! 🚀", key="start_portal_final"):
-            st.session_state["show_landing"] = False
+    # --- 3) The Button (Centered using CSS for perfect alignment) ---
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    if st.button("Let's Start! 🚀", key="start_portal_final"):
+        st.session_state["show_landing"] = False
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # Landing page state control (keep this immediately after the function)
