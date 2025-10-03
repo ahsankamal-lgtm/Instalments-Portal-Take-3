@@ -186,7 +186,7 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final landing page (Blue Gradient Minimalist Version)
+# Final landing page (Blue Gradient Minimalist Version - Adjusted Spacing)
 # -----------------------------
 def show_landing_page():
     # --- Expert CSS for a Blue Gradient Background and Centering ---
@@ -228,10 +228,10 @@ def show_landing_page():
             letter-spacing: 1px;
         }
 
-        /* 2) Subtitle/Tagline */
+        /* 2) Subtitle/Tagline - Reduced bottom margin */
         .landing-subtitle {
             font-size: 1.5rem;
-            margin-bottom: 60px; /* Increased spacing before the button */
+            margin-bottom: 0px; /* Set to zero to control spacing with <br> tags below */
             font-weight: 300;
             opacity: 0.9;
         }
@@ -265,6 +265,10 @@ def show_landing_page():
         <div class="landing-container">
             <div class="landing-title">Welcome to EV Finance Portal</div>
             <div class="landing-subtitle">Approve or Review EV Instalment Applications Efficiently</div>
+            <br>
+            <br>
+            <br>
+            <br>
         </div>
         """,
         unsafe_allow_html=True
@@ -272,6 +276,7 @@ def show_landing_page():
     
     # --- 3) The Button (Lets Streamlit handle centering via columns) ---
     # Use columns to push the button into the center third of the screen
+    # We remove the <br>s from the container and add them above the button to control vertical space
     col_center = st.columns([1, 2, 1]) 
     with col_center[1]:
         # The key ensures the button is distinct from any others used elsewhere
