@@ -380,7 +380,7 @@ with tabs[2]:
                                 "net_salary": net_salary,
                                 "emi": emi,
                                 "applicant_bank_balance": applicant_bank_balance,
-                                "guarantor_bank_balance": guarantor_bank_balance
+                                "guarantor_bank_balance": guarantor_bank_balance,
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
                             })
