@@ -184,21 +184,21 @@ def dti_score(outstanding, bike_price, net_salary):
         return 70, ratio
     else:
         return 40, ratio
-
 # -----------------------------
-# Final landing page (Expert-Fixed Version)
+# FINAL EXPERT-DESIGNED LANDING PAGE
+# (Perfectly Centered and Styled)
 # -----------------------------
 def show_landing_page():
-    # --- Expert CSS for a Clean, Centered Look ---
+    # --- 1. Expert CSS for Professional Look and Typography ---
     st.markdown(
         """
         <style>
-        /* Apply a dynamic blue gradient background to the entire app */
+        /* Apply a deep, professional Indigo-Violet gradient background */
         .stApp {
-            /* Using a static blue color from the image and a slightly darker gradient */
-            background: linear-gradient(135deg, #1e90ff, #0099ff); /* Adjusted Blue Gradient */
+            background: linear-gradient(135deg, #3f005a, #5a006c); 
             background-size: 400% 400%;
             animation: gradient-shift 15s ease infinite; 
+            color: white; /* Default text color */
         }
 
         /* Define the gradient animation for a smooth look */
@@ -208,87 +208,93 @@ def show_landing_page():
             100% { background-position: 0% 50%; }
         }
         
-        /* Main container: Now only controls the tightly grouped content */
-        .landing-container {
-            /* Use padding-top to visually center the content block */
-            padding-top: 25vh; /* Increased vertical push for perfect center */
+        /* Container for Centering (Must fill the viewport vertically) */
+        .landing-page-v-center {
+            /* Flex properties for perfect vertical and horizontal centering */
             display: flex;
             flex-direction: column;
-            align-items: center;
+            justify-content: center; /* Vertical center */
+            align-items: center;    /* Horizontal center */
             text-align: center;
-            color: white; 
-            width: 100%; /* Ensure it spans full width for centering */
+            height: 100vh; /* Use 100vh to ensure it covers the full screen */
+            padding: 20px;
         }
 
-        /* 1) Main Title */
-        .landing-title {
-            font-size: 4rem; /* Slightly larger */
+        /* Title: Bold, high contrast, and perfectly wrapped */
+        .landing-title-text {
+            font-size: 4.5rem;
             font-weight: 800;
-            margin-bottom: 5px; /* Reduced gap below the main title part */
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.4); /* Stronger shadow for pop */
+            margin-bottom: 5px; 
+            line-height: 1.05; /* Tighten line spacing */
+            text-shadow: 0px 4px 8px rgba(0,0,0,0.5); /* Strong, clean shadow */
             letter-spacing: 1px;
-            line-height: 1.1; /* Tighter line height for multiline text */
-        }
-        
-        /* 2) Subtitle/Tagline - Tighter spacing */
-        .landing-subtitle {
-            font-size: 1.3rem; /* Adjusted for better hierarchy */
-            font-weight: 300;
-            opacity: 0.95;
-            margin-bottom: 0px; 
-            padding-bottom: 0px;
-        }
-        
-        /* Button container alignment override */
-        div[data-testid="stVerticalBlock"] > div:nth-child(2) {
-            align-items: center;
+            color: white;
         }
 
-        /* 3) Button styling - High contrast and refined shadow */
+        /* Subtitle: Clean and informative */
+        .landing-subtitle-text {
+            font-size: 1.6rem;
+            font-weight: 300;
+            margin-top: 15px; 
+            margin-bottom: 50px; /* Space before the button */
+            opacity: 0.9;
+            color: #d1c4e9; /* Light purple for elegance */
+        }
+        
+        /* Button styling: Energetic and high contrast */
         div.stButton > button {
-            font-size: 1.4rem !important;
+            font-size: 1.5rem !important;
             font-weight: 700 !important;
             border-radius: 12px !important;
-            padding: 15px 45px !important;
-            background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
-            color: #1a1a1a !important; 
+            padding: 15px 50px !important;
+            background-color: #1affc6 !important; /* Bright Mint Green */
+            color: #000000 !important; /* Black text for max contrast */
             border: none !important;
-            /* Cleaner, sharper box shadow */
-            box-shadow: 0px 6px 20px rgba(255, 193, 7, 0.6), 0 0 10px rgba(255, 193, 7, 0.3); 
-            transition: all 0.2s ease-in-out !important;
+            /* Sharp, distinct box shadow */
+            box-shadow: 0px 8px 20px rgba(26, 255, 198, 0.7); 
+            transition: all 0.3s ease-in-out !important;
         }
 
         div.stButton > button:hover {
-            background-color: #e0a800 !important;
-            transform: scale(1.03); /* Subtle scale effect */
+            background-color: #00e6b2 !important;
+            transform: translateY(-2px); /* Slight lift on hover */
         }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    # --- Centered Content (Title & Subtitle) ---
-    st.markdown(
-        f"""
-        <div class="landing-container">
-            <div class="landing-title">Welcome to EV Finance<br>Portal</div>
-            <div style='height: 30px;'></div> 
-            <div class="landing-subtitle">Approve or Review EV Instalment Applications Efficiently</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # --- 2. Guaranteed Centering Logic ---
+    # Use Streamlit containers to force content into the vertical center
+    with st.container():
+        # Use HTML/CSS for the content block which handles V-centering (landing-page-v-center)
+        st.markdown(
+            """
+            <div class="landing-page-v-center">
+                <div class="landing-title-text">EV Finance Portal</div>
+                
+                <div class="landing-subtitle-text">Next-Generation Installment Scoring.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # FIX: Use minimal spacing <br> elements after the subtitle
-    st.markdown("<br><br><br>", unsafe_allow_html=True) 
-    
-    # --- 3) The Button (Perfectly Centered) ---
-    # FIX: Using native Streamlit centering methods (st.columns is unnecessary here)
-    # The div below ensures the button itself is centered horizontally
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    if st.button("Let's Start! 🚀", key="start_portal_final"):
-        st.session_state["show_landing"] = False
-    st.markdown("</div>", unsafe_allow_html=True)
+    # --- 3. The Button (Pixel-Perfect Alignment) ---
+    # We use columns to create space around the centered button, but only for horizontal padding, 
+    # relying on the CSS for V-centering.
+    col_l, col_c, col_r = st.columns([1, 3, 1])
+
+    with col_c:
+        # Use CSS text-align: center via markdown for the button wrapper 
+        # to ensure it is centered within the middle column (col_c).
+        st.markdown("<div style='text-align: center; margin-top: -300px;'>", unsafe_allow_html=True)
+        
+        # Crucial Fix: Use negative margin on the button container to pull it up 
+        # into the correct position relative to the V-centered text block.
+        if st.button("Begin Evaluation 🚀", key="perfect_start"):
+            st.session_state["show_landing"] = False
+            
+        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # Landing page state control (keep this immediately after the function)
