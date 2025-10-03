@@ -186,81 +186,119 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final Clean Landing Page (Centered + Works with Session State)
+# Final landing page — guaranteed centered button (replace previous landing block)
 # -----------------------------
 def show_landing_page():
     st.markdown(
         """
         <style>
-        .landing-container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        /* Page background */
+        .stApp, body, main {
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
+        /* Make main content area a centered flex column for title/subtitle */
+        main > div.block-container,
+        div.block-container,
+        section.main > div.block-container,
+        .reportview-container .main {
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* Title + subtitle */
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 12px;
+            margin: 0 0 12px 0;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
         }
-
         .landing-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
+            font-size: 1.15rem;
+            margin: 0 0 12px 0;
             color: #444;
             text-align: center;
-            max-width: 700px;
+            max-width: 760px;
         }
 
-        /* Center Streamlit button wrapper */
-        div.stButton > button {
+        /* Force Streamlit's button wrapper to be fixed at center of viewport.
+           This ensures the button is visually centered regardless of Streamlit's internal layout. */
+        div.stButton,
+        .stButton,
+        div.row-widget.stButton {
+            position: fixed !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            top: calc(50% + 90px) !important; /* place below title/subtitle */
+            z-index: 9999 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Button styling (still native Streamlit button) */
+        div.stButton > button,
+        .stButton > button {
             min-width: 220px;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
             border-radius: 12px;
-            padding: 14px 36px;
+            padding: 12px 36px;
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
             border: none;
-            box-shadow: 0px 6px 18px rgba(0,0,0,0.25);
-            transition: all 0.2s ease-in-out;
+            box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
+            transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+            margin: 0; /* remove unexpected offset */
+        }
+        div.stButton > button:hover,
+        .stButton > button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
         }
 
-        div.stButton > button:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
+        /* Responsive: move button a bit lower on small screens */
+        @media (max-width: 600px) {
+            .landing-title { font-size: 2.2rem; }
+            .landing-subtitle { font-size: 1rem; margin-bottom: 8px; }
+            div.stButton,
+            .stButton { top: calc(50% + 140px) !important; }
+            div.stButton > button, .stButton > button {
+                min-width: 160px; padding: 10px 24px; font-size: 1rem;
+            }
         }
         </style>
-
-        <div class="landing-container">
-            <div class="landing-title">Electric Bike Finance Portal</div>
-            <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
-        </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ✅ Use normal Streamlit button so session state updates correctly
+    # Render title + subtitle inside Streamlit flow so they align with the flex container above
+    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
+    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
+
+    # Native Streamlit button — clicking sets session_state and the app continues
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
 
 
-# -----------------------------
-# Landing Page State Control
-# -----------------------------
+# Landing page state control (keep this immediately after the function)
 if "show_landing" not in st.session_state:
     st.session_state["show_landing"] = True
 
 if st.session_state["show_landing"]:
     show_landing_page()
     st.stop()
+
 
 
 # -----------------------------
