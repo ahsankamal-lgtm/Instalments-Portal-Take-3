@@ -4,6 +4,13 @@ import urllib.parse
 import mysql.connector
 import pandas as pd
 from io import BytesIO
+import base64
+
+# 🔹 Embedded Wavetec logo (base64 string)
+logo_base64 = """
+<--- paste the long base64 string here --->
+"""
+
 
 # -----------------------------
 # Database Connection
@@ -201,7 +208,14 @@ if not st.session_state.landing_done:
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
 
     # Logo
-    st.image("wavetec.png", width=220)
+  st.markdown(
+    f"""
+    <div style="text-align:center;">
+        <img src="data:image/png;base64,{logo_base64}" width="220">
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
     # Welcome message
     st.markdown(
