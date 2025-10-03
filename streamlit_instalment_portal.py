@@ -193,100 +193,68 @@ def show_landing_page():
     st.markdown(
         """
         <style>
-        /* Background */
-        .stApp, body, main {
+        /* Full viewport flex container */
+        .landing-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
         }
 
-        /* Try multiple wrapper selectors used across Streamlit versions.
-           Make the main content wrapper a full-viewport flex container so
-           Streamlit-rendered widgets (like st.button) participate in the same flow. */
-        main > div.block-container,
-        div.block-container,
-        section.main > div.block-container,
-        .reportview-container .main {
-            min-height: 100vh !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important; /* vertical center */
-            align-items: center !important;     /* horizontal center */
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-
-        /* Title */
         .landing-title {
             font-size: 3rem;
             font-weight: 800;
-            margin: 0 0 12px 0;
+            margin-bottom: 12px;
             background: -webkit-linear-gradient(45deg, #0072ff, #00c6ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
         }
 
-        /* Subtitle */
         .landing-subtitle {
-            font-size: 1.15rem;
-            margin: 0 0 28px 0;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
             color: #444;
             text-align: center;
-            max-width: 760px;
+            max-width: 700px;
         }
 
-        /* Ensure Streamlit's button wrapper centers the button.
-           Use several selectors for robustness. */
-        div.stButton,
-        .stButton,
-        div.row-widget.stButton {
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* Style the button itself */
-        div.stButton > button,
-        .stButton > button {
-            min-width: 220px;
-            font-size: 1.15rem;
+        .enter-button {
+            display: inline-block;
+            font-size: 1.2rem;
             font-weight: 600;
+            padding: 14px 36px;
             border-radius: 12px;
-            padding: 12px 36px;
             background: linear-gradient(135deg, #00c6ff, #0072ff);
-            color: white;
-            border: none;
-            box-shadow: 0px 6px 18px rgba(0,0,0,0.22);
-            transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
-            margin: 0; /* remove unexpected offset */
+            color: white !important;
+            text-decoration: none;
+            box-shadow: 0px 6px 18px rgba(0,0,0,0.25);
+            transition: all 0.2s ease-in-out;
         }
-
-        div.stButton > button:hover,
-        .stButton > button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            .landing-title { font-size: 2.2rem; }
-            .landing-subtitle { font-size: 1rem; margin-bottom: 20px; }
-            div.stButton > button, .stButton > button { min-width: 160px; padding: 10px 24px; font-size: 1rem; }
+        .enter-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
         }
         </style>
+
+        <div class="landing-container">
+            <div class="landing-title">Electric Bike Finance Portal</div>
+            <div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>
+            <form action="#" method="post">
+                <button name="enter" class="enter-button">🚀 Enter Portal</button>
+            </form>
+        </div>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
-    # Render title/subtitle as Streamlit markdown so they live inside the same flow
-    st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
-    st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
-
-    # Normal st.button — now it will be inside the same full-height flex container and centered
-    if st.button("🚀 Enter Portal", key="enter_portal"):
+    # Capture the HTML form submit in Python:
+    # (Streamlit puts POST form submits into query params.)
+    if "enter" in st.experimental_get_query_params():
         st.session_state["show_landing"] = False
+        st.experimental_set_query_params()  # clear param
 
 
 # Landing page state control (keep this immediately after the function)
