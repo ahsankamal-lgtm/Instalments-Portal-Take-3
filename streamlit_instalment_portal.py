@@ -24,21 +24,19 @@ def save_to_db(data: dict):
     INSERT INTO data (
         first_name, last_name, cnic, license_no,
         guarantors, female_guarantor, phone_number,
-        qualifications,
         street_address, area_address, city, state_province, postal_code, country,
-        gender, electricity_bill, post_dated_cheques, guarantor_affidavit,
+        gender, electricity_bill,
         net_salary, emi, bike_type, bike_price
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     values = (
         data["first_name"], data["last_name"], data["cnic"], data["license_no"],
         data["guarantors"], data["female_guarantor"], data["phone_number"],
-        data["qualifications"],
         data["street_address"], data["area_address"], data["city"], data["state_province"],
         data["postal_code"], data["country"],
-        data["gender"], data["electricity_bill"], data["post_dated_cheques"], data["guarantor_affidavit"],
+        data["gender"], data["electricity_bill"],
         data["net_salary"], data["emi"], data["bike_type"], data["bike_price"]
     )
 
@@ -52,9 +50,8 @@ def fetch_all_applicants():
     query = """
     SELECT id, first_name, last_name, cnic, license_no,
            guarantors, female_guarantor, phone_number,
-           qualifications,
            street_address, area_address, city, state_province, postal_code, country,
-           gender, electricity_bill, post_dated_cheques, guarantor_affidavit,
+           gender, electricity_bill,
            net_salary, emi, bike_type, bike_price
     FROM data
     """
@@ -63,6 +60,7 @@ def fetch_all_applicants():
     return df
 
 def resequence_ids():
+    """ Re-sequence IDs after deletion and reset AUTO_INCREMENT """
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -77,7 +75,7 @@ def resequence_ids():
         st.error(f"❌ Failed to resequence IDs: {e}")
 
 # -----------------------------
-# Utility Functions
+# Utility Functions (Scoring Criteria)
 # -----------------------------
 def validate_cnic(cnic: str) -> bool:
     return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
@@ -132,7 +130,7 @@ def job_tenure_score(years):
 
 def age_score(age):
     if age < 18:
-        return -1
+        return -1  # reject
     elif age <= 25:
         return 80
     elif age <= 30:
@@ -195,7 +193,9 @@ with tabs[0]:
     if phone_number and not validate_phone(phone_number):
         st.error("❌ Invalid Phone Number - Please enter a valid phone number")
 
+    # ✅ Order adjusted here
     gender = st.radio("Gender", ["M", "F"])
+
     guarantors = st.radio("Guarantors Available?", ["Yes", "No"])
     female_guarantor = None
     if guarantors == "Yes":
@@ -205,16 +205,7 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    # New fields after electricity bill
-    post_dated_cheques = st.radio("Is applicant willing to provide post-dated cheques?", ["Yes", "No"])
-    guarantor_affidavit = st.radio("Is guarantor's affidavit available?", ["Yes", "No"])
-
-    # Qualifications
-    st.subheader("Qualifications")
-    qualifications = st.text_input("Applicant Qualifications (Optional)")
-
-    # Address
-    st.subheader("Address")
+    # Address fields (after electricity bill)
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -222,13 +213,17 @@ with tabs[0]:
     postal_code = st.text_input("Postal Code (Optional)")
     country = st.text_input("Country")
 
-    # Map Button
     if st.button("📍 View Location"):
         if street_address and area_address and city and state_province and country:
             full_address = f"{street_address}, {area_address}, {city}, {state_province}, {country} {postal_code or ''}"
             encoded = urllib.parse.quote_plus(full_address)
             maps_url = f"https://www.google.com/maps/search/?api=1&query={encoded}"
-            js = f"""<script>window.open("{maps_url}", "_blank").focus();</script>"""
+
+            js = f"""
+            <script>
+            window.open("{maps_url}", "_blank").focus();
+            </script>
+            """
             st.components.v1.html(js, height=0, width=0)
         else:
             st.error("❌ Please complete all mandatory address fields before viewing on Maps.")
@@ -289,7 +284,7 @@ with tabs[2]:
     else:
         st.subheader("📊 Results Summary")
 
-        if 'net_salary' in locals() and net_salary > 0 and 'emi' in locals() and emi > 0:
+        if st.session_state.get("applicant_valid") and 'net_salary' in locals() and net_salary > 0 and 'emi' in locals() and emi > 0:
             inc = income_score(net_salary, gender)
             bal = bank_balance_score(bank_balance, emi)
             sal = salary_consistency_score(salary_consistency)
@@ -300,6 +295,7 @@ with tabs[2]:
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, bike_price, net_salary)
 
+            # Age rejection case
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
@@ -329,6 +325,21 @@ with tabs[2]:
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision}")
 
+                st.markdown("### 📌 Decision Reasons")
+                reasons = []
+                if inc < 60:
+                    reasons.append("• Moderate to low income level.")
+                if bal >= 100:
+                    reasons.append("• Bank balance fully meets requirement (≥ 3× EMI).")
+                else:
+                    reasons.append("• Bank balance below recommended 3× EMI.")
+                if dti < 70:
+                    reasons.append("• High debt-to-income ratio, risky.")
+                if final >= 75:
+                    reasons.append("• Profile fits approval criteria.")
+                for r in reasons:
+                    st.write(r)
+
                 if decision == "✅ Approve":
                     if st.button("💾 Save Applicant to Database"):
                         try:
@@ -340,7 +351,6 @@ with tabs[2]:
                                 "guarantors": guarantors,
                                 "female_guarantor": female_guarantor if female_guarantor else "No",
                                 "phone_number": phone_number,
-                                "qualifications": qualifications,
                                 "street_address": street_address,
                                 "area_address": area_address,
                                 "city": city,
@@ -349,8 +359,6 @@ with tabs[2]:
                                 "country": country,
                                 "gender": gender,
                                 "electricity_bill": electricity_bill,
-                                "post_dated_cheques": post_dated_cheques,
-                                "guarantor_affidavit": guarantor_affidavit,
                                 "net_salary": net_salary,
                                 "emi": emi,
                                 "bike_type": bike_type,
@@ -389,6 +397,7 @@ with tabs[3]:
         if not df.empty:
             st.dataframe(df, use_container_width=True)
 
+            # Select Applicant to Delete
             delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
             if st.button("🗑️ Delete Applicant"):
                 if delete_id in df["id"].values:
@@ -396,6 +405,7 @@ with tabs[3]:
                 else:
                     st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
 
+            # 📥 Download Excel Button
             output = BytesIO()
             with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
                 df.to_excel(writer, index=False, sheet_name="Applicants")
