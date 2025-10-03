@@ -23,26 +23,32 @@ def save_to_db(data: dict):
     query = """
     INSERT INTO data (
         name, cnic, license_no,
-        guarantors, female_guarantor, phone_number,
-        street_address, area_address, city, state_province, postal_code, country,
-        gender, electricity_bill, education, occupation,
-        net_salary, emi, bike_type, bike_price, guarantor_bank_balance
+        phone_number, gender,
+        guarantors, female_guarantor, electricity_bill,
+        education, occupation,
+        address, city, state_province, postal_code, country,
+        net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
+        employer_type, age, residence,
+        bike_type, bike_price, decision
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     # ✅ Merge first_name + last_name into a single field
     full_name = f"{data['first_name']} {data['last_name']}".strip()
 
+    # ✅ Concatenate street + area into one address field
+    full_address = f"{data['street_address']}, {data['area_address']}"
+
     values = (
         full_name, data["cnic"], data["license_no"],
-        data["guarantors"], data["female_guarantor"], data["phone_number"],
-        data["street_address"], data["area_address"], data["city"], data["state_province"],
-        data["postal_code"], data["country"],
-        data["gender"], data["electricity_bill"],
+        data["phone_number"], data["gender"],
+        data["guarantors"], data["female_guarantor"], data["electricity_bill"],
         data.get("education"), data.get("occupation"),
-        data["net_salary"], data["emi"], data["bike_type"], data["bike_price"],
-        data.get("guarantor_bank_balance")
+        full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
+        data["net_salary"], data["emi"], data["bank_balance"], data.get("guarantor_bank_balance"),
+        data["employer_type"], data["age"], data["residence"],
+        data["bike_type"], data["bike_price"], data["decision"]
     )
 
     cursor.execute(query, values)
@@ -54,10 +60,13 @@ def fetch_all_applicants():
     conn = get_db_connection()
     query = """
     SELECT id, name, cnic, license_no,
-           guarantors, female_guarantor, phone_number,
-           street_address, area_address, city, state_province, postal_code, country,
-           gender, electricity_bill, education, occupation,
-           net_salary, emi, bike_type, bike_price, guarantor_bank_balance
+           phone_number, gender,
+           guarantors, female_guarantor, electricity_bill,
+           education, occupation,
+           address, city, state_province, postal_code, country,
+           net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
+           employer_type, age, residence,
+           bike_type, bike_price, decision
     FROM data
     """
     df = pd.read_sql(query, conn)
@@ -191,7 +200,6 @@ with tabs[0]:
     if cnic and not validate_cnic(cnic):
         st.error("❌ Invalid CNIC format. Use XXXXX-XXXXXXX-X")
 
-    # ✅ Strict numeric license suffix
     license_suffix = st.number_input(
         "Enter last 3 digits for License Number (#XXX)",
         min_value=0, max_value=999, step=1, format="%03d"
@@ -213,12 +221,10 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    # Qualifications (Optional)
     with st.expander("🎓 Qualifications (Optional)"):
         education = st.selectbox("Education", ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"])
         occupation = st.text_input("Occupation")
 
-    # Address fields
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
@@ -301,7 +307,6 @@ with tabs[2]:
         if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
             inc = income_score(net_salary, gender)
 
-            # Choose higher of applicant vs guarantor bank balance
             if guarantor_bank_balance and guarantor_bank_balance > bank_balance:
                 bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
                 used_balance = guarantor_bank_balance
@@ -319,7 +324,6 @@ with tabs[2]:
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, bike_price, net_salary)
 
-            # Age rejection case
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
@@ -329,11 +333,14 @@ with tabs[2]:
                 )
 
                 if final >= 75:
-                    decision = "✅ Approve"
+                    decision = "Approved"
+                    decision_display = "✅ Approve"
                 elif final >= 60:
-                    decision = "🟡 Review"
+                    decision = "Review"
+                    decision_display = "🟡 Review"
                 else:
-                    decision = "❌ Reject"
+                    decision = "Reject"
+                    decision_display = "❌ Reject"
 
                 st.markdown("### 🔹 Detailed Scores")
                 st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
@@ -347,24 +354,9 @@ with tabs[2]:
                 st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
                 st.write(f"**Debt-to-Income Score:** {dti:.1f}")
                 st.write(f"**Final Score:** {final:.1f}")
-                st.subheader(f"🏆 Decision: {decision}")
+                st.subheader(f"🏆 Decision: {decision_display}")
 
-                st.markdown("### 📌 Decision Reasons")
-                reasons = []
-                if inc < 60:
-                    reasons.append("• Moderate to low income level.")
-                if bal >= 100:
-                    reasons.append(f"• {bal_source} bank balance fully meets requirement.")
-                else:
-                    reasons.append(f"• {bal_source} bank balance below recommended threshold.")
-                if dti < 70:
-                    reasons.append("• High debt-to-income ratio, risky.")
-                if final >= 75:
-                    reasons.append("• Profile fits approval criteria.")
-                for r in reasons:
-                    st.write(r)
-
-                if decision == "✅ Approve":
+                if decision == "Approved":
                     if st.button("💾 Save Applicant to Database"):
                         try:
                             save_to_db({
