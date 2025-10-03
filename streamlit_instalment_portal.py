@@ -186,7 +186,7 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
-# Final landing page (Blue Gradient Minimalist Version - Adjusted Spacing)
+# Final landing page (Fixed Spacing Version)
 # -----------------------------
 def show_landing_page():
     # --- Expert CSS for a Blue Gradient Background and Centering ---
@@ -197,7 +197,7 @@ def show_landing_page():
         .stApp {
             background: linear-gradient(135deg, #1e90ff, #00bfff); /* Dodger Blue to Deep Sky Blue */
             background-size: 400% 400%;
-            animation: gradient-shift 15s ease infinite; /* Subtle animation */
+            animation: gradient-shift 15s ease infinite; 
         }
 
         /* Define the gradient animation for a smooth look */
@@ -207,16 +207,15 @@ def show_landing_page():
             100% { background-position: 0% 50%; }
         }
         
-        /* Main container for perfect vertical/horizontal centering */
+        /* 💡 CHANGE 1: Remove height: 100vh and use flex for centering */
         .landing-container {
-            height: 100vh;
+            /* We rely on Streamlit's native centering for this to work */
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             text-align: center;
-            color: white; /* All text should be white on the blue background */
-            padding: 20px;
+            color: white; 
+            padding-top: 20vh; /* Push content down from the top */
         }
 
         /* 1) Main Title */
@@ -228,12 +227,13 @@ def show_landing_page():
             letter-spacing: 1px;
         }
 
-        /* 2) Subtitle/Tagline - Reduced bottom margin */
+        /* 2) Subtitle/Tagline - 💡 CHANGE 2: Add negative margin to pull the next element up */
         .landing-subtitle {
             font-size: 1.5rem;
-            margin-bottom: 20px; /* Set to zero to control spacing with <br> tags below */
             font-weight: 300;
             opacity: 0.9;
+            margin-bottom: 0px; 
+            padding-bottom: 0px;
         }
         
         /* 3) Button styling - High contrast to gradient */
@@ -243,7 +243,7 @@ def show_landing_page():
             border-radius: 12px !important;
             padding: 15px 45px !important;
             background-color: #ffc107 !important; /* Yellow/Amber for high contrast */
-            color: #1a1a1a !important; /* Dark text on bright button */
+            color: #1a1a1a !important; 
             border: none !important;
             box-shadow: 0px 8px 18px rgba(255, 193, 7, 0.5) !important;
             transition: all 0.2s ease-in-out !important;
@@ -265,21 +265,17 @@ def show_landing_page():
         <div class="landing-container">
             <div class="landing-title">Welcome to EV Finance Portal</div>
             <div class="landing-subtitle">Approve or Review EV Instalment Applications Efficiently</div>
-            <br>
-            <br>
-            <br>
-            <br>
         </div>
         """,
         unsafe_allow_html=True
     )
+
+    # 💡 CHANGE 3: Add only the required <br> tags immediately before the button columns
+    st.markdown("<br><br>", unsafe_allow_html=True) # Two <br> tags for minimal space
     
     # --- 3) The Button (Lets Streamlit handle centering via columns) ---
-    # Use columns to push the button into the center third of the screen
-    # We remove the <br>s from the container and add them above the button to control vertical space
     col_center = st.columns([1, 2, 1]) 
     with col_center[1]:
-        # The key ensures the button is distinct from any others used elsewhere
         if st.button("Let's Start! 🚀", key="start_portal_final"):
             st.session_state["show_landing"] = False
 
