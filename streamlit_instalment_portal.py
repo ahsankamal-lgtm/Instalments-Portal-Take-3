@@ -428,12 +428,36 @@ with tabs[3]:
             st.dataframe(df, use_container_width=True)
 
             delete_id = st.number_input("Enter Applicant ID to Delete", min_value=1, step=1)
+
+            # 🔹 NEW: Two-step confirmation logic
+            if "confirm_delete" not in st.session_state:
+                st.session_state.confirm_delete = None
+
             if st.button("🗑️ Delete Applicant"):
                 if delete_id in df["id"].values:
-                    delete_applicant(delete_id)
+                    # Store selected ID + Name for confirmation
+                    applicant_name = df.loc[df["id"] == delete_id, "name"].values[0]
+                    st.session_state.confirm_delete = {"id": delete_id, "name": applicant_name}
                 else:
                     st.error("❌ Invalid ID. Please enter a valid Applicant ID from the table.")
 
+            # Show confirmation prompt if a delete is triggered
+            if st.session_state.confirm_delete:
+                c_id = st.session_state.confirm_delete["id"]
+                c_name = st.session_state.confirm_delete["name"]
+                st.warning(f"⚠️ Are you sure you want to delete the data for ID: {c_id} and Name: {c_name}?")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("✅ Yes, Delete"):
+                        delete_applicant(c_id)
+                        st.session_state.confirm_delete = None  # reset confirmation
+                with col2:
+                    if st.button("❌ No, Cancel"):
+                        st.info("Deletion cancelled.")
+                        st.session_state.confirm_delete = None  # reset confirmation
+
+            # Excel download remains the same
             output = BytesIO()
             with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
                 df.to_excel(writer, index=False, sheet_name="Applicants")
@@ -449,3 +473,4 @@ with tabs[3]:
             st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
         st.error(f"❌ Failed to load applicants: {e}")
+
