@@ -188,6 +188,9 @@ def dti_score(outstanding, bike_price, net_salary):
 
 import streamlit as st
 
+# -----------------------------
+# Final Landing Page (button truly centered)
+# -----------------------------
 def show_landing_page():
     st.markdown(
         """
@@ -218,7 +221,7 @@ def show_landing_page():
             color: #444;
         }
 
-        /* Force Streamlit button wrapper to center contents */
+        /* Center the button wrapper */
         div.stButton {
             display: flex;
             justify-content: center;
@@ -227,7 +230,7 @@ def show_landing_page():
             text-align: center !important;
         }
 
-        /* Style the button itself */
+        /* Button styling */
         div.stButton > button {
             min-width: 220px;
             font-size: 1.15rem;
@@ -246,7 +249,7 @@ def show_landing_page():
             box-shadow: 0px 10px 28px rgba(0,0,0,0.28);
         }
 
-        /* Mobile adjustments */
+        /* Mobile tweaks */
         @media (max-width: 600px) {
             .landing-title { font-size: 2.2rem; margin-top: 12vh; }
             .landing-subtitle { font-size: 1rem; margin-bottom: 22px; }
@@ -261,9 +264,20 @@ def show_landing_page():
     st.markdown('<div class="landing-title">Electric Bike Finance Portal</div>', unsafe_allow_html=True)
     st.markdown('<div class="landing-subtitle">Fast • Transparent • Smart Financing for Your EV Journey</div>', unsafe_allow_html=True)
 
-    # Button (perfectly centered now)
+    # Button (centered)
     if st.button("🚀 Enter Portal", key="enter_portal"):
         st.session_state["show_landing"] = False
+
+
+# -----------------------------
+# Landing Page State Control
+# -----------------------------
+if "show_landing" not in st.session_state:
+    st.session_state["show_landing"] = True
+
+if st.session_state["show_landing"]:
+    show_landing_page()
+    st.stop()
 
 
 # -----------------------------
