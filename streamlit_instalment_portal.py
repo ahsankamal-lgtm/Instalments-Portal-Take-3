@@ -20,6 +20,14 @@ def save_to_db(data: dict):
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # --- Check if CNIC already exists ---
+    cursor.execute("SELECT COUNT(*) FROM data WHERE cnic = %s", (data["cnic"],))
+    (exists,) = cursor.fetchone()
+    if exists > 0:
+        cursor.close()
+        conn.close()
+        raise ValueError("❌ CNIC already exists in the database. Please enter a unique CNIC.")
+
     query = """
     INSERT INTO data (
         name, cnic, license_no,
