@@ -6,11 +6,9 @@ import pandas as pd
 from io import BytesIO
 import base64
 
-# 🔹 Embedded Wavetec logo (base64 string)
 logo_base64 = """
-<--- paste the long base64 string here --->
+<BIG-BASE64-STRING>
 """
-
 
 # -----------------------------
 # Database Connection
@@ -204,10 +202,9 @@ if "landing_done" not in st.session_state:
 if not st.session_state.landing_done:
     st.set_page_config(page_title="⚡ EV Bike Finance Portal", layout="centered")
 
-    # Centered layout
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
 
-    # Logo (base64 embedded)
+    # ✅ Logo shows from base64
     st.markdown(
         f"""
         <div style="text-align:center;">
@@ -217,7 +214,6 @@ if not st.session_state.landing_done:
         unsafe_allow_html=True,
     )
 
-    # Welcome message
     st.markdown(
         "<h2 style='color:#1E90FF; font-family:Helvetica; font-weight:600;'>"
         "Let’s continue to the EV Bike Finance Portal, shall we?"
@@ -225,7 +221,6 @@ if not st.session_state.landing_done:
         unsafe_allow_html=True,
     )
 
-    # Full-width rounded button
     if st.button("🚀 Yes, Let's Go!", use_container_width=True):
         st.session_state.landing_done = True
         st.rerun()
