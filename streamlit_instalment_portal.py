@@ -254,6 +254,17 @@ def show_landing_page():
 
 
 # -----------------------------
+# Landing Page State Control
+# -----------------------------
+if "show_landing" not in st.session_state:
+    st.session_state["show_landing"] = True
+
+if st.session_state["show_landing"]:
+    show_landing_page()
+    st.stop()   # 👈 ensures other pages don’t load until button clicked
+
+
+# -----------------------------
 # Tabs (Main App Starts Here)
 # -----------------------------
 
