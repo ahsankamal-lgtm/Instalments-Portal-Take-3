@@ -251,7 +251,7 @@ def show_landing_page():
 
         div.stButton > button:hover {
             background-color: #e0a800 !important;
-            transform: scale(1.05);
+            transform: scale(3.05);
             box-shadow: 0px 12px 25px rgba(255, 193, 7, 0.6) !important;
         }
         </style>
