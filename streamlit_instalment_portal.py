@@ -188,10 +188,65 @@ def dti_score(outstanding, bike_price, net_salary):
 # -----------------------------
 # Streamlit App
 # -----------------------------
-st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-st.title("⚡ Electric Bike Finance Portal")
+# -----------------------------
+# Landing Page
+# -----------------------------
+if "landing_done" not in st.session_state:
+    st.session_state.landing_done = False
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+if not st.session_state.landing_done:
+    st.set_page_config(page_title="⚡ EV Bike Finance Portal", layout="centered")
+
+    # Centered layout
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+
+    # Logo
+    st.image("wavetec.png", width=220)
+
+    # Welcome message
+    st.markdown(
+        "<h2 style='color:#1E90FF; font-family:Helvetica; font-weight:600;'>"
+        "Let’s continue to the EV Bike Finance Portal, shall we?"
+        "</h2>",
+        unsafe_allow_html=True,
+    )
+
+    # Custom styled button (full width, rounded)
+    button_code = """
+        <style>
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(90deg, #1E90FF, #00BFFF);
+            border: none;
+            border-radius: 50px;
+            width: 80%;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .cta-button:hover {
+            background: linear-gradient(90deg, #00BFFF, #1E90FF);
+            transform: scale(1.03);
+        }
+        </style>
+        <a href="?run=1"><div class="cta-button">🚀 Yes, Let's Go!</div></a>
+    """
+    st.markdown(button_code, unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+else:
+ 
+    st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+    st.title("⚡ Electric Bike Finance Portal")
+
+    tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
