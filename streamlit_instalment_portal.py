@@ -225,42 +225,20 @@ if not st.session_state.landing_done:
         unsafe_allow_html=True,
     )
 
-    # Custom styled button (full width, rounded)
-    button_code = """
-        <style>
-        .cta-button {
-            display: inline-block;
-            padding: 15px 40px;
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(90deg, #1E90FF, #00BFFF);
-            border: none;
-            border-radius: 50px;
-            width: 80%;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .cta-button:hover {
-            background: linear-gradient(90deg, #00BFFF, #1E90FF);
-            transform: scale(1.03);
-        }
-        </style>
-        <a href="?run=1"><div class="cta-button">🚀 Yes, Let's Go!</div></a>
-    """
-    st.markdown(button_code, unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Full-width rounded button
+    if st.button("🚀 Yes, Let's Go!", use_container_width=True):
+        st.session_state.landing_done = True
+        st.rerun()
 
 else:
- 
+    # -----------------------------
+    # Your Existing App (Tabs etc.)
+    # -----------------------------
     st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
     st.title("⚡ Electric Bike Finance Portal")
 
     tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+    # your existing Page 1, Page 2, Page 3, Page 4 code continues...
 
 # -----------------------------
 # Page 1: Applicant Info
