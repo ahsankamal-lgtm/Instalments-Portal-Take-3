@@ -100,8 +100,9 @@ def resequence_ids():
 def validate_cnic(cnic: str) -> bool:
     return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
 
-def validate_phone(phone: str) -> bool:
-    return phone.isdigit() and 11 <= len(phone) <= 12
+phone_number = st.text_input("Phone Number (11 digits only)")
+if phone_number and not validate_phone(phone_number):
+    st.error("❌ Invalid Phone Number - Please enter exactly 11 digits")
 
 def income_score(net_salary, gender):
     if net_salary < 50000:
