@@ -480,7 +480,7 @@ with tabs[2]:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
-              st.markdown("### 🔹 Detailed Scores")
+st.markdown("### 🔹 Detailed Scores")
 st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
 st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
 st.write(f"**Salary Consistency Score:** {sal:.1f}")
