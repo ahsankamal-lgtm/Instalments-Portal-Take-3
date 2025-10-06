@@ -591,6 +591,7 @@ with tabs[3]:
                         st.session_state.confirm_delete = None  # reset confirmation
 
             # Excel download remains the same
+            df = df.sort_values(by="id", ascending=True)
             output = BytesIO()
             with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
                 df.to_excel(writer, index=False, sheet_name="Applicants")
