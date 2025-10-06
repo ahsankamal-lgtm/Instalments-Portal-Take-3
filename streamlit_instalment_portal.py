@@ -305,7 +305,7 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-   with st.expander("🎓 Qualifications (Optional)"):
+    with st.expander("🎓 Qualifications (Optional)"):
     education = st.selectbox(
         "Education",
         ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"]
@@ -320,8 +320,6 @@ with tabs[0]:
         st.error("❌ Invalid Employer Contact - Please enter exactly 11 digits")
  
    
-
-
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
     city = st.text_input("City")
