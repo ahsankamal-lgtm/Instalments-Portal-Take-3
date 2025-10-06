@@ -104,7 +104,6 @@ def fetch_all_applicants():
         tenure,
         emi, 
         decision,
-        created_at
     FROM data
     ORDER BY id ASC;
     """
