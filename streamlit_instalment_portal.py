@@ -50,11 +50,13 @@ def save_to_db(data: dict):
         full_name, data["cnic"], data["license_no"],
         data["phone_number"], data["gender"],
         data["guarantors"], data["female_guarantor"], data["electricity_bill"],
-        data.get("education"), data.get("occupation"),
+        data.get("education"), data.get("occupation"), data.get("designation"),
+        data.get("employer_name"), data.get("employer_contact"),
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
-        data["net_salary"], data["emi"], data["applicant_bank_balance"], data.get("guarantor_bank_balance"),
+        data["net_salary"], data["applicant_bank_balance"], data.get("guarantor_bank_balance"),
         data["employer_type"], data["age"], data["residence"],
-        data["bike_type"], data["bike_price"], data["decision"]
+        data["bike_type"], data["bike_price"], data["down_payment"], data["tenure"], data["emi"],
+        data["decision"]
     )
 
     cursor.execute(query, values)
