@@ -342,7 +342,7 @@ with tabs[0]:
 
     pdc_option = st.radio("Is the candidate willing to provide post-dated cheques (PDCs)?", ["Yes", "No"])
     if pdc_option == "No":
-        st.error("🚫 Application Rejected: Electricity bill not available.")
+        st.error("🚫 Application Rejected: Candidate not willing to provide post-dated cheques.")
 
     with st.expander("🎓 Qualifications (Optional)"):
         education = st.selectbox(
@@ -496,7 +496,7 @@ with tabs[2]:
 
                 if st.button("💾 Save Applicant to Database"):
                     try:
-                                save_to_db({
+                        save_to_db({
                                 "first_name": first_name,
                                 "last_name": last_name,
                                 "cnic": cnic,
@@ -523,18 +523,19 @@ with tabs[2]:
                                 "applicant_bank_balance": applicant_bank_balance,
                                 "guarantor_bank_balance": guarantor_bank_balance,
                                 "employer_type": employer_type,
-                                "age": age, 
-                                "residence": residence, 
+                                "age": age,
+                                "residence": residence,
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
                                 "down_payment": down_payment,
                                 "tenure": tenure,
                                 "emi": emi,
-                                "decision": decision 
-                            })
-                            st.success("✅ Applicant information saved to database successfully!")
-                        except Exception as e:
-                            st.error(f"❌ Failed to save applicant: {e}")
+                                "decision": decision
+            })
+            st.success("✅ Applicant information saved to database successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to save applicant: {e}")
+
         else:
             st.warning("⚠️ Complete Evaluation inputs first")
 
