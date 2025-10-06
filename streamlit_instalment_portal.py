@@ -207,18 +207,10 @@ if not st.session_state['app_started']:
     
     st.markdown("---") # Visual separator
     
-    # Optional: You could add a simple app visual here.
-    # st.image("path/to/your/screenshot.png", use_column_width=True)
-    
-    # 3. Strong Call-to-Action (CTA) Button
-    # When clicked, this button changes the session state and forces a rerun, 
-    # which then triggers the 'else' block (your main app).
-    if st.button("Launch App Now", type="primary", use_container_width=True):
+    if st.button("Start Application", type="primary", use_container_width=True):
         st.session_state['app_started'] = True
         st.experimental_rerun()
     
-    # Add an empty st.stop() to prevent the rest of your code from running 
-    # while the landing page is active.
     st.stop() 
 
 # --- END OF LANDING PAGE LOGIC ---
