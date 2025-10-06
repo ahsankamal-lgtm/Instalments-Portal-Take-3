@@ -480,21 +480,21 @@ with tabs[2]:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
-                st.markdown("### 🔹 Detailed Scores")
-                st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
-                st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
-                st.write(f"**Salary Consistency Score:** {sal:.1f}")
-                st.write(f"**Employer Type Score:** {emp:.1f}")
-                st.write(f"**Job Tenure Score:** {job:.1f}")
-                st.write(f"**Age Score:** {ag:.1f}")
-                st.write(f"**Dependents Score:** {dep:.1f}")
-                st.write(f"**Residence Score:** {res:.1f}")
-                st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
-                st.write(f"**Debt-to-Income Score:** {dti:.1f}")
-                st.write(f"**Final Score:** {final:.1f}")
-                st.subheader(f"🏆 Decision: {decision_display}")
+              st.markdown("### 🔹 Detailed Scores")
+st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
+st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
+st.write(f"**Salary Consistency Score:** {sal:.1f}")
+st.write(f"**Employer Type Score:** {emp:.1f}")
+st.write(f"**Job Tenure Score:** {job:.1f}")
+st.write(f"**Age Score:** {ag:.1f}")
+st.write(f"**Dependents Score:** {dep:.1f}")
+st.write(f"**Residence Score:** {res:.1f}")
+st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
+st.write(f"**Debt-to-Income Score:** {dti:.1f}")
+st.write(f"**Final Score:** {final:.1f}")
+st.subheader(f"🏆 Decision: {decision_display}")
 
-                if st.button("💾 Save Applicant to Database"):
+if st.button("💾 Save Applicant to Database"):
     try:
         save_to_db({
             "first_name": first_name,
@@ -523,18 +523,19 @@ with tabs[2]:
             "applicant_bank_balance": applicant_bank_balance,
             "guarantor_bank_balance": guarantor_bank_balance,
             "employer_type": employer_type,
-            "age": age, 
-            "residence": residence, 
+            "age": age,
+            "residence": residence,
             "bike_type": bike_type,
             "bike_price": bike_price,
             "down_payment": down_payment,
             "tenure": tenure,
             "emi": emi,
-            "decision": decision 
+            "decision": decision
         })
         st.success("✅ Applicant information saved to database successfully!")
     except Exception as e:
         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 # -----------------------------
