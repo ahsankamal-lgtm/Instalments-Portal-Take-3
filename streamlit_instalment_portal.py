@@ -15,7 +15,6 @@ def get_db_connection():
         password="ahsan@321",
         database="ev_installment_project"
     )
-
 def save_to_db(data: dict):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -45,7 +44,6 @@ def save_to_db(data: dict):
     """
 
     full_name = f"{data['first_name']} {data['last_name']}".strip()
-
     full_address = f"{data['street_address']}, {data['area_address']}"
 
     values = (
@@ -61,11 +59,11 @@ def save_to_db(data: dict):
         data["decision"]
     )
 
-
     cursor.execute(query, values)
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def fetch_all_applicants():
     conn = get_db_connection()
