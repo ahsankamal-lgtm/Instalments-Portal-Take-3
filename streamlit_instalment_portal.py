@@ -196,7 +196,7 @@ if 'app_started' not in st.session_state:
 
 # --- LANDING PAGE ---
 if not st.session_state['app_started']:
-    # Background styling (gradient only, no dark box)
+    # Custom styling (gradient background + blue button)
     page_bg = """
     <style>
     [data-testid="stAppViewContainer"] {
@@ -226,11 +226,27 @@ if not st.session_state['app_started']:
         background-color: rgba(255, 255, 255, 0.3);
         margin: 2rem 0;
     }
+    /* --- Custom blue button --- */
+    div.stButton > button:first-child {
+        background-color: #0074D9;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: 0.3s ease-in-out;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #005fa3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
     </style>
     """
     st.markdown(page_bg, unsafe_allow_html=True)
 
-    # Main content block (no container box)
+    # Main content block
     st.markdown('<h1 class="title">⚡ EV Bike Finance Portal</h1>', unsafe_allow_html=True)
     st.markdown(
         '<p class="subtitle">A unified digital platform to evaluate, approve, and manage electric bike financing — faster, smarter, and sustainable.</p>',
@@ -239,8 +255,8 @@ if not st.session_state['app_started']:
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-    # CTA button
-    if st.button("🚀 Launch App Now", type="primary", use_container_width=True):
+    # CTA button (blue now!)
+    if st.button("🚀 Launch App Now", use_container_width=True):
         st.session_state['app_started'] = True
         st.rerun()
 
