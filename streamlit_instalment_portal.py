@@ -26,18 +26,20 @@ def save_to_db(data: dict):
         cursor.close()
         conn.close()
         raise ValueError("❌ CNIC already exists in the database. Please enter a unique CNIC.")
-columns = [
-    "name", "cnic", "license_no",
-    "phone_number", "gender",
-    "guarantors", "female_guarantor", "electricity_bill", "pdc_option",
-    "education", "occupation", "designation",
-    "employer_name", "employer_contact",
-    "address", "city", "state_province", "postal_code", "country",
-    "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
-    "employer_type", "age", "residence",
-    "bike_type", "bike_price", "down_payment", "tenure", "emi",
-    "decision"
-]
+
+    # Columns in the exact order we will pass values
+    columns = [
+        "name", "cnic", "license_no",
+        "phone_number", "gender",
+        "guarantors", "female_guarantor", "electricity_bill", "willing_pdc",  # ✅ new column added
+        "education", "occupation", "designation",
+        "employer_name", "employer_contact",
+        "address", "city", "state_province", "postal_code", "country",
+        "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
+        "employer_type", "age", "residence",
+        "bike_type", "bike_price", "down_payment", "tenure", "emi",
+        "decision"
+    ]
 
     full_name = f"{data['first_name']} {data['last_name']}".strip()
     full_address = f"{data['street_address']}, {data['area_address']}"
@@ -46,8 +48,7 @@ columns = [
     values = (
         full_name, data["cnic"], data["license_no"],
         data["phone_number"], data["gender"],
-        data["guarantors"], data["female_guarantor"], data["electricity_bill"],
-        data["pdc_option"],
+        data["guarantors"], data["female_guarantor"], data["electricity_bill"], data["willing_pdc"],
         data.get("education"), data.get("occupation"), data.get("designation"),
         data.get("employer_name"), data.get("employer_contact"),
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
@@ -56,6 +57,7 @@ columns = [
         data["bike_type"], data["bike_price"], data["down_payment"], data["tenure"], data["emi"],
         data["decision"]
     )
+
 
     # Build placeholders dynamically so counts always match
     placeholders = ", ".join(["%s"] * len(values))
