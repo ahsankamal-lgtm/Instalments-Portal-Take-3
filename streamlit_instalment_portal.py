@@ -254,15 +254,15 @@ def landing_page():
 # Streamlit App
 # -----------------------------
 def main_app():
-st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-st.title("⚡ Electric Bike Finance Portal")
+    st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+    st.title("⚡ Electric Bike Finance Portal")
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+    tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
 # -----------------------------
-with tabs[0]:
+    with tabs[0]:
     st.subheader("Applicant Information")
 
     first_name = st.text_input("First Name")
@@ -543,11 +543,11 @@ with tabs[3]:
 # -----------------------------
 # App Navigation Control
 # -----------------------------
-if "page" not in st.session_state:
+    if "page" not in st.session_state:
     st.session_state.page = "landing"
 
-if st.session_state.page == "landing":
+    if st.session_state.page == "landing":
     landing_page()
-elif st.session_state.page == "main":
+    elif st.session_state.page == "main":
     main_app()
 
