@@ -101,7 +101,7 @@ def validate_cnic(cnic: str) -> bool:
     return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
 
 def validate_phone(phone: str) -> bool:
-    return phone.isdigit() and 11 <= len(phone) <= 12
+    return phone.isdigit() and len(phone) == 11
 
 def income_score(net_salary, gender):
     if net_salary < 50000:
