@@ -106,7 +106,7 @@ def fetch_all_applicants():
         decision,
         created_at
     FROM data
-    ORDER BY id DESC;
+    ORDER BY id ASC;
     """
     df = pd.read_sql(query, conn)
     conn.close()
