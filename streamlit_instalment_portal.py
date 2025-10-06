@@ -494,7 +494,6 @@ with tabs[2]:
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
-                if decision == "Approved":
                     if st.button("💾 Save Applicant to Database"):
                         try:
                             save_to_db({
