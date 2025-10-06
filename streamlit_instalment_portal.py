@@ -185,13 +185,54 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
+def landing_page():
+    st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+
+    st.markdown(
+        """
+        <style>
+        .main {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="main"><div class="title">⚡ Electric Bike Finance Portal</div>'
+                '<div class="subtitle">Simplifying EV Financing — One Ride at a Time</div>', unsafe_allow_html=True)
+
+    if st.button("🚀 Get Started", use_container_width=False):
+        st.session_state["page"] = "main"
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
 # -----------------------------
 # Streamlit App
 # -----------------------------
-st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
-st.title("⚡ Electric Bike Finance Portal")
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+def main_app():
+    st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
+    st.title("⚡ Electric Bike Finance Portal")
+
+    tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
@@ -473,3 +514,11 @@ with tabs[3]:
             st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
         st.error(f"❌ Failed to load applicants: {e}")
+
+if "page" not in st.session_state:
+    st.session_state["page"] = "landing"
+
+if st.session_state["page"] == "landing":
+    landing_page()
+else:
+    main_app()
