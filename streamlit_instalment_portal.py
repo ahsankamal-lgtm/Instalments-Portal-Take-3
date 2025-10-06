@@ -196,13 +196,12 @@ if 'app_started' not in st.session_state:
 if not st.session_state['app_started']:
     
     # 1. A Clear, Engaging Headline (H1)
-    st.title("🚀 Analyze Your Data Visually in Minutes.")
+    st.title("🚀 Electric Bike Financing Portal")
     
     # 2. Sub-Headline/Brief Description
     st.markdown(
         """
-        Upload a **CSV file**, select your columns, and instantly generate interactive 
-        plots and statistical summaries **without writing a single line of code.**
+      Empowering your EV journey with smarter, faster financing**
         """
     )
     
