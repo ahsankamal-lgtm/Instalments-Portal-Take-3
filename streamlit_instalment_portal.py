@@ -204,28 +204,20 @@ if not st.session_state['app_started']:
     
     st.markdown(
         """
-      Unified platform to evaluate, approve, and manage electric bike financing applications. Designed to make the process faster, fairer, and fully digital.
+      Unified platform to evaluate, approve, and manage electric bike financing applications. 
+      Designed to make the process faster, fairer, and fully digital.
         """
     )
     
     st.markdown("---")
     
     # 3. Strong Call-to-Action (CTA) Button
-    # Set the state and use st.rerun()
     if st.button("Launch App Now", type="primary", use_container_width=True):
         st.session_state['app_started'] = True
-        # Use the modern, stable st.rerun() instead of the deprecated st.experimental_rerun()
         st.rerun() 
     
     # st.stop() ensures nothing below this block runs until the state changes.
     st.stop() 
-
-# --- END OF LANDING PAGE LOGIC ---
-
-# ----------------------------------------------------------------------
-# Everything below this line is your existing application code.
-# ----------------------------------------------------------------------
-# ... (Your existing app code starts here)
 
 # -----------------------------
 # Streamlit App
