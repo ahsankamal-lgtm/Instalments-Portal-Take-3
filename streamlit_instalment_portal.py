@@ -185,49 +185,6 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
-
-import streamlit as st
-
-def landing_page_hero():
-    st.markdown("""
-        <style>
-        .hero-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #0a74da 0%, #0a95ff 100%);
-            color: white;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-        }
-        .hero-title {
-            font-size: 3.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
-        }
-        .hero-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 2.5rem;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="hero-container">', unsafe_allow_html=True)
-    st.markdown('<div class="hero-title">Electric Bike Financing</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-subtitle">Empowering your ride with easy and flexible financing</div>', unsafe_allow_html=True)
-
-    if st.button("🚀 Start Now", key="start_btn", use_container_width=False):
-        st.session_state["page"] = "main"
-        st.experimental_rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-
 # -----------------------------
 # Streamlit App
 # -----------------------------
