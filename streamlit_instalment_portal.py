@@ -26,20 +26,18 @@ def save_to_db(data: dict):
         cursor.close()
         conn.close()
         raise ValueError("❌ CNIC already exists in the database. Please enter a unique CNIC.")
-
-    # Columns in the exact order we will pass values
-    columns = [
-        "name", "cnic", "license_no",
-        "phone_number", "gender",
-        "guarantors", "female_guarantor", "electricity_bill",
-        "education", "occupation", "designation",
-        "employer_name", "employer_contact",
-        "address", "city", "state_province", "postal_code", "country",
-        "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
-        "employer_type", "age", "residence",
-        "bike_type", "bike_price", "down_payment", "tenure", "emi",
-        "decision"
-    ]
+columns = [
+    "name", "cnic", "license_no",
+    "phone_number", "gender",
+    "guarantors", "female_guarantor", "electricity_bill", "pdc_option",
+    "education", "occupation", "designation",
+    "employer_name", "employer_contact",
+    "address", "city", "state_province", "postal_code", "country",
+    "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
+    "employer_type", "age", "residence",
+    "bike_type", "bike_price", "down_payment", "tenure", "emi",
+    "decision"
+]
 
     full_name = f"{data['first_name']} {data['last_name']}".strip()
     full_address = f"{data['street_address']}, {data['area_address']}"
@@ -49,6 +47,7 @@ def save_to_db(data: dict):
         full_name, data["cnic"], data["license_no"],
         data["phone_number"], data["gender"],
         data["guarantors"], data["female_guarantor"], data["electricity_bill"],
+        data["pdc_option"],
         data.get("education"), data.get("occupation"), data.get("designation"),
         data.get("employer_name"), data.get("employer_contact"),
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
@@ -82,6 +81,7 @@ def fetch_all_applicants():
         guarantors, 
         female_guarantor, 
         electricity_bill,
+        pdc_option,
         education, 
         occupation, 
         designation,
@@ -338,6 +338,10 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
+    pdc_option = st.radio("Is the candidate willing to provide post-dated cheques (PDCs)?", ["Yes", "No"])
+    if pdc_option == "No":
+        st.error("🚫 Application Rejected: Electricity bill not available.")
+
     with st.expander("🎓 Qualifications (Optional)"):
         education = st.selectbox(
             "Education",
@@ -507,6 +511,7 @@ with tabs[2]:
                                 "country": country,
                                 "gender": gender,
                                 "electricity_bill": electricity_bill,
+                                "pdc_option": pdc_option,
                                 "education": education,
                                 "occupation": occupation,
                                 "designation": designation,
