@@ -186,6 +186,8 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 
+import streamlit as st
+
 def landing_page_hero():
     st.markdown("""
         <style>
@@ -211,29 +213,18 @@ def landing_page_hero():
             opacity: 0.9;
             margin-bottom: 2.5rem;
         }
-        .start-btn {
-            background-color: white;
-            color: #0a74da;
-            border: none;
-            border-radius: 10px;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .start-btn:hover {
-            background-color: #e6f0ff;
-            transform: scale(1.05);
-        }
         </style>
-        
-        <div class="hero-container">
-            <div class="hero-title">Electric Bike Financing</div>
-            <div class="hero-subtitle">Empowering your ride with easy and flexible financing</div>
-            <button class="start-btn" onclick="window.location.href='/?page=main'">Start Now</button>
-        </div>
     """, unsafe_allow_html=True)
+
+    st.markdown('<div class="hero-container">', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">Electric Bike Financing</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-subtitle">Empowering your ride with easy and flexible financing</div>', unsafe_allow_html=True)
+
+    if st.button("🚀 Start Now", key="start_btn", use_container_width=False):
+        st.session_state["page"] = "main"
+        st.experimental_rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
