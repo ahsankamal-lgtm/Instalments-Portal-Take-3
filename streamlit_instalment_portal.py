@@ -495,49 +495,47 @@ with tabs[2]:
                 st.subheader(f"🏆 Decision: {decision_display}")
 
                 if st.button("💾 Save Applicant to Database"):
-                    try:
-                        save_to_db({
-                                "first_name": first_name,
-                                "last_name": last_name,
-                                "cnic": cnic,
-                                "license_no": license_number,
-                                "guarantors": guarantors,
-                                "female_guarantor": female_guarantor if female_guarantor else "No",
-                                "phone_number": phone_number,
-                                "street_address": street_address,
-                                "area_address": area_address,
-                                "city": city,
-                                "state_province": state_province,
-                                "postal_code": postal_code,
-                                "country": country,
-                                "gender": gender,
-                                "electricity_bill": electricity_bill,
-                                "pdc_option": pdc_option,
-                                "education": education,
-                                "occupation": occupation,
-                                "designation": designation,
-                                "employer_name": employer_name,
-                                "employer_contact": employer_contact,
-                                "net_salary": net_salary,
-                                "emi": emi,
-                                "applicant_bank_balance": applicant_bank_balance,
-                                "guarantor_bank_balance": guarantor_bank_balance,
-                                "employer_type": employer_type,
-                                "age": age,
-                                "residence": residence,
-                                "bike_type": bike_type,
-                                "bike_price": bike_price,
-                                "down_payment": down_payment,
-                                "tenure": tenure,
-                                "emi": emi,
-                                "decision": decision
-            })
-            st.success("✅ Applicant information saved to database successfully!")
-        except Exception as e:
-            st.error(f"❌ Failed to save applicant: {e}")
+    try:
+        save_to_db({
+            "first_name": first_name,
+            "last_name": last_name,
+            "cnic": cnic,
+            "license_no": license_number,
+            "guarantors": guarantors,
+            "female_guarantor": female_guarantor if female_guarantor else "No",
+            "phone_number": phone_number,
+            "street_address": street_address,
+            "area_address": area_address,
+            "city": city,
+            "state_province": state_province,
+            "postal_code": postal_code,
+            "country": country,
+            "gender": gender,
+            "electricity_bill": electricity_bill,
+            "pdc_option": pdc_option,
+            "education": education,
+            "occupation": occupation,
+            "designation": designation,
+            "employer_name": employer_name,
+            "employer_contact": employer_contact,
+            "net_salary": net_salary,
+            "emi": emi,
+            "applicant_bank_balance": applicant_bank_balance,
+            "guarantor_bank_balance": guarantor_bank_balance,
+            "employer_type": employer_type,
+            "age": age, 
+            "residence": residence, 
+            "bike_type": bike_type,
+            "bike_price": bike_price,
+            "down_payment": down_payment,
+            "tenure": tenure,
+            "emi": emi,
+            "decision": decision 
+        })
+        st.success("✅ Applicant information saved to database successfully!")
+    except Exception as e:
+        st.error(f"❌ Failed to save applicant: {e}")
 
-        else:
-            st.warning("⚠️ Complete Evaluation inputs first")
 
 # -----------------------------
 # Page 4: Applicants
