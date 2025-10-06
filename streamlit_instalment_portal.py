@@ -290,9 +290,9 @@ with tabs[0]:
     )
     license_number = f"{cnic}#{license_suffix}" if validate_cnic(cnic) else ""
 
-    phone_number = st.text_input("Phone Number (11–12 digits)")
+    phone_number = st.text_input("Phone Number (11 digits only)")
     if phone_number and not validate_phone(phone_number):
-        st.error("❌ Invalid Phone Number - Please enter a valid phone number")
+        st.error("❌ Invalid Phone Number - Please enter exactly 11 digits")
 
     gender = st.radio("Gender", ["M", "F"])
 
