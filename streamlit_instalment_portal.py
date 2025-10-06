@@ -196,7 +196,7 @@ if 'app_started' not in st.session_state:
 
 # --- LANDING PAGE ---
 if not st.session_state['app_started']:
-    # Background styling
+    # Background styling (solid gradient, no blur card)
     page_bg = """
     <style>
     [data-testid="stAppViewContainer"] {
@@ -206,12 +206,12 @@ if not st.session_state['app_started']:
     }
     [data-testid="stHeader"] {background: rgba(0,0,0,0);}
     .main-card {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: #012b54;
         border-radius: 20px;
         padding: 3rem 2.5rem;
         text-align: center;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(8px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255,255,255,0.15);
     }
     .title {
         font-size: 2.8rem;
