@@ -375,7 +375,6 @@ with tabs[1]:
         st.subheader("Evaluation Inputs")
 
         net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
-        emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
         applicant_bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
         guarantor_bank_balance = st.number_input("Guarantor's Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
@@ -386,7 +385,10 @@ with tabs[1]:
         residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
         bike_price = st.number_input("Bike Price", min_value=0, step=1000, format="%i")
-        outstanding = st.number_input("Other Loans (Outstanding)", min_value=0, step=1000, format="%i")
+        down_payment = st.number_input("Down Payment", min_value=0, step=1000, format="%i")
+        tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
+        emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
+
 
         st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
 
@@ -417,7 +419,9 @@ with tabs[2]:
             ag = age_score(age)
             dep = dependents_score(dependents)
             res = residence_score(residence)
-            dti, ratio = dti_score(outstanding, bike_price, net_salary)
+            financed_amount = bike_price - down_payment
+            dti, ratio = dti_score(financed_amount, 0, net_salary)
+
 
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
@@ -484,6 +488,9 @@ with tabs[2]:
                                 "residence": residence, 
                                 "bike_type": bike_type,
                                 "bike_price": bike_price,
+                                "down_payment": down_payment,
+                                "tenure": tenure,
+                                "emi": emi,
                                 "decision": decision 
                             })
                             st.success("✅ Applicant information saved to database successfully!")
