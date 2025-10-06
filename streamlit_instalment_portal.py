@@ -201,7 +201,7 @@ if not st.session_state['app_started']:
     # 2. Sub-Headline/Brief Description
     st.markdown(
         """
-            Empowering your EV journey with smarter, faster financing
+            Driving the future of sustainable mobility through intelligent financing solutions. Assess, qualify, and manage your electric bike applications with ease and confidence.
         """
     )
     
