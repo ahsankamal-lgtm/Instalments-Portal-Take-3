@@ -33,13 +33,15 @@ def save_to_db(data: dict):
         name, cnic, license_no,
         phone_number, gender,
         guarantors, female_guarantor, electricity_bill,
-        education, occupation,
+        education, occupation, designation,
+        employer_name, employer_contact,
         address, city, state_province, postal_code, country,
-        net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
+        net_salary, applicant_bank_balance, guarantor_bank_balance,
         employer_type, age, residence,
-        bike_type, bike_price, decision
+        bike_type, bike_price, down_payment, tenure, emi,
+        decision
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     full_name = f"{data['first_name']} {data['last_name']}".strip()
@@ -58,6 +60,7 @@ def save_to_db(data: dict):
         data["bike_type"], data["bike_price"], data["down_payment"], data["tenure"], data["emi"],
         data["decision"]
     )
+
 
     cursor.execute(query, values)
     conn.commit()
