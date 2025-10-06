@@ -186,8 +186,74 @@ def dti_score(outstanding, bike_price, net_salary):
         return 40, ratio
 
 # -----------------------------
+# Landing Page
+# -----------------------------
+def landing_page():
+    st.set_page_config(page_title="Electric Bike Financing", layout="wide")
+
+    st.markdown("""
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #003366, #0066cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        header, footer, .stToolbar {visibility: hidden;}
+
+        .landing-container {
+            text-align: center;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .app-title {
+            font-size: 3.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+        }
+
+        .stButton > button {
+            background-color: white;
+            color: #003366;
+            border: none;
+            border-radius: 30px;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .stButton > button:hover {
+            background-color: #e6f0ff;
+            transform: scale(1.05);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    with st.container():
+        st.markdown('<div class="landing-container">', unsafe_allow_html=True)
+        st.markdown('<div class="app-title">Electric Bike Financing</div>', unsafe_allow_html=True)
+        st.markdown('<div class="subtitle">Empowering your ride, one smart decision at a time.</div>', unsafe_allow_html=True)
+
+        if st.button("Start"):
+            st.session_state.page = "main"
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# -----------------------------
 # Streamlit App
 # -----------------------------
+def main_app():
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 st.title("⚡ Electric Bike Finance Portal")
 
@@ -473,3 +539,15 @@ with tabs[3]:
             st.info("ℹ️ No applicants found in the database yet.")
     except Exception as e:
         st.error(f"❌ Failed to load applicants: {e}")
+
+# -----------------------------
+# App Navigation Control
+# -----------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "landing"
+
+if st.session_state.page == "landing":
+    landing_page()
+elif st.session_state.page == "main":
+    main_app()
+
