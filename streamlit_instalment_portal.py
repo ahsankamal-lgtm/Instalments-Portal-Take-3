@@ -187,37 +187,70 @@ def dti_score(outstanding, bike_price, net_salary):
 
 import streamlit as st
 
-# Initialize session state for the control mechanism
-# 'app_started' will be False when the user first visits.
+# --- PAGE CONFIG ---
+st.set_page_config(page_title="EV Bike Finance Portal", layout="centered")
+
+# --- SESSION STATE INIT ---
 if 'app_started' not in st.session_state:
     st.session_state['app_started'] = False
 
-
-# Initialize session state for the control mechanism
-if 'app_started' not in st.session_state:
-    st.session_state['app_started'] = False
-
-# --- LANDING PAGE LOGIC ---
+# --- LANDING PAGE ---
 if not st.session_state['app_started']:
-    
-    st.title("🚀 EV Bike Finance Portal")
-    
-    st.markdown(
-        """
-      Unified platform to evaluate, approve, and manage electric bike financing applications.
-      Designed to make the process faster, fairer, and fully digital.
-        """
-    )
-    
-    st.markdown("---")
-    
-    # 3. Strong Call-to-Action (CTA) Button
-    if st.button("Launch App Now", type="primary", use_container_width=True):
-        st.session_state['app_started'] = True
-        st.rerun() 
-    
-    # st.stop() ensures nothing below this block runs until the state changes.
-    st.stop() 
+    # Background styling
+    page_bg = """
+    <style>
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #001F3F 0%, #0074D9 50%, #7FDBFF 100%);
+        color: white;
+        padding: 0;
+    }
+    [data-testid="stHeader"] {background: rgba(0,0,0,0);}
+    .main-card {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        text-align: center;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(8px);
+    }
+    .title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #7FDBFF, #39CCCC, #01FF70);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+        font-size: 1.1rem;
+        color: #E0E0E0;
+        margin-bottom: 2rem;
+    }
+    </style>
+    """
+    st.markdown(page_bg, unsafe_allow_html=True)
+
+    # Main content block
+    with st.container():
+        st.markdown('<div class="main-card">', unsafe_allow_html=True)
+        st.markdown('<h1 class="title">⚡ EV Bike Finance Portal</h1>', unsafe_allow_html=True)
+        st.markdown(
+            '<p class="subtitle">A unified digital platform to evaluate, approve, and manage electric bike financing — faster, smarter, and sustainable.</p>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown("---")
+
+        # CTA button with custom styling
+        cta = st.button("🚀 Launch App Now", type="primary", use_container_width=True)
+        if cta:
+            st.session_state['app_started'] = True
+            st.rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.stop()
+
 
 # -----------------------------
 # Streamlit App
