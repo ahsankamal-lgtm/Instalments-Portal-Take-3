@@ -200,12 +200,11 @@ if 'app_started' not in st.session_state:
 # --- LANDING PAGE LOGIC ---
 if not st.session_state['app_started']:
     
-    st.title("🚀 Analyze Your Data Visually in Minutes.")
+    st.title("🚀 EV BIKE FINANCE PORTAL")
     
     st.markdown(
         """
-        Upload a **CSV file**, select your columns, and instantly generate interactive 
-        plots and statistical summaries **without writing a single line of code.**
+      unified platform to evaluate, approve, and manage electric bike financing applications. Designed to make the process faster, fairer, and fully digital.
         """
     )
     
