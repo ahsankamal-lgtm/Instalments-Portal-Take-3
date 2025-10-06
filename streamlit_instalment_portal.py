@@ -201,7 +201,7 @@ if not st.session_state['app_started']:
     # 2. Sub-Headline/Brief Description
     st.markdown(
         """
-      Empowering your EV journey with smarter, faster financing**
+            Empowering your EV journey with smarter, faster financing
         """
     )
     
