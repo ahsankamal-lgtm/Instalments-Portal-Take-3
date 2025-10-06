@@ -185,6 +185,58 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
+
+def landing_page_hero():
+    st.markdown("""
+        <style>
+        .hero-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a74da 0%, #0a95ff 100%);
+            color: white;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+        }
+        .start-btn {
+            background-color: white;
+            color: #0a74da;
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            background-color: #e6f0ff;
+            transform: scale(1.05);
+        }
+        </style>
+        
+        <div class="hero-container">
+            <div class="hero-title">Electric Bike Financing</div>
+            <div class="hero-subtitle">Empowering your ride with easy and flexible financing</div>
+            <button class="start-btn" onclick="window.location.href='/?page=main'">Start Now</button>
+        </div>
+    """, unsafe_allow_html=True)
+
+
+
 # -----------------------------
 # Streamlit App
 # -----------------------------
