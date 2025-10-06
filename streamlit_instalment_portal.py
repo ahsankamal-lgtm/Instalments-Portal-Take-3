@@ -192,40 +192,41 @@ import streamlit as st
 if 'app_started' not in st.session_state:
     st.session_state['app_started'] = False
 
+
+# Initialize session state for the control mechanism
+if 'app_started' not in st.session_state:
+    st.session_state['app_started'] = False
+
 # --- LANDING PAGE LOGIC ---
 if not st.session_state['app_started']:
     
-    # 1. A Clear, Engaging Headline (H1)
-    st.title("🚀 Electric Bike Financing Portal")
+    st.title("🚀 Analyze Your Data Visually in Minutes.")
     
-    # 2. Sub-Headline/Brief Description
     st.markdown(
         """
-            Driving the future of sustainable mobility through intelligent financing solutions. Assess, qualify, and manage your electric bike applications with ease and confidence.
+        Upload a **CSV file**, select your columns, and instantly generate interactive 
+        plots and statistical summaries **without writing a single line of code.**
         """
     )
     
-    st.markdown("---") # Visual separator
+    st.markdown("---")
     
-    if st.button("Start Application", type="primary", use_container_width=True):
+    # 3. Strong Call-to-Action (CTA) Button
+    # Set the state and use st.rerun()
+    if st.button("Launch App Now", type="primary", use_container_width=True):
         st.session_state['app_started'] = True
-        st.experimental_rerun()
+        # Use the modern, stable st.rerun() instead of the deprecated st.experimental_rerun()
+        st.rerun() 
     
+    # st.stop() ensures nothing below this block runs until the state changes.
     st.stop() 
 
 # --- END OF LANDING PAGE LOGIC ---
 
 # ----------------------------------------------------------------------
-# Everything below this line will only run AFTER the user clicks "Launch App Now"
+# Everything below this line is your existing application code.
 # ----------------------------------------------------------------------
-
-# ⚠️ Your existing Streamlit app code goes here without any changes to its indentation.
-# This part of the code is the 'control' that runs your main application.
-
-# ... (Start of your existing app code)
-# st.header("Welcome to the Main Application")
-# st.file_uploader("Upload your data")
-# ... (Rest of your existing app code)
+# ... (Your existing app code starts here)
 
 # -----------------------------
 # Streamlit App
