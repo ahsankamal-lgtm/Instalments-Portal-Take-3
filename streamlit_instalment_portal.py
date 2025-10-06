@@ -536,7 +536,7 @@ with tabs[2]:
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
                 else:
-                st.warning("⚠️ Complete Evaluation inputs first")
+                        st.warning("⚠️ Complete Evaluation inputs first")
 
 # -----------------------------
 # Page 4: Applicants
