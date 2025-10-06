@@ -101,7 +101,7 @@ def validate_cnic(cnic: str) -> bool:
     return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
 
 def validate_phone(phone: str) -> bool:
-    return phone.isdigit() and 11 <= len(phone) <= 12
+    return phone.isdigit() and len(phone) == 11
 
 def income_score(net_salary, gender):
     if net_salary < 50000:
@@ -305,9 +305,20 @@ with tabs[0]:
     if electricity_bill == "No":
         st.error("🚫 Application Rejected: Electricity bill not available.")
 
-    with st.expander("🎓 Qualifications (Optional)"):
-        education = st.selectbox("Education", ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"])
-        occupation = st.text_input("Occupation")
+  with st.expander("🎓 Qualifications (Optional)"):
+    education = st.selectbox(
+        "Education",
+        ["", "No Formal Education", "Primary", "Secondary", "Intermediate", "Bachelor's", "Master's", "PhD"]
+    )
+    occupation = st.text_input("Occupation")
+    designation = st.text_input("Designation")
+    employer_name = st.text_input("Employer Name")
+    employer_contact = st.text_input("Employer Contact (11 digits)")
+
+    # Validate employer contact only if entered
+    if employer_contact and not validate_phone(employer_contact):
+        st.error("❌ Invalid Employer Contact - Please enter exactly 11 digits")
+
 
     street_address = st.text_input("Street Address")
     area_address = st.text_input("Area Address")
@@ -459,8 +470,11 @@ with tabs[2]:
                                 "country": country,
                                 "gender": gender,
                                 "electricity_bill": electricity_bill,
-                                "education": education,                               
+                                "education": education,
                                 "occupation": occupation,
+                                "designation": designation,
+                                "employer_name": employer_name,
+                                "employer_contact": employer_contact,
                                 "net_salary": net_salary,
                                 "emi": emi,
                                 "applicant_bank_balance": applicant_bank_balance,
