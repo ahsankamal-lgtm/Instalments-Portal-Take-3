@@ -185,6 +185,57 @@ def dti_score(outstanding, bike_price, net_salary):
     else:
         return 40, ratio
 
+import streamlit as st
+
+# Initialize session state for the control mechanism
+# 'app_started' will be False when the user first visits.
+if 'app_started' not in st.session_state:
+    st.session_state['app_started'] = False
+
+# --- LANDING PAGE LOGIC ---
+if not st.session_state['app_started']:
+    
+    # 1. A Clear, Engaging Headline (H1)
+    st.title("🚀 Analyze Your Data Visually in Minutes.")
+    
+    # 2. Sub-Headline/Brief Description
+    st.markdown(
+        """
+        Upload a **CSV file**, select your columns, and instantly generate interactive 
+        plots and statistical summaries **without writing a single line of code.**
+        """
+    )
+    
+    st.markdown("---") # Visual separator
+    
+    # Optional: You could add a simple app visual here.
+    # st.image("path/to/your/screenshot.png", use_column_width=True)
+    
+    # 3. Strong Call-to-Action (CTA) Button
+    # When clicked, this button changes the session state and forces a rerun, 
+    # which then triggers the 'else' block (your main app).
+    if st.button("Launch App Now", type="primary", use_container_width=True):
+        st.session_state['app_started'] = True
+        st.experimental_rerun()
+    
+    # Add an empty st.stop() to prevent the rest of your code from running 
+    # while the landing page is active.
+    st.stop() 
+
+# --- END OF LANDING PAGE LOGIC ---
+
+# ----------------------------------------------------------------------
+# Everything below this line will only run AFTER the user clicks "Launch App Now"
+# ----------------------------------------------------------------------
+
+# ⚠️ Your existing Streamlit app code goes here without any changes to its indentation.
+# This part of the code is the 'control' that runs your main application.
+
+# ... (Start of your existing app code)
+# st.header("Welcome to the Main Application")
+# st.file_uploader("Upload your data")
+# ... (Rest of your existing app code)
+
 # -----------------------------
 # Streamlit App
 # -----------------------------
