@@ -31,7 +31,7 @@ def save_to_db(data: dict):
     columns = [
         "name", "cnic", "license_no",
         "phone_number", "gender",
-        "guarantors", "female_guarantor", "electricity_bill", "willing_pdc",  # ✅ new column added
+        "guarantors", "female_guarantor", "electricity_bill", "pdc_option",  
         "education", "occupation", "designation",
         "employer_name", "employer_contact",
         "address", "city", "state_province", "postal_code", "country",
@@ -48,7 +48,7 @@ def save_to_db(data: dict):
     values = (
         full_name, data["cnic"], data["license_no"],
         data["phone_number"], data["gender"],
-        data["guarantors"], data["female_guarantor"], data["electricity_bill"], data["willing_pdc"],
+        data["guarantors"], data["female_guarantor"], data["electricity_bill"], data["pdc_option"],
         data.get("education"), data.get("occupation"), data.get("designation"),
         data.get("employer_name"), data.get("employer_contact"),
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
