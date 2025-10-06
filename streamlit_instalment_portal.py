@@ -196,27 +196,20 @@ if 'app_started' not in st.session_state:
 
 # --- LANDING PAGE ---
 if not st.session_state['app_started']:
-    # Background styling (solid gradient, no blur card)
+    # Background styling (gradient only, no dark box)
     page_bg = """
     <style>
     [data-testid="stAppViewContainer"] {
         background: linear-gradient(135deg, #001F3F 0%, #0074D9 50%, #7FDBFF 100%);
         color: white;
-        padding: 0;
+        padding-top: 6rem;
     }
     [data-testid="stHeader"] {background: rgba(0,0,0,0);}
-    .main-card {
-        background-color: #012b54;
-        border-radius: 20px;
-        padding: 3rem 2.5rem;
-        text-align: center;
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255,255,255,0.15);
-    }
     .title {
         font-size: 2.8rem;
         font-weight: 800;
         margin-bottom: 1rem;
+        text-align: center;
         background: linear-gradient(to right, #7FDBFF, #39CCCC, #01FF70);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -224,30 +217,32 @@ if not st.session_state['app_started']:
     .subtitle {
         font-size: 1.1rem;
         color: #E0E0E0;
-        margin-bottom: 2rem;
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .divider {
+        border: none;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.3);
+        margin: 2rem 0;
     }
     </style>
     """
     st.markdown(page_bg, unsafe_allow_html=True)
 
-    # Main content block
-    with st.container():
-        st.markdown('<div class="main-card">', unsafe_allow_html=True)
-        st.markdown('<h1 class="title">⚡ EV Bike Finance Portal</h1>', unsafe_allow_html=True)
-        st.markdown(
-            '<p class="subtitle">A unified digital platform to evaluate, approve, and manage electric bike financing — faster, smarter, and sustainable.</p>',
-            unsafe_allow_html=True
-        )
+    # Main content block (no container box)
+    st.markdown('<h1 class="title">⚡ EV Bike Finance Portal</h1>', unsafe_allow_html=True)
+    st.markdown(
+        '<p class="subtitle">A unified digital platform to evaluate, approve, and manage electric bike financing — faster, smarter, and sustainable.</p>',
+        unsafe_allow_html=True
+    )
 
-        st.markdown("---")
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-        # CTA button with custom styling
-        cta = st.button("🚀 Launch App Now", type="primary", use_container_width=True)
-        if cta:
-            st.session_state['app_started'] = True
-            st.rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
+    # CTA button
+    if st.button("🚀 Launch App Now", type="primary", use_container_width=True):
+        st.session_state['app_started'] = True
+        st.rerun()
 
     st.stop()
 
