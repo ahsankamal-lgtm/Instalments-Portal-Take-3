@@ -200,11 +200,11 @@ if 'app_started' not in st.session_state:
 # --- LANDING PAGE LOGIC ---
 if not st.session_state['app_started']:
     
-    st.title("🚀 EV BIKE FINANCE PORTAL")
+    st.title("🚀 EV Bike Finance Portal")
     
     st.markdown(
         """
-      unified platform to evaluate, approve, and manage electric bike financing applications. Designed to make the process faster, fairer, and fully digital.
+      Unified platform to evaluate, approve, and manage electric bike financing applications. Designed to make the process faster, fairer, and fully digital.
         """
     )
     
