@@ -205,7 +205,6 @@ if not st.session_state['app_started']:
     st.markdown(
         """
       Unified platform to evaluate, approve, and manage electric bike financing applications.
-        """
       Designed to make the process faster, fairer, and fully digital.
         """
     )
