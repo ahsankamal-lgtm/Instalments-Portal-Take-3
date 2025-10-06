@@ -103,7 +103,7 @@ def fetch_all_applicants():
         down_payment,
         tenure,
         emi, 
-        decision,
+        decision
     FROM data
     ORDER BY id ASC;
     """
