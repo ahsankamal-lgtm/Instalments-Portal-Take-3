@@ -28,22 +28,19 @@ def save_to_db(data: dict):
         conn.close()
         raise ValueError("❌ CNIC already exists in the database. Please enter a unique CNIC.")
 
-  query = """
+    query = """
     INSERT INTO data (
-    name, cnic, license_no,
-    phone_number, gender,
-    guarantors, female_guarantor, electricity_bill,
-    education, occupation, designation,
-    employer_name, employer_contact,
-    address, city, state_province, postal_code, country,
-    net_salary, applicant_bank_balance, guarantor_bank_balance,
-    employer_type, age, residence,
-    bike_type, bike_price, down_payment, tenure, emi,
-    decision
-)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-"""
-
+        name, cnic, license_no,
+        phone_number, gender,
+        guarantors, female_guarantor, electricity_bill,
+        education, occupation,
+        address, city, state_province, postal_code, country,
+        net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
+        employer_type, age, residence,
+        bike_type, bike_price, decision
+    )
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
 
     full_name = f"{data['first_name']} {data['last_name']}".strip()
 
