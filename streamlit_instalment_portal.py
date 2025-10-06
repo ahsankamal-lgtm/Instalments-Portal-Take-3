@@ -65,19 +65,46 @@ def save_to_db(data: dict):
 def fetch_all_applicants():
     conn = get_db_connection()
     query = """
-    SELECT id, name, cnic, license_no,
-           phone_number, gender,
-           guarantors, female_guarantor, electricity_bill,
-           education, occupation,
-           address, city, state_province, postal_code, country,
-           net_salary, emi, applicant_bank_balance, guarantor_bank_balance,
-           employer_type, age, residence,
-           bike_type, bike_price, decision
+    SELECT 
+        id, 
+        name, 
+        cnic, 
+        license_no,
+        phone_number, 
+        gender,
+        guarantors, 
+        female_guarantor, 
+        electricity_bill,
+        education, 
+        occupation, 
+        designation,
+        employer_name,
+        employer_contact,
+        address, 
+        city, 
+        state_province, 
+        postal_code, 
+        country,
+        net_salary, 
+        applicant_bank_balance, 
+        guarantor_bank_balance,
+        employer_type, 
+        age, 
+        residence,
+        bike_type, 
+        bike_price, 
+        down_payment,
+        tenure,
+        emi, 
+        decision,
+        created_at
     FROM data
+    ORDER BY id DESC;
     """
     df = pd.read_sql(query, conn)
     conn.close()
     return df
+
 
 def resequence_ids():
     """ Re-sequence IDs after deletion and reset AUTO_INCREMENT """
