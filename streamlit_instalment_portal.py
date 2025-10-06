@@ -315,7 +315,7 @@ with tabs[0]:
     employer_name = st.text_input("Employer Name")
     employer_contact = st.text_input("Employer Contact (11 digits)")
 
-    # Validate employer contact only if entered
+    # ✅ Validate employer contact only if entered
     if employer_contact and not validate_phone(employer_contact):
         st.error("❌ Invalid Employer Contact - Please enter exactly 11 digits")
  
