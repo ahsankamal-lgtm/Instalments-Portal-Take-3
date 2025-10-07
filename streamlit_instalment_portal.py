@@ -483,7 +483,7 @@ with tabs[2]:
             min_emi = math.ceil((bike_price - down_payment) / tenure)
             st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi}")
 
-            # Input EMI check
+            # Input EMI check and adjustment
             if emi < min_emi:
                 st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover bike.")
                 adjusted_emi = min_emi
@@ -495,22 +495,33 @@ with tabs[2]:
             required_amount = bike_price
             feasibility_score = min(total_covered / required_amount, 1) * 100
 
-            # --- Bank balance score (updated logic) ---
-            def bank_balance_score(balance, emi, tenure, is_guarantor=False):
+            # --- Bank Balance Score with updated logic ---
+            def bank_balance_score_custom(applicant_balance, guarantor_balance, emi, tenure):
+                """
+                1. Prefer applicant if balance >= 3x EMI
+                2. Use guarantor only if applicant fails and guarantor balance >= 6x EMI
+                """
                 if emi <= 0 or tenure <= 0:
-                    return 0
-                total_obligation = emi * tenure  # only bike EMI
-                score = (balance / total_obligation) * 100
-                return min(score, 100)
+                    return 0, None
+                
+                applicant_ok = applicant_balance >= 3 * emi
+                guarantor_ok = guarantor_balance and (guarantor_balance >= 6 * emi)
+                
+                if applicant_ok:
+                    used_balance = applicant_balance
+                    source = "Applicant"
+                elif guarantor_ok:
+                    used_balance = guarantor_balance
+                    source = "Guarantor"
+                else:
+                    used_balance = applicant_balance  # fallback
+                    source = "Applicant"
 
-            if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
-                bal = bank_balance_score(guarantor_bank_balance, adjusted_emi, tenure=tenure, is_guarantor=True)
-                used_balance = guarantor_bank_balance
-                bal_source = "Guarantor"
-            else:
-                bal = bank_balance_score(applicant_bank_balance, adjusted_emi, tenure=tenure, is_guarantor=False)
-                used_balance = applicant_bank_balance
-                bal_source = "Applicant"
+                total_obligation = emi * tenure
+                score = min((used_balance / total_obligation) * 100, 100)
+                return score, source
+
+            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, adjusted_emi, tenure)
 
             # --- Other scoring functions ---
             sal = salary_consistency_score(salary_consistency)
@@ -520,12 +531,14 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
 
-            # --- DTI Calculation (includes outstanding debt) ---
+            # --- DTI Calculation ---
             dti, ratio = dti_score(outstanding, adjusted_emi, net_salary, tenure)
 
             # --- Final Score ---
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
+                decision = "Reject"
+                decision_display = "❌ Reject"
             else:
                 final = (
                     inc * 0.40 +
@@ -632,8 +645,6 @@ with tabs[2]:
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
-
-
 
 
 
