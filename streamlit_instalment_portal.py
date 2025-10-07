@@ -209,45 +209,16 @@ def residence_score(res):
     mapping = {"Owned": 100, "Family": 80, "Rented": 60, "Temporary": 40}
     return mapping.get(res, 0)
 
-def realistic_dti_score(outstanding, bike_price, down_payment, tenure_months, net_salary):
-    """
-    Calculate realistic DTI based on monthly obligations.
-
-    Parameters:
-    - outstanding: total outstanding debt (PKR)
-    - bike_price: total bike cost (PKR)
-    - down_payment: upfront payment (PKR)
-    - tenure_months: number of months for the bike EMI
-    - net_salary: applicant's monthly net salary (PKR)
-
-    Returns:
-    - score: DTI score (0-100)
-    - ratio: DTI ratio
-    - bike_emi: monthly EMI for the bike
-    """
-    if net_salary <= 0 or tenure_months <= 0:
-        return 0, 0, 0
-
-    # Scoring thresholds
-    if ratio <= 0.35:
-        score = 100
-    elif ratio <= 0.4:
-        score = 90
-    elif ratio <= 0.45:
-        score = 80
-    elif ratio <= 0.5:
-        score = 70
-    elif ratio <= 0.6:
-        score = 60
-    elif ratio <= 0.7:
-        score = 50
-    elif ratio <= 0.8:
-        score = 40
+def dti_score(outstanding, bike_price, net_salary):
+    if net_salary <= 0:
+        return 0, 0
+    ratio = (outstanding + bike_price) / net_salary
+    if ratio <= 0.5:
+        return 100, ratio
+    elif ratio <= 1:
+        return 70, ratio
     else:
-        score = 30
-
-    return score, ratio, bike_emi
-
+        return 40, ratio
 
 import streamlit as st
 
@@ -456,8 +427,6 @@ with tabs[1]:
         down_payment = st.number_input("Down Payment", min_value=0, step=1000, format="%i")
         tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
         emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
-        existing_debt = st.number_input("Existing Outstanding Debt (PKR)", min_value=0, step=1000, format="%i",help="Enter total monthly obligations or outstanding loan amount")
-
 
 
         st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
