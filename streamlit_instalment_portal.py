@@ -533,7 +533,7 @@ with tabs[2]:
             feasibility = financial_feasibility_score(bike_price, down_payment, adjusted_emi, tenure)
 
            
-           # --- Final Decision ---
+          # --- Final Decision ---
 if ag == -1:
     decision = "Reject"
     decision_display = "❌ Reject (Underage)"
@@ -563,23 +563,23 @@ else:
         decision = "Reject"
         decision_display = "❌ Reject"
 
-
     # --- Display Detailed Scores ---
-            st.markdown("### 🔹 Detailed Scores")
-            st.write(f"Income Score: {inc:.1f}")
-            st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
-            st.write(f"Salary Consistency: {sal:.1f}")
-            st.write(f"Employer Type Score: {emp:.1f}")
-            st.write(f"Job Tenure Score: {job:.1f}")
-            st.write(f"Age Score: {ag:.1f}")
-            st.write(f"Dependents Score: {dep:.1f}")
-            st.write(f"Residence Score: {res:.1f}")
-            st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
-            st.write(f"Debt-to-Income Score: {dti:.1f}")
-            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
-            st.write(f"EMI used for scoring: {adjusted_emi}")
-            st.write(f"Final Score: {final_score:.1f}")
-            st.subheader(f"🏆 Decision: {decision_display}")
+    st.markdown("### 🔹 Detailed Scores")
+    st.write(f"Income Score: {inc:.1f}")
+    st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
+    st.write(f"Salary Consistency: {sal:.1f}")
+    st.write(f"Employer Type Score: {emp:.1f}")
+    st.write(f"Job Tenure Score: {job:.1f}")
+    st.write(f"Age Score: {ag:.1f}")
+    st.write(f"Dependents Score: {dep:.1f}")
+    st.write(f"Residence Score: {res:.1f}")
+    st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
+    st.write(f"Debt-to-Income Score: {dti:.1f}")
+    st.write(f"Financial Feasibility Score: {feasibility:.1f}")
+    st.write(f"EMI used for scoring: {adjusted_emi}")
+    st.write(f"Final Score: {final_score:.1f}")
+    st.subheader(f"🏆 Decision: {decision_display}")
+
 
 
 
