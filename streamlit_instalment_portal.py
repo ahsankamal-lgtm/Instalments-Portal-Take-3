@@ -37,7 +37,8 @@ def save_to_db(data: dict):
         "address", "city", "state_province", "postal_code", "country",
         "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
         "employer_type", "age", "residence",
-        "bike_type", "bike_price", "down_payment", "tenure", "emi","outstanding"
+        "bike_type", "bike_price", "down_payment", "tenure", "emi",
+        "outstanding",
         "decision"
     ]
 
