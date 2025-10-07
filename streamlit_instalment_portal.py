@@ -445,22 +445,23 @@ with tabs[1]:
         tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
         outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000, format="%i")
 
-        # --- Minimum EMI Suggestion ---
-        min_emi = (bike_price + outstanding - down_payment) / tenure if tenure > 0 else 0
-        st.info(f"💡 Suggested minimum EMI to cover full obligation: {min_emi:.0f}")
+        # --- Minimum EMI Suggestion (Bike Price only) ---
+        min_emi = (bike_price - down_payment) / tenure if tenure > 0 else 0
+        st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi:.0f}")
 
         emi = st.number_input(
             "Monthly Installment (EMI)", 
             min_value=0, 
             step=500, 
-            value=int(max(min_emi, 0)),  # pre-fill with minimum feasible EMI
+            value=int(max(min_emi, 0)),  # pre-fill with minimum EMI
             format="%i"
         )
 
         if emi < min_emi:
-            st.warning(f"⚠️ Entered EMI ({emi}) is less than the minimum required ({min_emi:.0f}) to cover the total obligation.")
+            st.warning(f"⚠️ Entered EMI ({emi}) is less than the minimum required ({min_emi:.0f}) to cover the bike.")
 
         st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
+
 
 
 # -----------------------------
@@ -476,37 +477,33 @@ with tabs[2]:
             # Income score
             inc = income_score(net_salary, gender)
 
-            # --- Financial Feasibility Check ---
-            required_amount = bike_price + outstanding
+            # --- Financial Feasibility Check (Bike only) ---
             total_covered = emi * tenure + down_payment
+            required_amount = bike_price
             feasibility_score = min(total_covered / required_amount, 1) * 100
 
             adjusted_emi = emi
             if total_covered < required_amount:
                 adjusted_emi = (required_amount - down_payment) / tenure
                 st.warning(
-                    f"⚠️ EMI × Tenure + Down Payment ({total_covered:.0f}) is less than Bike Price + Outstanding ({required_amount:.0f})."
+                    f"⚠️ EMI × Tenure + Down Payment ({total_covered:.0f}) is less than Bike Price ({required_amount:.0f})."
                 )
-                st.info(f"💡 Minimum EMI to cover full obligation: {adjusted_emi:.0f}")
+                st.info(f"💡 Minimum EMI to cover bike: {adjusted_emi:.0f}")
 
-            # --- Bank Balance Score (updated) ---
-            def bank_balance_score(balance, emi, tenure, down_payment=0, outstanding=0, is_guarantor=False):
+            # --- Bank Balance Score (updated, Bike only) ---
+            def bank_balance_score(balance, emi, tenure, is_guarantor=False):
                 if emi <= 0 or tenure <= 0:
                     return 0
-                total_obligation = emi * tenure if is_guarantor else emi * tenure + down_payment + outstanding
+                total_obligation = emi * tenure  # only EMI for bike
                 score = (balance / total_obligation) * 100
                 return min(score, 100)
 
             if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
-                bal = bank_balance_score(
-                    guarantor_bank_balance, emi, tenure=tenure, down_payment=0, outstanding=0, is_guarantor=True
-                )
+                bal = bank_balance_score(guarantor_bank_balance, emi, tenure=tenure, is_guarantor=True)
                 used_balance = guarantor_bank_balance
                 bal_source = "Guarantor"
             else:
-                bal = bank_balance_score(
-                    applicant_bank_balance, emi, tenure=tenure, down_payment=down_payment, outstanding=outstanding, is_guarantor=False
-                )
+                bal = bank_balance_score(applicant_bank_balance, emi, tenure=tenure, is_guarantor=False)
                 used_balance = applicant_bank_balance
                 bal_source = "Applicant"
 
@@ -518,7 +515,7 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
 
-            # DTI Calculation
+            # DTI Calculation (includes outstanding debt)
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
             # Final score
@@ -538,7 +535,7 @@ with tabs[2]:
                     feasibility_score * 0.05
                 )
 
-                if final >= 70:
+                if final >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
                 elif final >= 60:
@@ -563,10 +560,10 @@ with tabs[2]:
                 st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
                 st.write(f"**Debt-to-Income Score:** {dti:.1f}")
                 st.write(f"**EMI × Tenure + Down Payment:** {total_covered:.0f}")
-                st.write(f"**Required Amount (Bike + Outstanding):** {required_amount:.0f}")
+                st.write(f"**Bike Price:** {required_amount:.0f}")
                 st.write(f"**Financial Feasibility Score:** {feasibility_score:.1f}")
                 if total_covered < required_amount:
-                    st.write(f"**Adjusted EMI (break-even):** {adjusted_emi:.0f}")
+                    st.write(f"**Adjusted EMI (break-even for bike):** {adjusted_emi:.0f}")
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
@@ -612,6 +609,7 @@ with tabs[2]:
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 
