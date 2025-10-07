@@ -506,7 +506,6 @@ with tabs[1]:
 
 
 
-
 # -----------------------------
 # Page 3: Results
 # -----------------------------
@@ -532,68 +531,69 @@ with tabs[2]:
             dti, ratio = dti_score(outstanding, adjusted_emi, net_salary, tenure)
             feasibility = financial_feasibility_score(bike_price, down_payment, adjusted_emi, tenure)
 
-           
-          # --- Final Decision ---
-if ag == -1:
-    decision = "Reject"
-    decision_display = "❌ Reject (Underage)"
-else:
-    # --- Adjusted weights ---
-    final_score = (
-        inc * 0.40 +          # Income
-        bal * 0.30 +          # Bank Balance
-        sal * 0.0343 +        # Salary Consistency
-        emp * 0.0343 +        # Employer Type
-        job * 0.0343 +        # Job Tenure
-        ag * 0.0343 +         # Age
-        dep * 0.0343 +        # Dependents
-        res * 0.0429 +        # Residence
-        dti * 0.0429 +        # Debt-to-Income
-        feasibility * 0.0429  # Financial Feasibility
-    )
+            # --- Final Decision ---
+            if ag == -1:
+                decision = "Reject"
+                decision_display = "❌ Reject (Underage)"
+            else:
+                # --- Adjusted weights ---
+                final_score = (
+                    inc * 0.40 +          # Income
+                    bal * 0.30 +          # Bank Balance
+                    sal * 0.0343 +        # Salary Consistency
+                    emp * 0.0343 +        # Employer Type
+                    job * 0.0343 +        # Job Tenure
+                    ag * 0.0343 +         # Age
+                    dep * 0.0343 +        # Dependents
+                    res * 0.0429 +        # Residence
+                    dti * 0.0429 +        # Debt-to-Income
+                    feasibility * 0.0429  # Financial Feasibility
+                )
 
-    # --- Decision thresholds ---
-    if final_score >= 75:
-        decision = "Approved"
-        decision_display = "✅ Approve"
-    elif final_score >= 60:
-        decision = "Review"
-        decision_display = "🟡 Review"
-    else:
-        decision = "Reject"
-        decision_display = "❌ Reject"
+                # --- Decision thresholds ---
+                if final_score >= 75:
+                    decision = "Approved"
+                    decision_display = "✅ Approve"
+                elif final_score >= 60:
+                    decision = "Review"
+                    decision_display = "🟡 Review"
+                else:
+                    decision = "Reject"
+                    decision_display = "❌ Reject"
 
-    # --- Display Detailed Scores ---
-    st.markdown("### 🔹 Detailed Scores")
-    st.write(f"Income Score: {inc:.1f}")
-    st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
-    st.write(f"Salary Consistency: {sal:.1f}")
-    st.write(f"Employer Type Score: {emp:.1f}")
-    st.write(f"Job Tenure Score: {job:.1f}")
-    st.write(f"Age Score: {ag:.1f}")
-    st.write(f"Dependents Score: {dep:.1f}")
-    st.write(f"Residence Score: {res:.1f}")
-    st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
-    st.write(f"Debt-to-Income Score: {dti:.1f}")
-    st.write(f"Financial Feasibility Score: {feasibility:.1f}")
-    st.write(f"EMI used for scoring: {adjusted_emi}")
-    st.write(f"Final Score: {final_score:.1f}")
-    st.subheader(f"🏆 Decision: {decision_display}")
+            # --- Display Detailed Scores ---
+            st.markdown("### 🔹 Detailed Scores")
+            st.write(f"Income Score: {inc:.1f}")
+            st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
+            st.write(f"Salary Consistency: {sal:.1f}")
+            st.write(f"Employer Type Score: {emp:.1f}")
+            st.write(f"Job Tenure Score: {job:.1f}")
+            st.write(f"Age Score: {ag:.1f}")
+            st.write(f"Dependents Score: {dep:.1f}")
+            st.write(f"Residence Score: {res:.1f}")
+            st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
+            st.write(f"Debt-to-Income Score: {dti:.1f}")
+            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
+            st.write(f"EMI used for scoring: {adjusted_emi}")
+            st.write(f"Final Score: {final_score:.1f}")
+            st.subheader(f"🏆 Decision: {decision_display}")
 
-  if decision == "Approved":
-    st.markdown("### 💰 Applicant Financial Plan")
+            # --- Financial Plan for Approved Applicant ---
+            if decision == "Approved":
+                st.markdown("### 💰 Applicant Financial Plan")
                 
-    remaining_price = bike_price - down_payment
-    total_payment = adjusted_emi * tenure
-    break_even = down_payment + total_payment
+                remaining_price = bike_price - down_payment
+                total_payment = adjusted_emi * tenure
+                break_even = down_payment + total_payment
 
-    st.write(f"**Down Payment:** {down_payment:,.0f}")
-    st.write(f"**Bike Price:** {bike_price:,.0f}")
-    st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
-    st.write(f"**Installment Tenure (Months):** {tenure}")
-    st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
-    st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
-    st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
+                st.write(f"**Down Payment:** {down_payment:,.0f}")
+                st.write(f"**Bike Price:** {bike_price:,.0f}")
+                st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
+                st.write(f"**Installment Tenure (Months):** {tenure}")
+                st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
+                st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
+                st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
+
 
 
 # -----------------------------
