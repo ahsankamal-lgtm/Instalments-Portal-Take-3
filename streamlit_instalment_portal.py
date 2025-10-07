@@ -450,15 +450,21 @@ with tabs[1]:
 # -----------------------------
 # Page 3: Results
 # -----------------------------
+# -----------------------------
+# Page 3: Results
+# -----------------------------
 with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
     else:
         st.subheader("📊 Results Summary")
 
-        if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0:
+        # Ensure required Evaluation inputs exist
+        if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0 and tenure > 0:
+            # Income score with gender adjustment
             inc = income_score(net_salary, gender)
 
+            # Bank balance logic
             if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
                 bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
                 used_balance = guarantor_bank_balance
@@ -468,16 +474,18 @@ with tabs[2]:
                 used_balance = applicant_bank_balance
                 bal_source = "Applicant"
 
+            # Other scoring functions
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
             ag = age_score(age)
             dep = dependents_score(dependents)
             res = residence_score(residence)
-            financed_amount = bike_price - down_payment
+
+            # --- DTI Calculation using new formula ---
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
-
+            # Decision logic
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
@@ -505,11 +513,14 @@ with tabs[2]:
                 st.write(f"**Age Score:** {ag:.1f}")
                 st.write(f"**Dependents Score:** {dep:.1f}")
                 st.write(f"**Residence Score:** {res:.1f}")
+                st.write(f"**Outstanding Obligation:** {outstanding}")
+                st.write(f"**EMI:** {emi}")
                 st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
                 st.write(f"**Debt-to-Income Score:** {dti:.1f}")
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
+                # Save applicant button remains unchanged
                 if st.button("💾 Save Applicant to Database"):
                     try:
                         save_to_db({
@@ -536,6 +547,7 @@ with tabs[2]:
                             "employer_contact": employer_contact,
                             "net_salary": net_salary,
                             "emi": emi,
+                            "outstanding": outstanding,  # new field saved
                             "applicant_bank_balance": applicant_bank_balance,
                             "guarantor_bank_balance": guarantor_bank_balance,
                             "employer_type": employer_type,
@@ -545,14 +557,12 @@ with tabs[2]:
                             "bike_price": bike_price,
                             "down_payment": down_payment,
                             "tenure": tenure,
-                            "emi": emi,
                             "decision": decision 
                         })
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
-                else:
-                        st.warning("⚠️ Complete Evaluation inputs first")
+
 
 # -----------------------------
 # Page 4: Applicants
