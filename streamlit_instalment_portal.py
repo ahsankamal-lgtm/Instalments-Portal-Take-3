@@ -443,11 +443,25 @@ with tabs[1]:
         bike_price = st.number_input("Bike Price", min_value=0, step=1000, format="%i")
         down_payment = st.number_input("Down Payment", min_value=0, step=1000, format="%i")
         tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
-        emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
         outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000, format="%i")
 
+        # --- Minimum EMI Suggestion ---
+        min_emi = (bike_price + outstanding - down_payment) / tenure if tenure > 0 else 0
+        st.info(f"💡 Suggested minimum EMI to cover full obligation: {min_emi:.0f}")
+
+        emi = st.number_input(
+            "Monthly Installment (EMI)", 
+            min_value=0, 
+            step=500, 
+            value=int(max(min_emi, 0)),  # pre-fill with minimum feasible EMI
+            format="%i"
+        )
+
+        if emi < min_emi:
+            st.warning(f"⚠️ Entered EMI ({emi}) is less than the minimum required ({min_emi:.0f}) to cover the total obligation.")
 
         st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
+
 
 # -----------------------------
 # Page 3: Results
@@ -458,9 +472,8 @@ with tabs[2]:
     else:
         st.subheader("📊 Results Summary")
 
-        # Ensure required Evaluation inputs exist
         if st.session_state.get("applicant_valid") and net_salary > 0 and tenure > 0:
-            # Income score with gender adjustment
+            # Income score
             inc = income_score(net_salary, gender)
 
             # --- Financial Feasibility Check ---
@@ -480,11 +493,7 @@ with tabs[2]:
             def bank_balance_score(balance, emi, tenure, down_payment=0, outstanding=0, is_guarantor=False):
                 if emi <= 0 or tenure <= 0:
                     return 0
-                # Total obligation
-                if is_guarantor:
-                    total_obligation = emi * tenure
-                else:
-                    total_obligation = emi * tenure + down_payment + outstanding
+                total_obligation = emi * tenure if is_guarantor else emi * tenure + down_payment + outstanding
                 score = (balance / total_obligation) * 100
                 return min(score, 100)
 
@@ -509,14 +518,13 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
 
-            # --- DTI Calculation ---
+            # DTI Calculation
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
-            # Decision logic
+            # Final score
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
-                # Include feasibility_score in final score with 5% weight
                 final = (
                     inc * 0.40 +
                     bal * 0.30 +
@@ -530,18 +538,17 @@ with tabs[2]:
                     feasibility_score * 0.05
                 )
 
-                # Determine decision
-                if final >= 70:
+                if final >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
-                elif final >= 50:
+                elif final >= 60:
                     decision = "Review"
                     decision_display = "🟡 Review"
                 else:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
-                # --- Display Detailed Scores ---
+                # Display detailed scores
                 st.markdown("### 🔹 Detailed Scores")
                 st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
                 st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
@@ -563,7 +570,7 @@ with tabs[2]:
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
-                # Save applicant button remains unchanged
+                # Save to database
                 if st.button("💾 Save Applicant to Database"):
                     try:
                         save_to_db({
@@ -605,6 +612,7 @@ with tabs[2]:
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 
