@@ -580,9 +580,20 @@ else:
     st.write(f"Final Score: {final_score:.1f}")
     st.subheader(f"🏆 Decision: {decision_display}")
 
+  if decision == "Approved":
+                st.markdown("### 💰 Applicant Financial Plan")
+                
+                remaining_price = bike_price - down_payment
+                total_payment = adjusted_emi * tenure
+                break_even = down_payment + total_payment
 
-
-
+                st.write(f"**Down Payment:** {down_payment:,.0f}")
+                st.write(f"**Bike Price:** {bike_price:,.0f}")
+                st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
+                st.write(f"**Installment Tenure (Months):** {tenure}")
+                st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
+                st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
+                st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
 
 
 # -----------------------------
