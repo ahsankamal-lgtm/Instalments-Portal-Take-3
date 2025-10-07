@@ -538,7 +538,7 @@ with tabs[2]:
                     feasibility_score * 0.05
                 )
 
-                if final >= 75:
+                if final >= 70:
                     decision = "Approved"
                     decision_display = "✅ Approve"
                 elif final >= 60:
