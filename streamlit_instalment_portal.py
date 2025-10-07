@@ -342,7 +342,7 @@ with tabs[0]:
 
     pdc_option = st.radio("Is the candidate willing to provide post-dated cheques (PDCs)?", ["Yes", "No"])
     if pdc_option == "No":
-        st.error("🚫 Application Rejected: Electricity bill not available.")
+        st.error("🚫 Application Rejected: PDCs not available")
 
     with st.expander("🎓 Qualifications (Optional)"):
         education = st.selectbox(
