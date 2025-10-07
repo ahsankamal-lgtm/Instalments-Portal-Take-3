@@ -531,10 +531,10 @@ with tabs[2]:
                 )
 
                 # Determine decision
-                if final >= 75:
+                if final >= 70:
                     decision = "Approved"
                     decision_display = "✅ Approve"
-                elif final >= 60:
+                elif final >= 50:
                     decision = "Review"
                     decision_display = "🟡 Review"
                 else:
