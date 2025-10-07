@@ -475,7 +475,7 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
             financed_amount = bike_price - down_payment
-            dti, ratio = dti_score(financed_amount, 0, net_salary)
+            dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
 
             if ag == -1:
