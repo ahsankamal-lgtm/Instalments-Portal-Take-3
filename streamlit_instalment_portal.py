@@ -209,16 +209,31 @@ def residence_score(res):
     mapping = {"Owned": 100, "Family": 80, "Rented": 60, "Temporary": 40}
     return mapping.get(res, 0)
 
-def dti_score(outstanding, bike_price, net_salary):
-    if net_salary <= 0:
-        return 0, 0
-    ratio = (outstanding + bike_price) / net_salary
-    if ratio <= 0.5:
-        return 100, ratio
-    elif ratio <= 1:
-        return 70, ratio
+def dti_score(outstanding, emi, net_salary, tenure):
+    """
+    Calculate Debt-to-Income (DTI) score and ratio based on:
+    (Outstanding Obligation / Tenure + EMI) / Net Salary
+    """
+    if net_salary <= 0 or tenure <= 0:
+        return 0, 0  # avoid division by zero
+
+    monthly_obligation = (outstanding / tenure) + emi
+    ratio = monthly_obligation / net_salary
+
+    # Scoring tiers (you can adjust)
+    if ratio <= 0.4:
+        score = 100
+    elif ratio <= 0.6:
+        score = 80
+    elif ratio <= 0.8:
+        score = 60
+    elif ratio <= 1.0:
+        score = 40
     else:
-        return 40, ratio
+        score = 20
+
+    return score, ratio
+
 
 import streamlit as st
 
