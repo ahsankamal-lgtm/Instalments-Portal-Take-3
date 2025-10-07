@@ -455,6 +455,9 @@ with tabs[1]:
 # -----------------------------
 # Page 3: Results
 # -----------------------------
+# -----------------------------
+# Page 3: Results
+# -----------------------------
 with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
@@ -462,7 +465,7 @@ with tabs[2]:
         st.subheader("📊 Results Summary")
 
         # Ensure required Evaluation inputs exist
-        if st.session_state.get("applicant_valid") and net_salary > 0 and emi > 0 and tenure > 0:
+        if st.session_state.get("applicant_valid") and net_salary > 0 and tenure > 0:
             # Income score with gender adjustment
             inc = income_score(net_salary, gender)
 
@@ -484,18 +487,41 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
 
-            # --- DTI Calculation using new formula ---
+            # --- DTI Calculation ---
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
+
+            # --- Financial Feasibility Check ---
+            required_amount = bike_price + outstanding
+            total_covered = emi * tenure + down_payment
+            feasibility_score = min(total_covered / required_amount, 1) * 100
+
+            adjusted_emi = emi
+            if total_covered < required_amount:
+                adjusted_emi = (required_amount - down_payment) / tenure
+                st.warning(
+                    f"⚠️ EMI × Tenure + Down Payment ({total_covered:.0f}) is less than Bike Price + Outstanding ({required_amount:.0f})."
+                )
+                st.info(f"💡 Minimum EMI to cover full obligation: {adjusted_emi:.0f}")
 
             # Decision logic
             if ag == -1:
                 st.subheader("❌ Rejected: Applicant is under 18 years old.")
             else:
+                # Include feasibility_score in final score with 5% weight
                 final = (
-                    inc * 0.40 + bal * 0.30 + sal * 0.04 + emp * 0.04 +
-                    job * 0.04 + ag * 0.04 + dep * 0.04 + res * 0.05 + dti * 0.05
+                    inc * 0.40 +
+                    bal * 0.30 +
+                    sal * 0.04 +
+                    emp * 0.04 +
+                    job * 0.04 +
+                    ag * 0.04 +
+                    dep * 0.04 +
+                    res * 0.05 +
+                    dti * 0.05 +
+                    feasibility_score * 0.05
                 )
 
+                # Determine decision
                 if final >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
@@ -506,6 +532,7 @@ with tabs[2]:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
+                # --- Display Detailed Scores ---
                 st.markdown("### 🔹 Detailed Scores")
                 st.write(f"**Income Score (with gender adj.):** {inc:.1f}")
                 st.write(f"**Bank Balance Score ({bal_source}):** {bal:.1f}")
@@ -519,6 +546,11 @@ with tabs[2]:
                 st.write(f"**EMI:** {emi}")
                 st.write(f"**Debt-to-Income Ratio:** {ratio:.2f}")
                 st.write(f"**Debt-to-Income Score:** {dti:.1f}")
+                st.write(f"**EMI × Tenure + Down Payment:** {total_covered:.0f}")
+                st.write(f"**Required Amount (Bike + Outstanding):** {required_amount:.0f}")
+                st.write(f"**Financial Feasibility Score:** {feasibility_score:.1f}")
+                if total_covered < required_amount:
+                    st.write(f"**Adjusted EMI (break-even):** {adjusted_emi:.0f}")
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
@@ -549,21 +581,22 @@ with tabs[2]:
                             "employer_contact": employer_contact,
                             "net_salary": net_salary,
                             "emi": emi,
-                            "outstanding": outstanding,  # new field saved
+                            "outstanding": outstanding,
                             "applicant_bank_balance": applicant_bank_balance,
                             "guarantor_bank_balance": guarantor_bank_balance,
                             "employer_type": employer_type,
-                            "age": age, 
-                            "residence": residence, 
+                            "age": age,
+                            "residence": residence,
                             "bike_type": bike_type,
                             "bike_price": bike_price,
                             "down_payment": down_payment,
                             "tenure": tenure,
-                            "decision": decision 
+                            "decision": decision
                         })
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 # -----------------------------
