@@ -165,32 +165,37 @@ def income_score(net_salary, gender):
         base *= 1.1
     return min(base, 100)
 
-def bank_balance_score_custom(applicant_balance, guarantor_balance, emi, tenure):
+def bank_balance_score_custom(applicant_balance, guarantor_balance, emi):
     """
-    Bank Balance Score Logic:
-    1. Prefer applicant if balance >= 3x EMI
-    2. Use guarantor only if applicant fails and guarantor balance >= 6x EMI
-    3. Returns (score, source_used)
+    Bank Balance Scoring Logic:
+    1. If applicant_balance >= 3×EMI → score = 100
+    2. Else:
+       a. If guarantor_balance is not provided → score proportional to applicant_balance
+       b. If guarantor_balance is provided and >= 6×EMI → score = 100
+       c. Else → score proportional to guarantor_balance
+    Returns:
+        score (0-100), source_used (str)
     """
-    if emi <= 0 or tenure <= 0:
+    if emi <= 0:
         return 0, None
 
-    applicant_ok = applicant_balance >= 3 * emi
-    guarantor_ok = guarantor_balance and (guarantor_balance >= 6 * emi)
+    # Case 1: Applicant meets threshold
+    if applicant_balance >= 3 * emi:
+        return 100, "Applicant"
 
-    if applicant_ok:
-        used_balance = applicant_balance
-        source = "Applicant"
-    elif guarantor_ok:
-        used_balance = guarantor_balance
-        source = "Guarantor"
-    else:
-        used_balance = applicant_balance
-        source = "Applicant (Below Threshold)"
+    # Applicant does not meet threshold
+    if not guarantor_balance:
+        # No guarantor provided → score based on applicant
+        score = min((applicant_balance / (3 * emi)) * 100, 100)
+        return score, "Applicant (Below Threshold, No Guarantor)"
 
-    total_obligation = emi * tenure
-    score = min((used_balance / total_obligation) * 100, 100)
-    return score, source
+    # Guarantor provided
+    if guarantor_balance >= 6 * emi:
+        return 100, "Guarantor"
+
+    # Guarantor does not meet full threshold → scale proportionally
+    score = min((guarantor_balance / (6 * emi)) * 100, 100)
+    return score, "Guarantor (Below Threshold)"
 
 def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
@@ -517,7 +522,7 @@ with tabs[2]:
             min_emi = calculate_min_emi(bike_price, down_payment, tenure)
             adjusted_emi = max(emi, min_emi)
 
-            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, adjusted_emi, tenure)
+            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, adjusted_emi)
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
