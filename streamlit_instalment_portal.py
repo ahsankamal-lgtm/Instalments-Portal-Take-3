@@ -37,7 +37,7 @@ def save_to_db(data: dict):
         "address", "city", "state_province", "postal_code", "country",
         "net_salary", "applicant_bank_balance", "guarantor_bank_balance",
         "employer_type", "age", "residence",
-        "bike_type", "bike_price", "down_payment", "tenure", "emi",
+        "bike_type", "bike_price", "down_payment", "tenure", "emi","outstanding"
         "decision"
     ]
 
@@ -54,7 +54,7 @@ def save_to_db(data: dict):
         full_address, data["city"], data["state_province"], data["postal_code"], data["country"],
         data["net_salary"], data["applicant_bank_balance"], data.get("guarantor_bank_balance"),
         data["employer_type"], data["age"], data["residence"],
-        data["bike_type"], data["bike_price"], data["down_payment"], data["tenure"], data["emi"],
+        data["bike_type"], data["bike_price"], data["down_payment"], data["tenure"], data["emi"],data["outstanding"]
         data["decision"]
     )
 
@@ -105,6 +105,7 @@ def fetch_all_applicants():
         down_payment,
         tenure,
         emi, 
+        outstanding,
         decision
     FROM data
     ORDER BY id ASC;
