@@ -452,12 +452,6 @@ with tabs[1]:
 # -----------------------------
 # Page 3: Results
 # -----------------------------
-# -----------------------------
-# Page 3: Results
-# -----------------------------
-# -----------------------------
-# Page 3: Results
-# -----------------------------
 with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
@@ -468,27 +462,6 @@ with tabs[2]:
         if st.session_state.get("applicant_valid") and net_salary > 0 and tenure > 0:
             # Income score with gender adjustment
             inc = income_score(net_salary, gender)
-
-            # Bank balance logic
-            if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
-                bal = bank_balance_score(guarantor_bank_balance, emi, is_guarantor=True)
-                used_balance = guarantor_bank_balance
-                bal_source = "Guarantor"
-            else:
-                bal = bank_balance_score(applicant_bank_balance, emi, is_guarantor=False)
-                used_balance = applicant_bank_balance
-                bal_source = "Applicant"
-
-            # Other scoring functions
-            sal = salary_consistency_score(salary_consistency)
-            emp = employer_type_score(employer_type)
-            job = job_tenure_score(job_years)
-            ag = age_score(age)
-            dep = dependents_score(dependents)
-            res = residence_score(residence)
-
-            # --- DTI Calculation ---
-            dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
             # --- Financial Feasibility Check ---
             required_amount = bike_price + outstanding
@@ -502,6 +475,42 @@ with tabs[2]:
                     f"⚠️ EMI × Tenure + Down Payment ({total_covered:.0f}) is less than Bike Price + Outstanding ({required_amount:.0f})."
                 )
                 st.info(f"💡 Minimum EMI to cover full obligation: {adjusted_emi:.0f}")
+
+            # --- Bank Balance Score (updated) ---
+            def bank_balance_score(balance, emi, tenure, down_payment=0, outstanding=0, is_guarantor=False):
+                if emi <= 0 or tenure <= 0:
+                    return 0
+                # Total obligation
+                if is_guarantor:
+                    total_obligation = emi * tenure
+                else:
+                    total_obligation = emi * tenure + down_payment + outstanding
+                score = (balance / total_obligation) * 100
+                return min(score, 100)
+
+            if guarantor_bank_balance and guarantor_bank_balance > applicant_bank_balance:
+                bal = bank_balance_score(
+                    guarantor_bank_balance, emi, tenure=tenure, down_payment=0, outstanding=0, is_guarantor=True
+                )
+                used_balance = guarantor_bank_balance
+                bal_source = "Guarantor"
+            else:
+                bal = bank_balance_score(
+                    applicant_bank_balance, emi, tenure=tenure, down_payment=down_payment, outstanding=outstanding, is_guarantor=False
+                )
+                used_balance = applicant_bank_balance
+                bal_source = "Applicant"
+
+            # Other scoring functions
+            sal = salary_consistency_score(salary_consistency)
+            emp = employer_type_score(employer_type)
+            job = job_tenure_score(job_years)
+            ag = age_score(age)
+            dep = dependents_score(dependents)
+            res = residence_score(residence)
+
+            # --- DTI Calculation ---
+            dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
 
             # Decision logic
             if ag == -1:
