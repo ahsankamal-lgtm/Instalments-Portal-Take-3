@@ -597,7 +597,7 @@ with tabs[2]:
 # -----------------------------
 # Save Applicant Button
 # -----------------------------
-if st.button("💾 Save Applicant to Database"):
+if decision == "Approved": st.button("💾 Save Applicant to Database"):
     try:
         # Build a dictionary with all required fields
         applicant_data = {
