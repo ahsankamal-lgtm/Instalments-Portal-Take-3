@@ -532,32 +532,36 @@ with tabs[2]:
             dti, ratio = dti_score(outstanding, adjusted_emi, net_salary, tenure)
             feasibility = financial_feasibility_score(bike_price, down_payment, adjusted_emi, tenure)
 
-            # --- Final Decision ---
-            if ag == -1:
-                decision = "Reject"
-                decision_display = "❌ Reject (Underage)"
-            else:
-                final_score = (
-                    inc * 0.40 +
-                    bal * 0.30 +
-                    sal * 0.04 +
-                    emp * 0.04 +
-                    job * 0.04 +
-                    ag * 0.04 +
-                    dep * 0.04 +
-                    res * 0.05 +
-                    dti * 0.05 +
-                    feasibility * 0.05
-                )
-                if final_score >= 75:
-                    decision = "Approved"
-                    decision_display = "✅ Approve"
-                elif final_score >= 60:
-                    decision = "Review"
-                    decision_display = "🟡 Review"
-                else:
-                    decision = "Reject"
-                    decision_display = "❌ Reject"
+           
+           # --- Final Decision ---
+if ag == -1:
+    decision = "Reject"
+    decision_display = "❌ Reject (Underage)"
+else:
+    # --- Adjusted weights ---
+    final_score = (
+        inc * 0.40 +          # Income
+        bal * 0.30 +          # Bank Balance
+        sal * 0.0343 +        # Salary Consistency
+        emp * 0.0343 +        # Employer Type
+        job * 0.0343 +        # Job Tenure
+        ag * 0.0343 +         # Age
+        dep * 0.0343 +        # Dependents
+        res * 0.0429 +        # Residence
+        dti * 0.0429 +        # Debt-to-Income
+        feasibility * 0.0429  # Financial Feasibility
+    )
+
+    # --- Decision thresholds ---
+    if final_score >= 75:
+        decision = "Approved"
+        decision_display = "✅ Approve"
+    elif final_score >= 60:
+        decision = "Review"
+        decision_display = "🟡 Review"
+    else:
+        decision = "Reject"
+        decision_display = "❌ Reject"
 
             # --- Display Detailed Scores ---
             st.markdown("### 🔹 Detailed Scores")
