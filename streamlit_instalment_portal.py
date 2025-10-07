@@ -427,6 +427,7 @@ with tabs[1]:
         down_payment = st.number_input("Down Payment", min_value=0, step=1000, format="%i")
         tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
         emi = st.number_input("Monthly Installment (EMI)", min_value=0, step=500, format="%i")
+        outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000, format="%i")
 
 
         st.info("➡️ Once inputs are completed, check the Results tab for scoring and decision.")
