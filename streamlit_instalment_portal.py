@@ -479,11 +479,11 @@ with tabs[2]:
             # --- Income score ---
             inc = income_score(net_salary, gender)
 
-            # --- Minimum EMI (ceil to avoid rounding issues) ---
+            # --- Minimum EMI (ceil) ---
             min_emi = math.ceil((bike_price - down_payment) / tenure)
             st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi}")
 
-            # Input EMI field should be >= min_emi
+            # Input EMI check
             if emi < min_emi:
                 st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover bike.")
                 adjusted_emi = min_emi
@@ -495,11 +495,11 @@ with tabs[2]:
             required_amount = bike_price
             feasibility_score = min(total_covered / required_amount, 1) * 100
 
-            # --- Bank balance score ---
+            # --- Bank balance score (updated logic) ---
             def bank_balance_score(balance, emi, tenure, is_guarantor=False):
                 if emi <= 0 or tenure <= 0:
                     return 0
-                total_obligation = emi * tenure  # only EMI for bike
+                total_obligation = emi * tenure  # only bike EMI
                 score = (balance / total_obligation) * 100
                 return min(score, 100)
 
@@ -572,6 +572,22 @@ with tabs[2]:
                 st.write(f"**Final Score:** {final:.1f}")
                 st.subheader(f"🏆 Decision: {decision_display}")
 
+                # --- Quick Financial Plan for Approved Applicants ---
+                if decision == "Approved":
+                    remaining_bike_price = bike_price - down_payment
+                    total_emi_paid = adjusted_emi * tenure
+
+                    st.markdown("### 📊 Quick Financial Plan")
+                    st.write(f"**Down Payment:** {down_payment:.0f}")
+                    st.write(f"**Remaining Bike Price after Down Payment:** {remaining_bike_price:.0f}")
+                    st.write(f"**EMI:** {adjusted_emi:.0f}")
+                    st.write(f"**Total EMI over {tenure} months:** {total_emi_paid:.0f}")
+
+                    if total_emi_paid >= remaining_bike_price:
+                        st.success("✅ Break-even reached: EMI × Tenure covers the bike price.")
+                    else:
+                        st.warning("⚠️ EMI × Tenure does NOT fully cover the bike price. Adjust EMI.")
+
                 # --- Save to Database ---
                 if st.button("💾 Save Applicant to Database"):
                     try:
@@ -616,6 +632,7 @@ with tabs[2]:
                         st.success("✅ Applicant information saved to database successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 
