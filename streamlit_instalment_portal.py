@@ -564,7 +564,7 @@ else:
         decision_display = "❌ Reject"
 
 
-            # --- Display Detailed Scores ---
+    # --- Display Detailed Scores ---
             st.markdown("### 🔹 Detailed Scores")
             st.write(f"Income Score: {inc:.1f}")
             st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
