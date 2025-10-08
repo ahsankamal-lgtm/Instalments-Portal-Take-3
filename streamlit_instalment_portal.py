@@ -5,6 +5,83 @@ import mysql.connector
 import pandas as pd
 from io import BytesIO
 
+st.set_page_config(
+    page_title="⚡ Electric Bike Finance Portal",
+    layout="wide",
+    page_icon="🚲",
+    initial_sidebar_state="expanded"
+)
+
+# --- Global UI Styling ---
+st.markdown(
+    """
+    <style>
+    /* 🌊 Global App Background */
+    .stApp {
+        background-color: #e6f0ff;
+        background-image: linear-gradient(180deg, #e6f0ff 0%, #cce0ff 100%);
+        background-attachment: fixed;
+    }
+
+    /* 📦 Main Content Container */
+    .block-container {
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 2rem 3rem;
+        border-radius: 20px;
+        box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* 🧭 Tabs & Navigation */
+    div[data-baseweb="tab-list"] {
+        background-color: #d6e6ff;
+        border-radius: 15px;
+        padding: 0.5rem;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    div[data-baseweb="tab"] {
+        font-weight: 600;
+        color: #004080 !important;
+    }
+
+    div[data-baseweb="tab"]:hover {
+        background-color: #b3d1ff !important;
+        border-radius: 10px;
+    }
+
+    /* 🧾 Text Styling */
+    h1, h2, h3, h4 {
+        color: #002b80;
+        font-weight: 700;
+    }
+
+    p, label, span, div {
+        color: #001f4d;
+    }
+
+    /* 💾 Buttons */
+    button[kind="primary"] {
+        background-color: #004080 !important;
+        color: white !important;
+        border-radius: 12px !important;
+        border: none !important;
+    }
+
+    button[kind="primary"]:hover {
+        background-color: #0059b3 !important;
+    }
+
+    /* 🎯 Inputs */
+    .stTextInput > div > div > input,
+    .stNumberInput input {
+        border-radius: 10px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+
 # -----------------------------
 # Database Connection
 # -----------------------------
