@@ -369,7 +369,7 @@ st.markdown(
 
     /* Optional: Make the main content readable on blue bg */
     .block-container {
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: #ffffff;  /* solid white, no transparency */
         padding: 2rem 3rem;
         border-radius: 20px;
         box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
