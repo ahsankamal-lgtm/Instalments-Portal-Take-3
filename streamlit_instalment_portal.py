@@ -426,7 +426,7 @@ st.markdown(
 st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 st.title("⚡ Electric Bike Finance Portal")
 
-tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "✅ Results", "📂 Applicants"])
+tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "🎯 Results", "📂 Applicants"])
 
 # -----------------------------
 # Page 1: Applicant Info
@@ -574,7 +574,7 @@ with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
     else:
-        st.subheader("📊 Results Summary")
+        st.subheader("🎯 Results Summary")
 
         if net_salary > 0 and tenure > 0:
             # --- Calculate Scores ---
