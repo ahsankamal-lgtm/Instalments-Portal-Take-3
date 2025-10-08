@@ -81,6 +81,7 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True
+)
 
 # -----------------------------
 # Database Connection
