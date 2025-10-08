@@ -710,6 +710,15 @@ with tabs[2]:
 with tabs[3]:
     st.subheader("📂 Applicants Database")
 
+    col_left, col_right = st.columns([8, 2])  # Right-hand side column
+    with col_right:
+        if st.button("🚀 Start New Application"):
+            # Reset session state and go back to landing page
+            for key in st.session_state.keys():
+                st.session_state[key] = False  # or reset selectively if needed
+            st.session_state['app_started'] = False
+            st.experimental_rerun()
+
     if st.button("🔄 Refresh Data"):
         resequence_ids()
         st.session_state.refresh = True
