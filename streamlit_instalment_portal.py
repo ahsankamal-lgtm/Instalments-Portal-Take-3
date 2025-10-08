@@ -353,7 +353,7 @@ if not st.session_state['app_started']:
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
     # CTA button (blue now!)
-    if st.button("🚀 Launch App Now", use_container_width=True):
+    if st.button("🚀 Start New Application", use_container_width=True):
         st.session_state['app_started'] = True
         st.rerun()
 
