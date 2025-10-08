@@ -653,7 +653,7 @@ with tabs[2]:
                 st.write(f"**Installment Tenure (Months):** {tenure}")
                 st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
                 st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
-                st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
+                st.write(f"**Total Paid Towards Bike (Down Payment + EMIs):** {break_even:,.0f}")
 
                 # --- Save Applicant Button ONLY if Approved ---
                 if st.button("💾 Save Applicant to Database"):
