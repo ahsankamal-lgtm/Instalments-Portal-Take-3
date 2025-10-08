@@ -353,7 +353,7 @@ if not st.session_state['app_started']:
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
     # CTA button (blue now!)
-    if st.button("🚀 Start New Application", use_container_width=True):
+    if st.button("🚀 Launch App Now", use_container_width=True):
         st.session_state['app_started'] = True
         st.rerun()
 
@@ -565,132 +565,141 @@ with tabs[1]:
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
 
-        eval_complete = all([
-            net_salary > 0,
-            applicant_bank_balance > 0,
-            emi >= min_emi,
-            salary_consistency >= 0,
-            employer_type,
-            job_years >= 0,
-            age >= 18,
-            dependents >= 0,
-            residence,
-            bike_type,
-            bike_price > 0,
-            down_payment >= 0,
-            tenure > 0
-        ])
-        st.session_state["evaluation_complete"] = eval_complete
-
-        if eval_complete:
-            st.success("✅ Evaluation inputs completed. You can now view Results tab.")
-        else:
-            st.warning("⚠️ Please complete all required evaluation inputs.")
-
 
 
 # -----------------------------
 # Page 3: Results
 # -----------------------------
-# --- RESULTS TAB ---
-decision = st.session_state.get("decision", None)
-
 with tabs[2]:
-    st.markdown("## 🧾 Financing Decision Summary")
-
-    if not st.session_state.get("evaluation_complete", False):
-    st.warning("⚠️ Please complete the applicant evaluation first to view results.")
-    
-    elif decision == "Approved":
-        # --- Success Banner ---
-        st.markdown(
-            "<div style='background-color:#00C853; padding:10px; border-radius:10px; color:white; font-size:1.1rem;'>"
-            "✅ <b>Decision: Approved</b><br>This applicant meets all financial and eligibility criteria.</div>",
-            unsafe_allow_html=True
-        )
-
-        st.markdown("### 💰 Applicant Financial Plan")
-
-        remaining_price = bike_price - down_payment
-        total_payment = adjusted_emi * tenure
-        affordability_threshold = down_payment + total_payment
-
-        st.write(f"**Down Payment:** {down_payment:,.0f}")
-        st.write(f"**Bike Price:** {bike_price:,.0f}")
-        st.write(f"**Remaining Price (After Down Payment):** {remaining_price:,.0f}")
-        st.write(f"**Installment Tenure:** {tenure} months")
-        st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
-        st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
-        st.write(f"**Affordability Threshold (Down Payment + Total EMIs):** {affordability_threshold:,.0f}")
-
-        st.markdown(
-            f"<p style='color:#00FFAA; font-size:0.9rem;'>"
-            f"💡 The affordability threshold represents the total amount the applicant will pay "
-            f"across the entire financing period (including down payment). "
-            f"It helps assess whether the payment plan remains financially sustainable."
-            f"</p>", unsafe_allow_html=True
-        )
-
-        st.markdown("---")
-
-        # --- Save Approved Applicant ---
-        if st.button("💾 Save Approved Applicant to Database"):
-            try:
-                applicant_data = {
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "cnic": cnic,
-                    "license_no": license_number,
-                    "phone_number": phone_number,
-                    "gender": gender,
-                    "guarantors": guarantors,
-                    "female_guarantor": female_guarantor,
-                    "electricity_bill": electricity_bill,
-                    "pdc_option": pdc_option,
-                    "education": education,
-                    "occupation": occupation,
-                    "designation": designation,
-                    "employer_name": employer_name,
-                    "employer_contact": employer_contact,
-                    "street_address": street_address,
-                    "area_address": area_address,
-                    "city": city,
-                    "state_province": state_province,
-                    "postal_code": postal_code,
-                    "country": country,
-                    "net_salary": net_salary,
-                    "applicant_bank_balance": applicant_bank_balance,
-                    "guarantor_bank_balance": guarantor_bank_balance,
-                    "employer_type": employer_type,
-                    "age": age,
-                    "residence": residence,
-                    "bike_type": bike_type,
-                    "bike_price": bike_price,
-                    "down_payment": down_payment,
-                    "tenure": tenure,
-                    "emi": adjusted_emi,
-                    "outstanding": outstanding,
-                    "decision": decision
-                }
-
-                save_to_db(applicant_data)
-                st.success("✅ Applicant saved successfully!")
-            except Exception as e:
-                st.error(f"❌ Failed to save applicant: {e}")
-
-    elif decision == "Review":
-        st.markdown(
-            "<div style='background-color:#FFD600; padding:10px; border-radius:10px; color:black; font-size:1.1rem;'>"
-            "🟡 <b>Decision: Review Required</b><br>The applicant is near the eligibility threshold. Please review manually.</div>",
-            unsafe_allow_html=True
-        )
-
+    if not st.session_state.get("applicant_valid", False):
+        st.error("🚫 Please complete Applicant Information first.")
     else:
-        st.markdown(
-            "<div style='background-color:#D50000; padding:10px; border-radius:10px; color:white; font-size:1.1rem;'>"
-            "❌ <b>Decision: Rejected</b><br>The applicant does not meet the required criteria for financing.</div>",
-            unsafe_allow_html=True
-        )
+        st.subheader("📊 Results Summary")
+
+        if net_salary > 0 and tenure > 0:
+            # --- Calculate Scores ---
+            inc = income_score(net_salary, gender)
+            min_emi = calculate_min_emi(bike_price, down_payment, tenure)
+            adjusted_emi = max(emi, min_emi)
+
+            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, adjusted_emi)
+            sal = salary_consistency_score(salary_consistency)
+            emp = employer_type_score(employer_type)
+            job = job_tenure_score(job_years)
+            ag = age_score(age)
+            dep = dependents_score(dependents)
+            res = residence_score(residence)
+            dti, ratio = dti_score(outstanding, adjusted_emi, net_salary, tenure)
+            feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
+
+            # --- Final Decision ---
+            if ag == -1:
+                decision = "Reject"
+                decision_display = "❌ Reject (Underage)"
+            else:
+                # --- Adjusted weights ---
+                final_score = (
+                    inc * 0.40 +          # Income
+                    bal * 0.30 +          # Bank Balance
+                    sal * 0.0343 +        # Salary Consistency
+                    emp * 0.0343 +        # Employer Type
+                    job * 0.0343 +        # Job Tenure
+                    ag * 0.0343 +         # Age
+                    dep * 0.0343 +        # Dependents
+                    res * 0.0429 +        # Residence
+                    dti * 0.0429 +        # Debt-to-Income
+                    feasibility * 0.0429  # Financial Feasibility
+                )
+
+                # --- Decision thresholds ---
+                if final_score >= 75:
+                    decision = "Approved"
+                    decision_display = "✅ Approve"
+                elif final_score >= 60:
+                    decision = "Review"
+                    decision_display = "🟡 Review"
+                else:
+                    decision = "Reject"
+                    decision_display = "❌ Reject"
+
+            # --- Display Detailed Scores ---
+            st.markdown("### 🔹 Detailed Scores")
+            st.write(f"Income Score: {inc:.1f}")
+            st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
+            st.write(f"Salary Consistency: {sal:.1f}")
+            st.write(f"Employer Type Score: {emp:.1f}")
+            st.write(f"Job Tenure Score: {job:.1f}")
+            st.write(f"Age Score: {ag:.1f}")
+            st.write(f"Dependents Score: {dep:.1f}")
+            st.write(f"Residence Score: {res:.1f}")
+            st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
+            st.write(f"Debt-to-Income Score: {dti:.1f}")
+            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
+            st.write(f"EMI used for scoring: {adjusted_emi}")
+            st.write(f"Final Score: {final_score:.1f}")
+            st.subheader(f"🏆 Decision: {decision_display}")
+
+            # --- Financial Plan for Approved Applicant ---
+            if decision == "Approved":
+                st.markdown("### 💰 Applicant Financial Plan")
+                
+                remaining_price = bike_price - down_payment
+                total_payment = adjusted_emi * tenure
+                break_even = down_payment + total_payment
+
+                st.write(f"**Down Payment:** {down_payment:,.0f}")
+                st.write(f"**Bike Price:** {bike_price:,.0f}")
+                st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
+                st.write(f"**Installment Tenure (Months):** {tenure}")
+                st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
+                st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
+                st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
+
+                # --- Save Applicant Button ONLY if Approved ---
+                if st.button("💾 Save Applicant to Database"):
+                    try:
+                        # Build a dictionary with all required fields
+                        applicant_data = {
+                            "first_name": first_name,
+                            "last_name": last_name,
+                            "cnic": cnic,
+                            "license_no": license_number,
+                            "phone_number": phone_number,
+                            "gender": gender,
+                            "guarantors": guarantors,
+                            "female_guarantor": female_guarantor,
+                            "electricity_bill": electricity_bill,
+                            "pdc_option": pdc_option,
+                            "education": education,
+                            "occupation": occupation,
+                            "designation": designation,
+                            "employer_name": employer_name,
+                            "employer_contact": employer_contact,
+                            "street_address": street_address,
+                            "area_address": area_address,
+                            "city": city,
+                            "state_province": state_province,
+                            "postal_code": postal_code,
+                            "country": country,
+                            "net_salary": net_salary,
+                            "applicant_bank_balance": applicant_bank_balance,
+                            "guarantor_bank_balance": guarantor_bank_balance,
+                            "employer_type": employer_type,
+                            "age": age,
+                            "residence": residence,
+                            "bike_type": bike_type,
+                            "bike_price": bike_price,
+                            "down_payment": down_payment,
+                            "tenure": tenure,
+                            "emi": adjusted_emi,
+                            "outstanding": outstanding,
+                            "decision": decision
+                        }
+
+                        save_to_db(applicant_data)
+                        st.success("✅ Applicant saved successfully!")
+                    except Exception as e:
+                        st.error(f"❌ Failed to save applicant: {e}")
 
 
 
