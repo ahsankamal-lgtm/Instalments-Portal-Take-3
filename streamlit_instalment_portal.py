@@ -656,50 +656,76 @@ with tabs[2]:
                 st.write(f"**Break-even Point Reached (Down Payment + EMIs):** {break_even:,.0f}")
 
                 # --- Save Applicant Button ONLY if Approved ---
-                if st.button("💾 Save Applicant to Database"):
-                    try:
-                        # Build a dictionary with all required fields
-                        applicant_data = {
-                            "first_name": first_name,
-                            "last_name": last_name,
-                            "cnic": cnic,
-                            "license_no": license_number,
-                            "phone_number": phone_number,
-                            "gender": gender,
-                            "guarantors": guarantors,
-                            "female_guarantor": female_guarantor,
-                            "electricity_bill": electricity_bill,
-                            "pdc_option": pdc_option,
-                            "education": education,
-                            "occupation": occupation,
-                            "designation": designation,
-                            "employer_name": employer_name,
-                            "employer_contact": employer_contact,
-                            "street_address": street_address,
-                            "area_address": area_address,
-                            "city": city,
-                            "state_province": state_province,
-                            "postal_code": postal_code,
-                            "country": country,
-                            "net_salary": net_salary,
-                            "applicant_bank_balance": applicant_bank_balance,
-                            "guarantor_bank_balance": guarantor_bank_balance,
-                            "employer_type": employer_type,
-                            "age": age,
-                            "residence": residence,
-                            "bike_type": bike_type,
-                            "bike_price": bike_price,
-                            "down_payment": down_payment,
-                            "tenure": tenure,
-                            "emi": adjusted_emi,
-                            "outstanding": outstanding,
-                            "decision": decision
-                        }
+                # --- Financial Plan for Approved Applicant ---
+if decision == "Approved":
+    st.markdown("### 💰 Applicant Financial Plan")
 
-                        save_to_db(applicant_data)
-                        st.success("✅ Applicant saved successfully!")
-                    except Exception as e:
-                        st.error(f"❌ Failed to save applicant: {e}")
+    remaining_price = bike_price - down_payment
+    total_payment = adjusted_emi * tenure
+    affordability_threshold = down_payment + total_payment
+
+    st.write(f"**Down Payment:** {down_payment:,.0f}")
+    st.write(f"**Bike Price:** {bike_price:,.0f}")
+    st.write(f"**Remaining Price (After Down Payment):** {remaining_price:,.0f}")
+    st.write(f"**Installment Tenure:** {tenure} months")
+    st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
+    st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
+    st.write(f"**Affordability Threshold (Down Payment + Total EMIs):** {affordability_threshold:,.0f}")
+
+    st.markdown(
+        f"<p style='color:#00FFAA; font-size:0.9rem;'>"
+        f"💡 The affordability threshold represents the total amount the applicant will pay "
+        f"across the entire financing period (including down payment). "
+        f"It helps assess whether the payment plan remains financially sustainable."
+        f"</p>", unsafe_allow_html=True
+    )
+
+    # --- Save Applicant Button (Only if Approved) ---
+    st.markdown("---")
+    if st.button("💾 Save Approved Applicant to Database"):
+        try:
+            applicant_data = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "cnic": cnic,
+                "license_no": license_number,
+                "phone_number": phone_number,
+                "gender": gender,
+                "guarantors": guarantors,
+                "female_guarantor": female_guarantor,
+                "electricity_bill": electricity_bill,
+                "pdc_option": pdc_option,
+                "education": education,
+                "occupation": occupation,
+                "designation": designation,
+                "employer_name": employer_name,
+                "employer_contact": employer_contact,
+                "street_address": street_address,
+                "area_address": area_address,
+                "city": city,
+                "state_province": state_province,
+                "postal_code": postal_code,
+                "country": country,
+                "net_salary": net_salary,
+                "applicant_bank_balance": applicant_bank_balance,
+                "guarantor_bank_balance": guarantor_bank_balance,
+                "employer_type": employer_type,
+                "age": age,
+                "residence": residence,
+                "bike_type": bike_type,
+                "bike_price": bike_price,
+                "down_payment": down_payment,
+                "tenure": tenure,
+                "emi": adjusted_emi,
+                "outstanding": outstanding,
+                "decision": decision
+            }
+
+            save_to_db(applicant_data)
+            st.success("✅ Applicant saved successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 
