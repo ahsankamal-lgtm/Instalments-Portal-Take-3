@@ -646,9 +646,9 @@ with tabs[2]:
                 remaining_price = bike_price - down_payment
                 total_payment = adjusted_emi * tenure
                 break_even = down_payment + total_payment
-
-                st.write(f"**Down Payment:** {down_payment:,.0f}")
+                
                 st.write(f"**Bike Price:** {bike_price:,.0f}")
+                st.write(f"**Down Payment:** {down_payment:,.0f}")
                 st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
                 st.write(f"**Installment Tenure (Months):** {tenure}")
                 st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
