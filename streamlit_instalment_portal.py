@@ -565,6 +565,28 @@ with tabs[1]:
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
 
+        eval_complete = all([
+            net_salary > 0,
+            applicant_bank_balance > 0,
+            emi >= min_emi,
+            salary_consistency >= 0,
+            employer_type,
+            job_years >= 0,
+            age >= 18,
+            dependents >= 0,
+            residence,
+            bike_type,
+            bike_price > 0,
+            down_payment >= 0,
+            tenure > 0
+        ])
+        st.session_state["evaluation_complete"] = eval_complete
+
+        if eval_complete:
+            st.success("✅ Evaluation inputs completed. You can now view Results tab.")
+        else:
+            st.warning("⚠️ Please complete all required evaluation inputs.")
+
 
 
 # -----------------------------
@@ -576,8 +598,8 @@ decision = st.session_state.get("decision", None)
 with tabs[2]:
     st.markdown("## 🧾 Financing Decision Summary")
 
-    if decision is None:
-        st.warning("⚠️ Please complete the applicant evaluation first to view results.")
+    if not st.session_state.get("evaluation_complete", False):
+    st.warning("⚠️ Please complete the applicant evaluation first to view results.")
     
     elif decision == "Approved":
         # --- Success Banner ---
