@@ -361,15 +361,15 @@ if not st.session_state['app_started']:
 st.markdown(
     """
     <style>
-    /* 🔵 Exact Blue Gradient from Landing Page */
+    /* 🔵 Global Blue Gradient Background */
     [data-testid="stAppViewContainer"] {
         background: linear-gradient(to bottom right, #004aad, #5de0e6);
         background-attachment: fixed;
     }
 
-    /* Optional: Make the main content readable on blue bg */
+    /* 📄 Solid White Form Container */
     .block-container {
-        background-color: #ffffff;  /* solid white, no transparency */
+        background-color: #ffffff;  /* Fully opaque white */
         padding: 2rem 3rem;
         border-radius: 20px;
         box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
@@ -377,27 +377,48 @@ st.markdown(
         margin-bottom: 2rem;
     }
 
-    /* White text headings for contrast */
-    h1, h2, h3, h4, label, p, div {
+    /* 🌈 Headings on Blue Background (Landing Page Titles) */
+    h1, h2, h3, h4 {
         color: #ffffff;
+        font-weight: 700;
     }
 
-    /* Buttons */
+    /* 🧾 Form and Body Text (on white areas) */
+    .stTextInput label,
+    .stSelectbox label,
+    .stNumberInput label,
+    .stRadio label,
+    .stCheckbox label,
+    p, span, div, label {
+        color: #002b80 !important;  /* Dark blue text for readability */
+    }
+
+    /* 💾 Primary Buttons */
     button[kind="primary"] {
-        background-color: #ffffff !important;
-        color: #004aad !important;
+        background-color: #004aad !important;
+        color: white !important;
         font-weight: 600 !important;
         border-radius: 10px !important;
+        border: none !important;
     }
 
     button[kind="primary"]:hover {
-        background-color: #e0f2ff !important;
-        color: #003080 !important;
+        background-color: #0059d6 !important;
+        color: white !important;
+    }
+
+    /* 🎯 Input Styling */
+    .stTextInput > div > div > input,
+    .stNumberInput input,
+    .stSelectbox select {
+        border-radius: 10px !important;
+        border: 1px solid #004aad !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # -----------------------------
 # Streamlit App
