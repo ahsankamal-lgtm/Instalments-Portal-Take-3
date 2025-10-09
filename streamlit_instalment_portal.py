@@ -536,7 +536,7 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # --- Custom input for formatted currency-like numbers ---
+        # --- Custom input for formatted currency-like numbers (fixed version) ---
         def formatted_number_input(label, key, placeholder="0"):
             user_input = st.text_input(label, placeholder, key=key)
             cleaned = user_input.replace(",", "").strip()
@@ -553,9 +553,8 @@ with tabs[1]:
 
             # Reformat with commas (e.g., 100000 → 100,000)
             formatted_value = f"{value:,}"
-            st.session_state[key] = formatted_value
 
-            # Display the formatted version in the input box
+            # Show right-aligned input (visual only)
             st.markdown(
                 f"""
                 <style>
@@ -567,6 +566,7 @@ with tabs[1]:
                 unsafe_allow_html=True
             )
 
+            # Return the numeric value
             return value
 
         # --- Use the new formatted inputs ---
@@ -605,8 +605,6 @@ with tabs[1]:
 
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
-
-
 
 # -----------------------------
 # Page 3: Results
