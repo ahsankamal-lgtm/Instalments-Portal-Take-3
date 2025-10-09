@@ -536,12 +536,20 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # --- Custom input for formatted currency-like numbers (fixed version) ---
+        # --- Enhanced auto-formatting input function ---
         def formatted_number_input(label, key, placeholder="0"):
-            user_input = st.text_input(label, placeholder, key=key)
+            # Initialize if not present
+            if key not in st.session_state:
+                st.session_state[key] = ""
+
+            user_input = st.text_input(label, st.session_state[key] or placeholder, key=key)
+
+            # Remove commas for processing
             cleaned = user_input.replace(",", "").strip()
 
+            # Handle blank
             if cleaned == "":
+                st.session_state[key] = ""
                 return 0
 
             # Validate numeric input
@@ -549,12 +557,15 @@ with tabs[1]:
                 st.error(f"❌ Please enter a valid number for {label}.")
                 return 0
 
-            value = int(cleaned)
+            # Format with commas
+            formatted = f"{int(cleaned):,}"
 
-            # Reformat with commas (e.g., 100000 → 100,000)
-            formatted_value = f"{value:,}"
+            # If formatted differs from raw, update
+            if formatted != user_input:
+                st.session_state[key] = formatted
+                st.experimental_rerun()
 
-            # Show right-aligned input (visual only)
+            # Right align numeric fields
             st.markdown(
                 f"""
                 <style>
@@ -566,10 +577,9 @@ with tabs[1]:
                 unsafe_allow_html=True
             )
 
-            # Return the numeric value
-            return value
+            return int(cleaned)
 
-        # --- Use the new formatted inputs ---
+        # --- Use the formatted inputs ---
         net_salary = formatted_number_input("Net Salary", key="net_salary")
         applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance", key="applicant_bank_balance")
         guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional)", key="guarantor_bank_balance")
@@ -605,6 +615,7 @@ with tabs[1]:
 
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
+
 
 # -----------------------------
 # Page 3: Results
