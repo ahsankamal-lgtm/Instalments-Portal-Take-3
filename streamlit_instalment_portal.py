@@ -535,28 +535,38 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Custom formatted input with commas
-        def formatted_number_input(label, key, optional=False, step=1000):
-            """Custom text input that auto-formats commas and returns numeric value."""
-            raw_val = st.text_input(label, value=st.session_state.get(key, ""), key=key)
-            clean_val = re.sub(r"[^\d]", "", raw_val)  # remove commas, spaces, non-digits
+        # ✅ Improved live comma input function
+        def formatted_number_input(label, key, optional=False):
+            """Text input with live comma formatting that returns an integer value."""
+            # Retrieve stored value (string form)
+            current_val = st.session_state.get(key, "")
 
-            if clean_val:
-                num_val = int(clean_val)
-                formatted = f"{num_val:,}"
-                if formatted != raw_val:
-                    st.session_state[key] = formatted
-                    st.rerun()
-                return num_val
-            else:
-                return 0 if not optional else None
+            # Display formatted version (commas)
+            formatted_val = f"{int(current_val.replace(',', '')):,}" if current_val and re.sub(r"[^\d]", "", current_val) else current_val
 
-        # 💰 Comma-formatted salary & balances
+            # Render the input widget
+            input_val = st.text_input(label, value=formatted_val, key=f"{key}_display")
+
+            # Extract numeric part only
+            clean_val = re.sub(r"[^\d]", "", input_val)
+
+            # Detect and update when the user types a new number
+            if clean_val != re.sub(r"[^\d]", "", formatted_val):
+                if clean_val:
+                    st.session_state[key] = f"{int(clean_val):,}"
+                else:
+                    st.session_state[key] = ""
+                st.experimental_rerun()
+
+            # Return integer for calculations
+            return int(clean_val) if clean_val else (0 if not optional else None)
+
+        # 💰 Inputs with live commas
         net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
         applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
         guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
 
-        # 📅 Other evaluation inputs
+        # 📅 Other evaluation inputs (unchanged)
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
@@ -579,7 +589,7 @@ with tabs[1]:
         st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi:,}")
 
         emi = st.number_input(
-            "Monthly Installment (EMI)", 
+            "Monthly Installment (EMI)",
             min_value=min_emi,
             step=500,
             value=min_emi
