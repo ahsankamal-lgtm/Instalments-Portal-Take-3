@@ -526,99 +526,75 @@ with tabs[0]:
     else:
         st.warning("⚠️ Please complete all required fields before proceeding.")
 
-# -----------------------------
-# EVALUATION TAB
-# -----------------------------
-    elif selected_tab == "⚡ Evaluation":
-        st.markdown("### 🧾 Applicant Evaluation")
+# -------------------
+# EVALUATION 
+# -------------------
+with tabs[1]:
+    if not st.session_state.get("applicant_valid", False):
+        st.error("🚫 Please complete Applicant Information first.")
+    else:
+        st.subheader("Evaluation Inputs")
 
-    # --- Financing Plan Selection ---
-        st.subheader("Select Financing Plan")
+        # ✅ Fully functional live comma input
+        def formatted_number_input(label, key, optional=False):
+            """Text input with live comma formatting (e.g. 50,000). Returns integer."""
+            # Get current numeric string
+            raw_val = st.session_state.get(f"{key}_raw", "")
 
-    plans = {
-        "Bykea": {"upfront": 33000, "installment": 9900, "tenure": 36},
-        "Solarize": {"upfront": 40000, "installment": 10000, "tenure": 36},
-        "NED": {"upfront": 33000, "installment": 9900, "tenure": 36},
-        "Wavetec Group Employees": {"upfront": 8500, "installment": 9900, "tenure": 36},
-        "Individual Cases / Wavetec Plan": {"upfront": 40000, "installment": 9900, "tenure": 36},
-    }
+            # Format for display
+            formatted = f"{int(raw_val):,}" if raw_val else ""
 
-    selected_plan = st.selectbox("Choose a Financing Plan", list(plans.keys()))
+            # Dynamic key ensures Streamlit refreshes widget display
+            input_val = st.text_input(label, value=formatted, key=f"{key}_display_{formatted}")
 
-    # --- Compute Plan Details ---
-    plan_details = plans[selected_plan]
-    upfront = plan_details["upfront"]
-    installment = plan_details["installment"]
-    tenure = plan_details["tenure"]
-    bike_price = upfront + (installment * tenure)
+            # Clean input
+            clean_val = re.sub(r"[^\d]", "", input_val)
 
-    # --- Display Plan Summary in an Info Box ---
-    st.markdown(
-        f"""
-        <div style="
-            border: 2px solid #1E88E5;
-            border-radius: 12px;
-            padding: 15px;
-            background-color: #F9FBFF;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
-            margin-top: 10px;
-        ">
-            <h4 style="color:#1E88E5; margin-bottom:8px;">Selected Plan: {selected_plan}</h4>
-            <ul style="list-style-type: none; padding-left: 10px; margin: 0;">
-                <li>💰 <b>Bike Price:</b> Rs. {bike_price:,.0f}</li>
-                <li>🏦 <b>Upfront (Down Payment):</b> Rs. {upfront:,.0f}</li>
-                <li>📆 <b>Tenure:</b> {tenure} months</li>
-                <li>💸 <b>Monthly Installment:</b> Rs. {installment:,.0f}</li>
-            </ul>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            # Update stored raw value
+            if clean_val != raw_val:
+                st.session_state[f"{key}_raw"] = clean_val
+                st.rerun()
 
-    st.divider()
+            return int(clean_val) if clean_val else (0 if not optional else None)
 
-    # --- Other Evaluation Inputs ---
-    st.markdown("### 💼 Financial Evaluation")
-    monthly_income = st.text_input("Monthly Income (Rs.)", placeholder="Enter numeric value")
-    bank_balance = st.text_input("Bank Balance (Rs.)", placeholder="Enter numeric value")
-    obligations = st.text_input("Monthly Obligations (Rs.)", placeholder="Enter numeric value")
-    cnic_valid = st.radio("CNIC Valid?", ["Yes", "No"])
-    guarantor = st.radio("Guarantor Available?", ["Yes", "No"])
+        # 💰 Inputs with live commas
+        net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
+        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
+        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
 
-    # Live comma formatting
-    def format_number_input(value):
-        return re.sub(r"(?<=\d)(?=(\d{3})+(?!\d))", ",", value) if value.isdigit() else value
+        # 📅 Other evaluation inputs (unchanged)
+        salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
+        employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
+        age = st.number_input("Age", min_value=18, max_value=70, step=1)
+        job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
 
-    st.session_state["monthly_income"] = format_number_input(monthly_income)
-    st.session_state["bank_balance"] = format_number_input(bank_balance)
-    st.session_state["obligations"] = format_number_input(obligations)
+        # 🚫 Logical Validation: Experience cannot exceed Age
+        if job_years > age:
+            st.error("❌ Job tenure cannot exceed age. Please correct the values.")
 
-    # --- Evaluation Logic ---
-    if st.button("Evaluate Applicant"):
-        try:
-            income_val = float(monthly_income.replace(",", ""))
-            balance_val = float(bank_balance.replace(",", ""))
-            obligation_val = float(obligations.replace(",", ""))
+        dependents = st.number_input("Number of Dependents", min_value=0, step=1)
+        residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
+        bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
+        bike_price = st.number_input("Bike Price", min_value=0, step=1000)
+        down_payment = st.number_input("Down Payment", min_value=0, step=1000)
+        tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
+        outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000)
 
-            result, score = evaluate_applicant(
-                income_val, balance_val, obligation_val, installment, cnic_valid, guarantor
-            )
+        # 💡 Minimum EMI Suggestion
+        min_emi = calculate_min_emi(bike_price, down_payment, tenure)
+        st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi:,}")
 
-            # Save details to session for use in Results / DB
-            st.session_state.update({
-                "evaluation_result": result,
-                "evaluation_score": score,
-                "bike_price": bike_price,
-                "down_payment": upfront,
-                "tenure": tenure,
-                "monthly_installment": installment,
-                "plan_selected": selected_plan,
-            })
+        emi = st.number_input(
+            "Monthly Installment (EMI)",
+            min_value=min_emi,
+            step=500,
+            value=min_emi
+        )
 
-            st.success(f"✅ Evaluation complete! Result: **{result}** (Score: {score})")
+        if emi < min_emi:
+            st.warning(f"⚠️ Entered EMI ({emi:,}) is less than minimum required ({min_emi:,}) to cover the bike.")
 
-        except ValueError:
-            st.error("⚠️ Please enter valid numeric values for all fields.")
+
 
 
 # -----------------------------
