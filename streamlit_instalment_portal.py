@@ -535,30 +535,29 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Improved live comma input function
+        # ✅ Improved live comma input (safe for Streamlit ≥1.39)
         def formatted_number_input(label, key, optional=False):
             """Text input with live comma formatting that returns an integer value."""
-            # Retrieve stored value (string form)
             current_val = st.session_state.get(key, "")
 
-            # Display formatted version (commas)
+            # Prepare formatted version
             formatted_val = f"{int(current_val.replace(',', '')):,}" if current_val and re.sub(r"[^\d]", "", current_val) else current_val
 
-            # Render the input widget
+            # Render input box
             input_val = st.text_input(label, value=formatted_val, key=f"{key}_display")
 
-            # Extract numeric part only
+            # Extract only digits
             clean_val = re.sub(r"[^\d]", "", input_val)
 
-            # Detect and update when the user types a new number
+            # Update if user changed the number
             if clean_val != re.sub(r"[^\d]", "", formatted_val):
                 if clean_val:
                     st.session_state[key] = f"{int(clean_val):,}"
                 else:
                     st.session_state[key] = ""
-                st.experimental_rerun()
+                st.rerun()   # ✅ Updated for latest Streamlit
 
-            # Return integer for calculations
+            # Return numeric integer (or 0 / None)
             return int(clean_val) if clean_val else (0 if not optional else None)
 
         # 💰 Inputs with live commas
