@@ -535,28 +535,26 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Live comma formatting input (final version)
+        # ✅ Fully functional live comma input
         def formatted_number_input(label, key, optional=False):
-            """Text input with live comma formatting (e.g. 50,000) and numeric return."""
-            # Retrieve stored numeric string (if any)
-            if f"{key}_raw" not in st.session_state:
-                st.session_state[f"{key}_raw"] = ""
+            """Text input with live comma formatting (e.g. 50,000). Returns integer."""
+            # Get current numeric string
+            raw_val = st.session_state.get(f"{key}_raw", "")
 
-            raw_value = st.session_state[f"{key}_raw"]
+            # Format for display
+            formatted = f"{int(raw_val):,}" if raw_val else ""
 
-            # Display formatted value (with commas)
-            formatted_value = f"{int(raw_value):,}" if raw_value else ""
-            user_input = st.text_input(label, value=formatted_value, key=f"{key}_display")
+            # Dynamic key ensures Streamlit refreshes widget display
+            input_val = st.text_input(label, value=formatted, key=f"{key}_display_{formatted}")
 
-            # Remove commas and non-digits
-            clean_val = re.sub(r"[^\d]", "", user_input)
+            # Clean input
+            clean_val = re.sub(r"[^\d]", "", input_val)
 
-            # If user typed a new value (detect change)
-            if clean_val != raw_value:
+            # Update stored raw value
+            if clean_val != raw_val:
                 st.session_state[f"{key}_raw"] = clean_val
-                st.rerun()  # rerun to refresh the comma formatting
+                st.rerun()
 
-            # Return integer version
             return int(clean_val) if clean_val else (0 if not optional else None)
 
         # 💰 Inputs with live commas
