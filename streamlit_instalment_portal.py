@@ -535,29 +535,28 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Improved live comma input (safe for Streamlit ≥1.39)
+        # ✅ Live comma formatting input (final version)
         def formatted_number_input(label, key, optional=False):
-            """Text input with live comma formatting that returns an integer value."""
-            current_val = st.session_state.get(key, "")
+            """Text input with live comma formatting (e.g. 50,000) and numeric return."""
+            # Retrieve stored numeric string (if any)
+            if f"{key}_raw" not in st.session_state:
+                st.session_state[f"{key}_raw"] = ""
 
-            # Prepare formatted version
-            formatted_val = f"{int(current_val.replace(',', '')):,}" if current_val and re.sub(r"[^\d]", "", current_val) else current_val
+            raw_value = st.session_state[f"{key}_raw"]
 
-            # Render input box
-            input_val = st.text_input(label, value=formatted_val, key=f"{key}_display")
+            # Display formatted value (with commas)
+            formatted_value = f"{int(raw_value):,}" if raw_value else ""
+            user_input = st.text_input(label, value=formatted_value, key=f"{key}_display")
 
-            # Extract only digits
-            clean_val = re.sub(r"[^\d]", "", input_val)
+            # Remove commas and non-digits
+            clean_val = re.sub(r"[^\d]", "", user_input)
 
-            # Update if user changed the number
-            if clean_val != re.sub(r"[^\d]", "", formatted_val):
-                if clean_val:
-                    st.session_state[key] = f"{int(clean_val):,}"
-                else:
-                    st.session_state[key] = ""
-                st.rerun()   # ✅ Updated for latest Streamlit
+            # If user typed a new value (detect change)
+            if clean_val != raw_value:
+                st.session_state[f"{key}_raw"] = clean_val
+                st.rerun()  # rerun to refresh the comma formatting
 
-            # Return numeric integer (or 0 / None)
+            # Return integer version
             return int(clean_val) if clean_val else (0 if not optional else None)
 
         # 💰 Inputs with live commas
@@ -596,6 +595,7 @@ with tabs[1]:
 
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi:,}) is less than minimum required ({min_emi:,}) to cover the bike.")
+
 
 
 
