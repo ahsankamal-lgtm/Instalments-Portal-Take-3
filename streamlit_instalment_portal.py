@@ -526,43 +526,46 @@ with tabs[0]:
     else:
         st.warning("⚠️ Please complete all required fields before proceeding.")
 
-#-------------------
+# -------------------
 # EVALUATION 
-#-------------------
-
+# -------------------
 with tabs[1]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
     else:
         st.subheader("Evaluation Inputs")
 
-        # 💰 Nicely formatted numeric inputs with commas
-
-        def formatted_number_input(label, key, optional=False):
-    """Custom text input that auto-formats commas and returns numeric value."""
+        # ✅ Custom formatted input with commas
+        def formatted_number_input(label, key, optional=False, step=1000):
+            """Custom text input that auto-formats commas and returns numeric value."""
             raw_val = st.text_input(label, value=st.session_state.get(key, ""), key=key)
             clean_val = re.sub(r"[^\d]", "", raw_val)  # remove commas, spaces, non-digits
 
             if clean_val:
                 num_val = int(clean_val)
-                # show formatted with commas
                 formatted = f"{num_val:,}"
                 if formatted != raw_val:
-                st.session_state[key] = formatted
-                st.rerun()
+                    st.session_state[key] = formatted
+                    st.rerun()
                 return num_val
             else:
                 return 0 if not optional else None
 
+        # 💰 Comma-formatted salary & balances
         net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
-        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="app_bal")
-        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="gua_bal", optional=True)
+        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
+        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
+
+        # 📅 Other evaluation inputs
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
+
+        # 🚫 Logical Validation: Experience cannot exceed Age
         if job_years > age:
             st.error("❌ Job tenure cannot exceed age. Please correct the values.")
+
         dependents = st.number_input("Number of Dependents", min_value=0, step=1)
         residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
@@ -571,9 +574,9 @@ with tabs[1]:
         tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
         outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000)
 
-        # Minimum EMI Suggestion
+        # 💡 Minimum EMI Suggestion
         min_emi = calculate_min_emi(bike_price, down_payment, tenure)
-        st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi}")
+        st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi:,}")
 
         emi = st.number_input(
             "Monthly Installment (EMI)", 
@@ -583,7 +586,7 @@ with tabs[1]:
         )
 
         if emi < min_emi:
-            st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
+            st.warning(f"⚠️ Entered EMI ({emi:,}) is less than minimum required ({min_emi:,}) to cover the bike.")
 
 
 
