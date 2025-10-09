@@ -526,9 +526,7 @@ with tabs[0]:
     else:
         st.warning("⚠️ Please complete all required fields before proceeding.")
 
-# -------------------
-# EVALUATION 
-# -------------------
+
 # -------------------
 # EVALUATION + RESULTS (Reactive)
 # -------------------
@@ -605,9 +603,13 @@ with tabs[1]:
         # 💡 Minimum EMI info
         st.info(f"💡 EMI to be used for scoring: {emi:,}")
 
-        # -------------------
-        # RESULTS (Reactive)
-        # -------------------
+# -------------------
+# RESULTS (Reactive)
+# -------------------
+with tabs [2]:
+    if not st.session_state.get("applicant_valid", False):
+        st.error("🚫 Please complete Applicant Information first.")
+    else:
         st.subheader("🎯 Results Summary")
 
         if net_salary > 0 and tenure > 0:
