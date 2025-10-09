@@ -529,11 +529,11 @@ with tabs[0]:
 # -----------------------------
 # EVALUATION TAB
 # -----------------------------
-elif selected_tab == "⚡ Evaluation":
-    st.markdown("### 🧾 Applicant Evaluation")
+    elif selected_tab == "⚡ Evaluation":
+        st.markdown("### 🧾 Applicant Evaluation")
 
     # --- Financing Plan Selection ---
-    st.subheader("Select Financing Plan")
+        st.subheader("Select Financing Plan")
 
     plans = {
         "Bykea": {"upfront": 33000, "installment": 9900, "tenure": 36},
