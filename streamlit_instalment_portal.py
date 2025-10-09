@@ -536,17 +536,54 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
-        applicant_bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
-        guarantor_bank_balance = st.number_input("Guarantor's Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
+        # --- Custom input for formatted currency-like numbers ---
+        def formatted_number_input(label, key, placeholder="0"):
+            user_input = st.text_input(label, placeholder, key=key)
+            cleaned = user_input.replace(",", "").strip()
+
+            if cleaned == "":
+                return 0
+
+            # Validate numeric input
+            if not cleaned.isdigit():
+                st.error(f"❌ Please enter a valid number for {label}.")
+                return 0
+
+            value = int(cleaned)
+
+            # Reformat with commas (e.g., 100000 → 100,000)
+            formatted_value = f"{value:,}"
+            st.session_state[key] = formatted_value
+
+            # Display the formatted version in the input box
+            st.markdown(
+                f"""
+                <style>
+                input[data-testid="stTextInput-{key}"] {{
+                    text-align: right;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
+            return value
+
+        # --- Use the new formatted inputs ---
+        net_salary = formatted_number_input("Net Salary", key="net_salary")
+        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance", key="applicant_bank_balance")
+        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional)", key="guarantor_bank_balance")
+
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
         dependents = st.number_input("Number of Dependents", min_value=0, step=1)
 
+        # ✅ Logical validation: Experience cannot exceed Age
         if job_years > age:
             st.error("❌ Invalid Input: Job experience cannot exceed age.")
+            st.stop()
 
         residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
