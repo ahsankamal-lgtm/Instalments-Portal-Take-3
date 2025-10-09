@@ -538,23 +538,13 @@ with tabs[1]:
         # ✅ Fully functional live comma input
         def formatted_number_input(label, key, optional=False):
             """Text input with live comma formatting (e.g. 50,000). Returns integer."""
-            # Get current numeric string
             raw_val = st.session_state.get(f"{key}_raw", "")
-
-            # Format for display
             formatted = f"{int(raw_val):,}" if raw_val else ""
-
-            # Dynamic key ensures Streamlit refreshes widget display
             input_val = st.text_input(label, value=formatted, key=f"{key}_display_{formatted}")
-
-            # Clean input
             clean_val = re.sub(r"[^\d]", "", input_val)
-
-            # Update stored raw value
             if clean_val != raw_val:
                 st.session_state[f"{key}_raw"] = clean_val
                 st.rerun()
-
             return int(clean_val) if clean_val else (0 if not optional else None)
 
         # 💰 Inputs with live commas
@@ -562,37 +552,57 @@ with tabs[1]:
         applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
         guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
 
-        # 📅 Other evaluation inputs (unchanged)
+        # 📅 Other evaluation inputs
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
-
-        # 🚫 Logical Validation: Experience cannot exceed Age
         if job_years > age:
             st.error("❌ Job tenure cannot exceed age. Please correct the values.")
-
         dependents = st.number_input("Number of Dependents", min_value=0, step=1)
         residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
+
+        # 🚲 Bike Type
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
-        bike_price = st.number_input("Bike Price", min_value=0, step=1000)
-        down_payment = st.number_input("Down Payment", min_value=0, step=1000)
-        tenure = st.selectbox("Installment Tenure (Months)", [6, 12, 18, 24, 30, 36])
+
+        # 🏦 Financing Plan Dropdown
+        financing_plans = {
+            "Bykea": {"upfront": 33000, "installment": 9900, "tenure": 36},
+            "Solarize": {"upfront": 40000, "installment": 10000, "tenure": 36},
+            "NED": {"upfront": 33000, "installment": 9900, "tenure": 36},
+            "Wavetec Group Employees": {"upfront": 8500, "installment": 9900, "tenure": 36},
+            "Individual Cases / Wavetec Plan": {"upfront": 40000, "installment": 9900, "tenure": 36}
+        }
+
+        selected_plan = st.selectbox("Financing Plan", list(financing_plans.keys()))
+
+        # ✅ Calculate Bike Price and display plan details (read-only)
+        plan = financing_plans[selected_plan]
+        calculated_bike_price = plan["upfront"] + plan["installment"] * plan["tenure"]
+
+        with st.container():
+            st.markdown("### 🏦 Financing Plan Details")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Down Payment / Upfront", f"Rs. {plan['upfront']:,}")
+                st.metric("Installment Amount", f"Rs. {plan['installment']:,}")
+            with col2:
+                st.metric("Tenure (Months)", f"{plan['tenure']}")
+                st.metric("Total Bike Price", f"Rs. {calculated_bike_price:,}")
+
+        # 🚫 User input for Outstanding Obligation remains visible
         outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000)
 
-        # 💡 Minimum EMI Suggestion
-        min_emi = calculate_min_emi(bike_price, down_payment, tenure)
-        st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi:,}")
+        # 💡 Minimum EMI Suggestion based on plan
+        min_emi = plan["installment"]
+        st.info(f"💡 EMI to be used for scoring: {min_emi:,}")
 
-        emi = st.number_input(
-            "Monthly Installment (EMI)",
-            min_value=min_emi,
-            step=500,
-            value=min_emi
-        )
+        # EMI is **fixed based on plan**
+        emi = min_emi
+        tenure = plan["tenure"]
+        down_payment = plan["upfront"]
+        bike_price = calculated_bike_price
 
-        if emi < min_emi:
-            st.warning(f"⚠️ Entered EMI ({emi:,}) is less than minimum required ({min_emi:,}) to cover the bike.")
 
 
 
