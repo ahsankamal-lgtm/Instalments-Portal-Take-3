@@ -565,7 +565,7 @@ with tabs[1]:
         # 🚲 Bike Type
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
 
-        # 🏦 Financing Plan Dropdown (Dynamic based on Bike Type)
+        # 💳 Financing Plan Dropdown (Dynamic based on Bike Type)
         if bike_type == "EV-125":
             financing_plans = {
                 "Bykea": {"upfront": 33000, "installment": 9900, "tenure": 36},
