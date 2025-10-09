@@ -544,6 +544,10 @@ with tabs[1]:
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
         dependents = st.number_input("Number of Dependents", min_value=0, step=1)
+
+if job_years > age:
+    st.error("❌ Invalid Input: Job experience cannot exceed age.")
+
         residence = st.radio("Residence", ["Owned", "Family", "Rented", "Temporary"])
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
         bike_price = st.number_input("Bike Price", min_value=0, step=1000)
