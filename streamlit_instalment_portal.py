@@ -588,7 +588,7 @@ with tabs[1]:
 
         # 🏦 Display Plan Details (read-only)
         with st.container():
-            st.markdown("### 🏦💳 Financing Plan Details")
+            st.markdown("###💳 Financing Plan Details")
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("Down Payment / Upfront", f"Rs. {down_payment:,}")
