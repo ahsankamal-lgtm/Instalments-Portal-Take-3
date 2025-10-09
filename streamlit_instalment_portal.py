@@ -529,30 +529,30 @@ with tabs[0]:
 # -------------------
 # EVALUATION 
 # -------------------
+# -------------------
+# EVALUATION + RESULTS (Reactive)
+# -------------------
 with tabs[1]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Fully functional live comma input
+        # ✅ Live comma input without st.rerun
         def formatted_number_input(label, key, optional=False):
-            """Text input with live comma formatting (e.g. 50,000). Returns integer."""
             raw_val = st.session_state.get(f"{key}_raw", "")
             formatted = f"{int(raw_val):,}" if raw_val else ""
             input_val = st.text_input(label, value=formatted, key=f"{key}_display_{formatted}")
             clean_val = re.sub(r"[^\d]", "", input_val)
-            if clean_val != raw_val:
-                st.session_state[f"{key}_raw"] = clean_val
-                st.rerun()
+            st.session_state[f"{key}_raw"] = clean_val
             return int(clean_val) if clean_val else (0 if not optional else None)
 
-        # 💰 Inputs with live commas
+        # 💰 Financial Inputs
         net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
         applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
         guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
 
-        # 📅 Other evaluation inputs
+        # 📅 Other Inputs
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
@@ -565,7 +565,7 @@ with tabs[1]:
         # 🚲 Bike Type
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
 
-        # 💳 Financing Plan Dropdown (Dynamic based on Bike Type)
+        # 🏦 Financing Plan Dropdown (Dynamic)
         if bike_type == "EV-125":
             financing_plans = {
                 "Bykea": {"upfront": 33000, "installment": 9900, "tenure": 36},
@@ -581,57 +581,46 @@ with tabs[1]:
 
         selected_plan = st.selectbox("Financing Plan", list(financing_plans.keys()))
 
-        # ✅ Calculate Bike Price and display plan details (read-only)
+        # ✅ Calculate plan values
         plan = financing_plans[selected_plan]
-        calculated_bike_price = plan["upfront"] + plan["installment"] * plan["tenure"]
-
-        with st.container():
-            st.markdown("### 💳 Financing Plan Details")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Down Payment / Upfront", f"Rs. {plan['upfront']:,}")
-                st.metric("Installment Amount", f"Rs. {plan['installment']:,}")
-            with col2:
-                st.metric("Tenure (Months)", f"{plan['tenure']}")
-                st.metric("Total Bike Price", f"Rs. {calculated_bike_price:,}")
-
-        # 🚫 User input for Outstanding Obligation remains visible
-        outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000)
-
-        # 💡 Minimum EMI Suggestion based on plan
-        min_emi = plan["installment"]
-        st.info(f"💡 EMI to be used for scoring: {min_emi:,}")
-
-        # EMI is **fixed based on plan**
-        emi = min_emi
+        bike_price = plan["upfront"] + plan["installment"] * plan["tenure"]
+        emi = plan["installment"]
         tenure = plan["tenure"]
         down_payment = plan["upfront"]
-        bike_price = calculated_bike_price
 
+        # 🏦 Display Plan Details (read-only)
+        with st.container():
+            st.markdown("### 🏦💳 Financing Plan Details")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Down Payment / Upfront", f"Rs. {down_payment:,}")
+                st.metric("Installment Amount", f"Rs. {emi:,}")
+            with col2:
+                st.metric("Tenure (Months)", f"{tenure}")
+                st.metric("Total Bike Price", f"Rs. {bike_price:,}")
 
-# -----------------------------
-# Page 3: Results
-# -----------------------------
-with tabs[2]:
-    if not st.session_state.get("applicant_valid", False):
-        st.error("🚫 Please complete Applicant Information first.")
-    else:
+        # 🚫 Outstanding Obligation input remains editable
+        outstanding = st.number_input("Outstanding Obligation", min_value=0, step=1000)
+
+        # 💡 Minimum EMI info
+        st.info(f"💡 EMI to be used for scoring: {emi:,}")
+
+        # -------------------
+        # RESULTS (Reactive)
+        # -------------------
         st.subheader("🎯 Results Summary")
 
         if net_salary > 0 and tenure > 0:
             # --- Calculate Scores ---
             inc = income_score(net_salary, gender)
-            min_emi = calculate_min_emi(bike_price, down_payment, tenure)
-            adjusted_emi = max(emi, min_emi)
-
-            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, adjusted_emi)
+            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, emi)
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
             ag = age_score(age)
             dep = dependents_score(dependents)
             res = residence_score(residence)
-            dti, ratio = dti_score(outstanding, adjusted_emi, net_salary, tenure)
+            dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
             feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
             # --- Final Decision ---
@@ -639,21 +628,11 @@ with tabs[2]:
                 decision = "Reject"
                 decision_display = "❌ Reject (Underage)"
             else:
-                # --- Adjusted weights ---
                 final_score = (
-                    inc * 0.40 +          # Income
-                    bal * 0.30 +          # Bank Balance
-                    sal * 0.0343 +        # Salary Consistency
-                    emp * 0.0343 +        # Employer Type
-                    job * 0.0343 +        # Job Tenure
-                    ag * 0.0343 +         # Age
-                    dep * 0.0343 +        # Dependents
-                    res * 0.0429 +        # Residence
-                    dti * 0.0429 +        # Debt-to-Income
-                    feasibility * 0.0429  # Financial Feasibility
+                    inc * 0.40 + bal * 0.30 + sal * 0.0343 + emp * 0.0343 +
+                    job * 0.0343 + ag * 0.0343 + dep * 0.0343 + res * 0.0429 +
+                    dti * 0.0429 + feasibility * 0.0429
                 )
-
-                # --- Decision thresholds ---
                 if final_score >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
@@ -664,7 +643,7 @@ with tabs[2]:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
-            # --- Display Detailed Scores ---
+            # --- Display Scores ---
             st.markdown("### 🔹 Detailed Scores")
             st.write(f"Income Score: {inc:.1f}")
             st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
@@ -677,25 +656,23 @@ with tabs[2]:
             st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
             st.write(f"Debt-to-Income Score: {dti:.1f}")
             st.write(f"Financial Feasibility Score: {feasibility:.1f}")
-            st.write(f"EMI used for scoring: {adjusted_emi}")
+            st.write(f"EMI used for scoring: {emi}")
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
 
-            # --- Financial Plan for Approved Applicant ---
             if decision == "Approved":
                 st.markdown("### 💰 Applicant Financial Plan")
-                
                 remaining_price = bike_price - down_payment
-                total_payment = adjusted_emi * tenure
+                total_payment = emi * tenure
                 break_even = down_payment + total_payment
-                
                 st.write(f"**Bike Price:** {bike_price:,.0f}")
                 st.write(f"**Down Payment:** {down_payment:,.0f}")
                 st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
                 st.write(f"**Installment Tenure (Months):** {tenure}")
-                st.write(f"**Monthly EMI:** {adjusted_emi:,.0f}")
+                st.write(f"**Monthly EMI:** {emi:,.0f}")
                 st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
                 st.write(f"**Total Paid Towards Bike (Down Payment + EMIs):** {break_even:,.0f}")
+
 
                 # --- Save Applicant Button ONLY if Approved ---
                 if st.button("💾 Save Applicant to Database"):
