@@ -536,20 +536,22 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # --- Enhanced auto-formatting input function ---
+        # --- Safe auto-formatting numeric input ---
         def formatted_number_input(label, key, placeholder="0"):
-            # Initialize if not present
-            if key not in st.session_state:
-                st.session_state[key] = ""
+            display_key = f"{key}_display"  # internal state key for formatted text
 
-            user_input = st.text_input(label, st.session_state[key] or placeholder, key=key)
+            # Initialize the display key if not present
+            if display_key not in st.session_state:
+                st.session_state[display_key] = ""
 
-            # Remove commas for processing
+            # Render the input using formatted text
+            user_input = st.text_input(label, st.session_state[display_key] or placeholder, key=display_key)
+
+            # Remove commas and spaces
             cleaned = user_input.replace(",", "").strip()
 
-            # Handle blank
+            # Handle empty input
             if cleaned == "":
-                st.session_state[key] = ""
                 return 0
 
             # Validate numeric input
@@ -557,19 +559,20 @@ with tabs[1]:
                 st.error(f"❌ Please enter a valid number for {label}.")
                 return 0
 
-            # Format with commas
-            formatted = f"{int(cleaned):,}"
+            # Convert to int and format with commas
+            value = int(cleaned)
+            formatted = f"{value:,}"
 
-            # If formatted differs from raw, update
+            # If formatting changed, update the display value
             if formatted != user_input:
-                st.session_state[key] = formatted
+                st.session_state[display_key] = formatted
                 st.experimental_rerun()
 
-            # Right align numeric fields
+            # Align numbers to the right visually
             st.markdown(
                 f"""
                 <style>
-                input[data-testid="stTextInput-{key}"] {{
+                input[data-testid="stTextInput-{display_key}"] {{
                     text-align: right;
                 }}
                 </style>
@@ -577,7 +580,7 @@ with tabs[1]:
                 unsafe_allow_html=True
             )
 
-            return int(cleaned)
+            return value
 
         # --- Use the formatted inputs ---
         net_salary = formatted_number_input("Net Salary", key="net_salary")
@@ -607,7 +610,7 @@ with tabs[1]:
         st.info(f"💡 Suggested minimum EMI to cover bike: {min_emi}")
 
         emi = st.number_input(
-            "Monthly Installment (EMI)", 
+            "Monthly Installment (EMI)",
             min_value=min_emi,
             step=500,
             value=min_emi
@@ -615,6 +618,7 @@ with tabs[1]:
 
         if emi < min_emi:
             st.warning(f"⚠️ Entered EMI ({emi}) is less than minimum required ({min_emi}) to cover the bike.")
+
 
 
 # -----------------------------
