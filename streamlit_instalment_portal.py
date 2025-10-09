@@ -536,9 +536,27 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        net_salary = st.number_input("Net Salary", min_value=0, step=1000, format="%i")
-        applicant_bank_balance = st.number_input("Applicant's Average 6M Bank Balance", min_value=0, step=1000, format="%i")
-        guarantor_bank_balance = st.number_input("Guarantor's Average 6M Bank Balance (Optional)", min_value=0, step=1000, format="%i")
+        # 💰 Nicely formatted numeric inputs with commas
+
+        def formatted_number_input(label, key, optional=False):
+    """Custom text input that auto-formats commas and returns numeric value."""
+            raw_val = st.text_input(label, value=st.session_state.get(key, ""), key=key)
+            clean_val = re.sub(r"[^\d]", "", raw_val)  # remove commas, spaces, non-digits
+
+            if clean_val:
+                num_val = int(clean_val)
+                # show formatted with commas
+                formatted = f"{num_val:,}"
+                if formatted != raw_val:
+                st.session_state[key] = formatted
+                st.rerun()
+                return num_val
+            else:
+                return 0 if not optional else None
+
+        net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
+        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="app_bal")
+        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="gua_bal", optional=True)
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
