@@ -528,7 +528,7 @@ with tabs[0]:
 
 
 # -------------------
-# EVALUATION + RESULTS (Reactive)
+# EVALUATION 
 # -------------------
 with tabs[1]:
     if not st.session_state.get("applicant_valid", False):
@@ -536,19 +536,34 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
-        # ✅ Live comma input without st.rerun
+        # ✅ Smooth, lag-free number input (shows formatted value below)
         def formatted_number_input(label, key, optional=False):
-            raw_val = st.session_state.get(f"{key}_raw", "")
-            formatted = f"{int(raw_val):,}" if raw_val else ""
-            input_val = st.text_input(label, value=formatted, key=f"{key}_display_{formatted}")
+            raw_key = f"{key}_raw"
+            raw_val = st.session_state.get(raw_key, "")
+
+            # Basic input (no commas while typing)
+            input_val = st.text_input(label, value=raw_val, key=raw_key)
+
+            # Keep only digits
             clean_val = re.sub(r"[^\d]", "", input_val)
-            st.session_state[f"{key}_raw"] = clean_val
-            return int(clean_val) if clean_val else (0 if not optional else None)
+
+            # Convert to number
+            num = int(clean_val) if clean_val else (0 if not optional else None)
+
+            # Display formatted version below
+            if clean_val:
+                st.caption(f"💰 **Formatted:** {num:,}")
+
+            return num
 
         # 💰 Financial Inputs
         net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
-        applicant_bank_balance = formatted_number_input("Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance")
-        guarantor_bank_balance = formatted_number_input("Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True)
+        applicant_bank_balance = formatted_number_input(
+            "Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance"
+        )
+        guarantor_bank_balance = formatted_number_input(
+            "Guarantor's Average 6M Bank Balance (Optional, PKR)", key="guarantor_bank_balance", optional=True
+        )
 
         # 📅 Other Inputs
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
@@ -570,7 +585,7 @@ with tabs[1]:
                 "Solarize": {"upfront": 40000, "installment": 10000, "tenure": 36},
                 "NED": {"upfront": 33000, "installment": 9900, "tenure": 36},
                 "Wavetec Group Employees": {"upfront": 8500, "installment": 9900, "tenure": 36},
-                "Individual Cases / Wavetec Plan": {"upfront": 40000, "installment": 9900, "tenure": 36}
+                "Individual Cases / Wavetec Plan": {"upfront": 40000, "installment": 9900, "tenure": 36},
             }
         else:  # EV-1
             financing_plans = {
@@ -602,6 +617,7 @@ with tabs[1]:
 
         # 💡 Minimum EMI info
         st.info(f"💡 EMI to be used for scoring: {emi:,}")
+
 
 # -------------------
 # RESULTS (Reactive)
