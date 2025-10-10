@@ -139,7 +139,7 @@ import re
 # Validation Functions
 # -----------------------------
 def validate_cnic(cnic: str) -> bool:
-    return bool(re.fullmatch(r"\d{5}-?\d{7}-?\d", cnic)
+    return bool(re.fullmatch(r"\d{5}-?\d{7}-?\d", cnic))
 
 
 def validate_phone(phone: str) -> bool:
