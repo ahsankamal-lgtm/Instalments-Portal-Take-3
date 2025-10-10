@@ -139,7 +139,8 @@ import re
 # Validation Functions
 # -----------------------------
 def validate_cnic(cnic: str) -> bool:
-    return bool(re.fullmatch(r"\d{5}-\d{7}-\d", cnic))
+    return bool(re.fullmatch(r"\d{5}-?\d{7}-?\d", cnic)
+
 
 def validate_phone(phone: str) -> bool:
     return phone.isdigit() and len(phone) == 11
@@ -423,7 +424,6 @@ st.markdown(
 # -----------------------------
 # Streamlit App
 # -----------------------------
-st.set_page_config(page_title="⚡ Electric Bike Finance Portal", layout="centered")
 st.title("⚡ Electric Bike Finance Portal")
 
 tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "🎯 Results", "📂 Applicants"])
@@ -588,7 +588,7 @@ with tabs[1]:
 
         # 🏦 Display Plan Details (read-only)
         with st.container():
-            st.markdown("###💳 Financing Plan Details")
+            st.markdown("💳 Financing Plan Details")
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("Down Payment / Upfront", f"Rs. {down_payment:,}")
@@ -606,7 +606,7 @@ with tabs[1]:
 # -------------------
 # RESULTS (Reactive)
 # -------------------
-with tabs [2]:
+with tabs[2]:
     if not st.session_state.get("applicant_valid", False):
         st.error("🚫 Please complete Applicant Information first.")
     else:
@@ -712,7 +712,7 @@ with tabs [2]:
                             "bike_price": bike_price,
                             "down_payment": down_payment,
                             "tenure": tenure,
-                            "emi": adjusted_emi,
+                            "emi": emi,
                             "outstanding": outstanding,
                             "decision": decision
                         }
