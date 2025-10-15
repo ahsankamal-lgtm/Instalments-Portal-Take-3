@@ -203,7 +203,7 @@ def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
 
 def employer_type_score(emp_type):
-    mapping = {"Govt": 100, "MNC": 80, "SME": 60, "Startup": 40, "Self-employed": 20}
+    mapping = {"Govt": 100, "MNC": 80, "Private Limited": 70, "SME": 60, "Startup": 40, "Self-employed": 20}
     return mapping.get(emp_type, 0)
 
 def job_tenure_score(years):
