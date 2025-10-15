@@ -672,7 +672,7 @@ with tabs[2]:
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
 
-            if decision in ["Approved", "Review", "Rejected"]:
+            if decision in ["Approved", "Review", "Reject"]:
                 st.markdown("### 💰 Applicant Financial Plan")
                 remaining_price = bike_price - down_payment
                 total_payment = emi * tenure
