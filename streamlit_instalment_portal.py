@@ -169,35 +169,47 @@ def income_score(net_salary, gender):
 
 def bank_balance_score_custom(applicant_balance, guarantor_balance, emi):
     """
-    Bank Balance Scoring Logic:
-    1. If applicant_balance >= 3×EMI → score = 100
-    2. Else:
-       a. If guarantor_balance is not provided → score proportional to applicant_balance
-       b. If guarantor_balance is provided and >= 6×EMI → score = 100
-       c. Else → score proportional to guarantor_balance
+    Bank Balance Evaluation Logic (Strict Rule with Applicant/Guarantor Fallback)
+
+    Conditions:
+    - Applicant must have >= 3×EMI → score = 100 (source = Applicant)
+    - If Applicant fails but Guarantor >= 6×EMI → score = 100 (source = Guarantor)
+    - If both fail → score = 0 (soft rejection)
+
     Returns:
-        score (0-100), source_used (str)
+        score (int),
+        source_used (str),
+        rejection_reason (str or None)
     """
     if emi <= 0:
-        return 0, None
+        return 0, "Invalid", "Invalid EMI value"
 
-    # Case 1: Applicant meets threshold
-    if applicant_balance >= 3 * emi:
-        return 100, "Applicant"
+    applicant_threshold = 3 * emi
+    guarantor_threshold = 6 * emi
 
-    # Applicant does not meet threshold
-    if not guarantor_balance:
-        # No guarantor provided → score based on applicant
-        score = min((applicant_balance / (3 * emi)) * 100, 100)
-        return score, "Applicant (Below Threshold, No Guarantor)"
+    # Case 1: Applicant meets criteria
+    if applicant_balance >= applicant_threshold:
+        return 100, "Applicant", None
 
-    # Guarantor provided
-    if guarantor_balance >= 6 * emi:
-        return 100, "Guarantor"
+    # Case 2: Applicant fails, check guarantor
+    if guarantor_balance is not None and guarantor_balance >= guarantor_threshold:
+        return 100, "Guarantor", None
 
-    # Guarantor does not meet full threshold → scale proportionally
-    score = min((guarantor_balance / (6 * emi)) * 100, 100)
-    return score, "Guarantor (Below Threshold)"
+    # Case 3: Both fail
+    if guarantor_balance is not None:
+        rejection_reason = (
+            f"Neither applicant nor guarantor meets required bank balance thresholds.\n"
+            f"Applicant required: PKR {applicant_threshold:,.0f} | Current: PKR {applicant_balance:,.0f}\n"
+            f"Guarantor required: PKR {guarantor_threshold:,.0f} | Current: PKR {guarantor_balance:,.0f}"
+        )
+    else:
+        rejection_reason = (
+            f"Applicant bank balance below required threshold.\n"
+            f"Required minimum: PKR {applicant_threshold:,.0f} | Current: PKR {applicant_balance:,.0f}"
+        )
+
+    return 0, "Applicant", rejection_reason
+
 
 def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
@@ -625,7 +637,7 @@ with tabs[2]:
         if net_salary > 0 and tenure > 0:
             # --- Calculate Scores ---
             inc = income_score(net_salary, gender)
-            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, emi)
+            bal, bal_source, bal_reject_reason = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, emi)
             sal = salary_consistency_score(salary_consistency)
             emp = employer_type_score(employer_type)
             job = job_tenure_score(job_years)
@@ -671,6 +683,9 @@ with tabs[2]:
             st.write(f"EMI used for scoring: {emi}")
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
+            if bal_reject_reason:
+                st.markdown("---")
+                st.error(f"**⚠️ Bank Balance Rejection Reason:**\n\n{bal_reject_reason}")
 
             if decision in ["Approved", "Review", "Reject"]:
                 st.markdown("### 💰 Applicant Financial Plan")
