@@ -579,13 +579,14 @@ with tabs[1]:
         bike_type = st.selectbox("Bike Type", ["EV-1", "EV-125"])
 
         # 🏦 Financing Plan Dropdown (Dynamic)
-            financing_plans = {
-                "1 Year Plan": {"upfront": 60000, "installment": 25500, "tenure": 12},
-                "2 Year Plan": {"upfront": 40000, "installment": 14900, "tenure": 24},
-                "3 Year Plan": {"upfront": 40000, "installment": 9900, "tenure": 36},
-            }
+        financing_plans = {
+            "1 Year Plan": {"upfront": 60000, "installment": 25500, "tenure": 12},
+            "2 Year Plan": {"upfront": 40000, "installment": 14900, "tenure": 24},
+            "3 Year Plan": {"upfront": 40000, "installment": 9900, "tenure": 36},
+        }
 
         selected_plan = st.selectbox("Financing Plan", list(financing_plans.keys()))
+
 
         # ✅ Calculate plan values
         plan = financing_plans[selected_plan]
