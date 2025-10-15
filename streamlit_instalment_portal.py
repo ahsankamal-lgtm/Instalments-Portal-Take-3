@@ -583,7 +583,7 @@ with tabs[1]:
                 "1 Year Plan": {"upfront": 60000, "installment": 25500, "tenure": 12},
                 "2 Year Plan": {"upfront": 40000, "installment": 14900, "tenure": 24},
                 "3 Year Plan": {"upfront": 40000, "installment": 9900, "tenure": 36},
-                              }
+            }
 
         selected_plan = st.selectbox("Financing Plan", list(financing_plans.keys()))
 
