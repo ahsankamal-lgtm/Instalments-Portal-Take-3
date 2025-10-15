@@ -567,7 +567,7 @@ with tabs[1]:
 
         # 📅 Other Inputs
         salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
-        employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "SME", "Startup", "Self-employed"])
+        employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "Private Limited", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
         job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
         if job_years > age:
