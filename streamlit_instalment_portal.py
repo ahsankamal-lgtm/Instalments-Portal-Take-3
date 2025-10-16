@@ -666,6 +666,33 @@ with tabs[2]:
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
 
+            # -------------------------------
+            # ⚠️ Bank Balance Rejection Message
+            # -------------------------------
+            if bal == 0:
+                messages = []
+
+                # Applicant condition
+                if applicant_bank_balance is not None and applicant_bank_balance < 3 * emi:
+                    messages.append(
+                        f"⚠️ Applicant bank balance Rs. {applicant_bank_balance:,.0f} "
+                        f"< required bank balance Rs. {3 * emi:,.0f} (3×EMI)"
+                    )
+
+                # Guarantor condition
+                if guarantor_bank_balance is not None and guarantor_bank_balance < 6 * emi:
+                    messages.append(
+                        f"⚠️ Guarantor bank balance Rs. {guarantor_bank_balance:,.0f} "
+                        f"< required guarantor bank balance Rs. {6 * emi:,.0f} (6×EMI)"
+                    )
+
+                # Display messages
+                if messages:
+                    st.markdown("**Application Rejected:**")
+                    for msg in messages:
+                        st.markdown(f"- {msg}")
+
+            # --- Financial Plan ---
             if decision in ["Approved", "Review", "Reject"]:
                 st.markdown("### 💰 Applicant Financial Plan")
                 remaining_price = bike_price - down_payment
@@ -678,7 +705,6 @@ with tabs[2]:
                 st.write(f"**Monthly EMI:** {emi:,.0f}")
                 st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
                 st.write(f"**Total Paid Towards Bike (Down Payment + EMIs):** {break_even:,.0f}")
-
 
                 # --- Save Applicant Button ONLY if Approved ---
                 if st.button("💾 Save Applicant to Database"):
