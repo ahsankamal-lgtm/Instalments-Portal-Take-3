@@ -630,6 +630,8 @@ with tabs[2]:
             feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
             # --- Final Decision ---
+            final_score = 0  # ✅ Prevent NameError if rejected early
+
             if ag == -1:
                 decision = "Reject"
                 decision_display = "❌ Reject (Underage)"
@@ -666,7 +668,13 @@ with tabs[2]:
             st.write(f"Debt-to-Income Score: {dti:.1f}")
             st.write(f"Financial Feasibility Score: {feasibility:.1f}")
             st.write(f"EMI used for scoring: {emi}")
-            st.write(f"Final Score: {final_score:.1f}")
+
+            # ✅ Show N/A for Final Score if rejected early
+            if decision == "Reject" and final_score == 0:
+                st.write("Final Score: N/A")
+            else:
+                st.write(f"Final Score: {final_score:.1f}")
+
             st.subheader(f"🏆 Decision: {decision_display}")
 
             # -------------------------------
@@ -678,14 +686,14 @@ with tabs[2]:
                 # Applicant condition
                 if applicant_bank_balance is not None and applicant_bank_balance < 3 * emi:
                     messages.append(
-                        f"⚠️ Applicant bank balance Rs. {applicant_bank_balance:,.0f} "
+                        f"❗ Applicant bank balance Rs. {applicant_bank_balance:,.0f} "
                         f"< required bank balance Rs. {3 * emi:,.0f} (3×EMI)"
                     )
 
                 # Guarantor condition
                 if guarantor_bank_balance is not None and guarantor_bank_balance < 6 * emi:
                     messages.append(
-                        f"⚠️ Guarantor bank balance Rs. {guarantor_bank_balance:,.0f} "
+                        f"❗ Guarantor bank balance Rs. {guarantor_bank_balance:,.0f} "
                         f"< required guarantor bank balance Rs. {6 * emi:,.0f} (6×EMI)"
                     )
 
@@ -712,7 +720,6 @@ with tabs[2]:
                 # --- Save Applicant Button ONLY if Approved ---
                 if st.button("💾 Save Applicant to Database"):
                     try:
-                        # Build a dictionary with all required fields
                         applicant_data = {
                             "first_name": first_name,
                             "last_name": last_name,
@@ -754,6 +761,7 @@ with tabs[2]:
                         st.success("✅ Applicant saved successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 
