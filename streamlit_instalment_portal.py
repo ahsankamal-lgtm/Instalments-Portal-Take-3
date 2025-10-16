@@ -521,7 +521,7 @@ with tabs[0]:
         guarantor_valid, female_guarantor_valid,
         phone_number and validate_phone(phone_number),
         street_address, area_address, city, state_province, country,
-        gender, electricity_bill == "Yes"
+        gender, electricity_bill == "Yes", pdc_option == "Yes"
     ])
 
     st.session_state.applicant_valid = info_complete
