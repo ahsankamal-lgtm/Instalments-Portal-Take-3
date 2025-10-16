@@ -280,13 +280,6 @@ def dti_score(outstanding, emi, net_salary, tenure):
 
     return score, ratio
 
-def financial_feasibility_score(bike_price, down_payment, emi, tenure):
-    """Score based on EMI × Tenure + Down Payment covering bike price"""
-    if tenure <= 0 or bike_price <= 0:
-        return 0
-    total_covered = emi * tenure + down_payment
-    return min(total_covered / bike_price, 1) * 100
-
 def calculate_min_emi(bike_price, down_payment, tenure):
     """Minimum EMI needed to cover bike price"""
     if tenure <= 0:
@@ -661,7 +654,6 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
-            feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
             # --- Final Decision ---
             if ag == -1:
@@ -669,10 +661,17 @@ with tabs[2]:
                 decision_display = "❌ Reject (Underage)"
             else:
                 final_score = (
-                    inc * 0.40 + bal * 0.30 + sal * 0.0343 + emp * 0.0343 +
-                    job * 0.0343 + ag * 0.0343 + dep * 0.0343 + res * 0.0429 +
-                    dti * 0.0429 + feasibility * 0.0429
-                )
+                    net_salary_score * 0.25 +
+                    bank_balance_score * 0.20 +
+                    financial_feasibility_score * 0.15 +
+                    salary_consistency_score * 0.10 +
+                    employer_type_score * 0.05 +
+                    age_score * 0.05 +
+                    dependants_score * 0.05 +
+                    residence_score * 0.05 +
+                    dti_score * 0.05 +
+                    job_tenure_score * 0.05
+                    )
                 if final_score >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
@@ -695,7 +694,6 @@ with tabs[2]:
             st.write(f"Residence Score: {res:.1f}")
             st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
             st.write(f"Debt-to-Income Score: {dti:.1f}")
-            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
             st.write(f"EMI used for scoring: {emi}")
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
