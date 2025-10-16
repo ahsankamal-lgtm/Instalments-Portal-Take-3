@@ -629,10 +629,14 @@ with tabs[2]:
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
             feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
+          
             # --- Final Decision ---
             if ag == -1:
                 decision = "Reject"
                 decision_display = "❌ Reject (Underage)"
+            elif bal == 0:
+                decision = "Reject"
+                decision_display = "❌ Reject (Insufficient Bank Balance)"
             else:
                 final_score = (
                     inc * 0.40 + bal * 0.30 + sal * 0.0343 + emp * 0.0343 +
@@ -648,6 +652,7 @@ with tabs[2]:
                 else:
                     decision = "Reject"
                     decision_display = "❌ Reject"
+
 
             # --- Display Scores ---
             st.markdown("### 🔹 Detailed Scores")
