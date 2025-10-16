@@ -168,24 +168,29 @@ def income_score(net_salary, gender):
     return min(base, 100)
     
 def bank_balance_score_custom(applicant_balance, guarantor_balance, emi):
-    # Initialize scores
-    applicant_score = 0
-    guarantor_score = 0
+    """
+    Binary scoring logic:
+    - Applicant >= 3x EMI → 100
+    - Guarantor >= 6x EMI → 100
+    - If both provided:
+        → Applicant takes priority if both qualify
+    """
+    score = 0
+    source = "None"
 
-    # Applicant logic: balance >= 3x EMI → score 100
-    if applicant_balance is not None and applicant_balance >= 3 * emi:
-        applicant_score = 100
+    applicant_ok = applicant_balance is not None and applicant_balance >= 3 * emi
+    guarantor_ok = guarantor_balance is not None and guarantor_balance >= 6 * emi
 
-    # Guarantor logic: balance >= 6x EMI → score 100
-    if guarantor_balance is not None and guarantor_balance >= 6 * emi:
-        guarantor_score = 100
-
-    # Final bank balance score:
-    # If either meets their respective condition → 100, else 0
-    if applicant_score == 100 or guarantor_score == 100:
-        return 100
+    if applicant_ok and guarantor_ok:
+        score, source = 100, "Applicant (Priority)"
+    elif applicant_ok:
+        score, source = 100, "Applicant"
+    elif guarantor_ok:
+        score, source = 100, "Guarantor"
     else:
-        return 0
+        score, source = 0, "None"
+
+    return score, source
 
 
 def salary_consistency_score(months):
