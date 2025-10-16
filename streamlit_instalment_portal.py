@@ -262,13 +262,6 @@ def dti_score(outstanding, emi, net_salary, tenure):
 
     return score, ratio
 
-def financial_feasibility_score(bike_price, down_payment, emi, tenure):
-    """Score based on EMI × Tenure + Down Payment covering bike price"""
-    if tenure <= 0 or bike_price <= 0:
-        return 0
-    total_covered = emi * tenure + down_payment
-    return min(total_covered / bike_price, 1) * 100
-
 def calculate_min_emi(bike_price, down_payment, tenure):
     """Minimum EMI needed to cover bike price"""
     if tenure <= 0:
@@ -640,9 +633,9 @@ with tabs[2]:
                 decision_display = "❌ Reject (Insufficient Bank Balance)"
             else:
                 final_score = (
-                    inc * 0.40 + bal * 0.30 + sal * 0.0343 + emp * 0.0343 +
-                    job * 0.0343 + ag * 0.0343 + dep * 0.0343 + res * 0.0429 +
-                    dti * 0.0429 + feasibility * 0.0429
+                    inc * 0.40 + bal * 0.30 + sal * 0.4 + emp * 0.4 +
+                    job * 0.04 + ag * 0.04 + dep * 0.04 + res * 0.05 +
+                    dti * 0.05
                 )
                 if final_score >= 75:
                     decision = "Approved"
@@ -666,7 +659,6 @@ with tabs[2]:
             st.write(f"Residence Score: {res:.1f}")
             st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
             st.write(f"Debt-to-Income Score: {dti:.1f}")
-            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
             st.write(f"EMI used for scoring: {emi}")
 
             # ✅ Show N/A for Final Score if rejected early
