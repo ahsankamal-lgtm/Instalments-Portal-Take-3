@@ -710,51 +710,51 @@ with tabs[2]:
                 st.write(f"**Total Paid Towards Bike (Down Payment + EMIs):** {break_even:,.0f}")
 
                 # --- Save Applicant Button ONLY if Approved ---
-                if decision == "Approved":
-                    if st.button("💾 Save Applicant to Database"):
-                        try:
-                            # Build a dictionary with all required fields
-                            applicant_data = {
-                                "first_name": first_name,
-                                "last_name": last_name,
-                                "cnic": cnic,
-                                "license_no": license_number,
-                                "phone_number": phone_number,
-                                "gender": gender,
-                                "guarantors": guarantors,
-                                "female_guarantor": female_guarantor,
-                                "electricity_bill": electricity_bill,
-                                "pdc_option": pdc_option,
-                                "education": education,
-                                "occupation": occupation,
-                                "designation": designation,
-                                "employer_name": employer_name,
-                                "employer_contact": employer_contact,
-                                "street_address": street_address,
-                                "area_address": area_address,
-                                "city": city,
-                                "state_province": state_province,
-                                "postal_code": postal_code,
-                                "country": country,
-                                "net_salary": net_salary,
-                                "applicant_bank_balance": applicant_bank_balance,
-                                "guarantor_bank_balance": guarantor_bank_balance,
-                                "employer_type": employer_type,
-                                "age": age,
-                                "residence": residence,
-                                "bike_type": bike_type,
-                                "bike_price": bike_price,
-                                "down_payment": down_payment,
-                                "tenure": tenure,
-                                "emi": emi,
-                                "outstanding": outstanding,
-                                "decision": decision
-                            }
+                if st.button("💾 Save Applicant to Database"):
+                    try:
+                        # Build a dictionary with all required fields
+                        applicant_data = {
+                            "first_name": first_name,
+                            "last_name": last_name,
+                            "cnic": cnic,
+                            "license_no": license_number,
+                            "phone_number": phone_number,
+                            "gender": gender,
+                            "guarantors": guarantors,
+                            "female_guarantor": female_guarantor,
+                            "electricity_bill": electricity_bill,
+                            "pdc_option": pdc_option,
+                            "education": education,
+                            "occupation": occupation,
+                            "designation": designation,
+                            "employer_name": employer_name,
+                            "employer_contact": employer_contact,
+                            "street_address": street_address,
+                            "area_address": area_address,
+                            "city": city,
+                            "state_province": state_province,
+                            "postal_code": postal_code,
+                            "country": country,
+                            "net_salary": net_salary,
+                            "applicant_bank_balance": applicant_bank_balance,
+                            "guarantor_bank_balance": guarantor_bank_balance,
+                            "employer_type": employer_type,
+                            "age": age,
+                            "residence": residence,
+                            "bike_type": bike_type,
+                            "bike_price": bike_price,
+                            "down_payment": down_payment,
+                            "tenure": tenure,
+                            "emi": emi,
+                            "outstanding": outstanding,
+                            "decision": decision
+                        }
 
-                            save_to_db(applicant_data)
-                            st.success("✅ Applicant saved successfully!")
-                        except Exception as e:
-                            st.error(f"❌ Failed to save applicant: {e}")
+                        save_to_db(applicant_data)
+                        st.success("✅ Applicant saved successfully!")
+                    except Exception as e:
+                        st.error(f"❌ Failed to save applicant: {e}")
+
 
 
 # -----------------------------
