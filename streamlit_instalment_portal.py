@@ -632,7 +632,7 @@ with tabs[2]:
                 decision_display = "❌ Reject (Insufficient Bank Balance)"
             else:
                 final_score = (
-                    inc * 0.40 + bal * 0.30 + sal * 0.4 + emp * 0.4 +
+                    inc * 0.40 + bal * 0.30 + sal * 0.04 + emp * 0.04 +
                     job * 0.04 + ag * 0.04 + dep * 0.04 + res * 0.05 +
                     dti * 0.05
                 )
