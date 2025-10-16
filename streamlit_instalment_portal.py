@@ -169,47 +169,35 @@ def income_score(net_salary, gender):
 
 def bank_balance_score_custom(applicant_balance, guarantor_balance, emi):
     """
-    Bank Balance Evaluation Logic (Strict Rule with Applicant/Guarantor Fallback)
-
-    Conditions:
-    - Applicant must have >= 3×EMI → score = 100 (source = Applicant)
-    - If Applicant fails but Guarantor >= 6×EMI → score = 100 (source = Guarantor)
-    - If both fail → score = 0 (soft rejection)
-
+    Bank Balance Scoring Logic:
+    1. If applicant_balance >= 3×EMI → score = 100
+    2. Else:
+       a. If guarantor_balance is not provided → score proportional to applicant_balance
+       b. If guarantor_balance is provided and >= 6×EMI → score = 100
+       c. Else → score proportional to guarantor_balance
     Returns:
-        score (int),
-        source_used (str),
-        rejection_reason (str or None)
+        score (0-100), source_used (str)
     """
     if emi <= 0:
-        return 0, "Invalid", "Invalid EMI value"
+        return 0, None
 
-    applicant_threshold = 3 * emi
-    guarantor_threshold = 6 * emi
+    # Case 1: Applicant meets threshold
+    if applicant_balance >= 3 * emi:
+        return 100, "Applicant"
 
-    # Case 1: Applicant meets criteria
-    if applicant_balance >= applicant_threshold:
-        return 100, "Applicant", None
+    # Applicant does not meet threshold
+    if not guarantor_balance:
+        # No guarantor provided → score based on applicant
+        score = min((applicant_balance / (3 * emi)) * 100, 100)
+        return score, "Applicant (Below Threshold, No Guarantor)"
 
-    # Case 2: Applicant fails, check guarantor
-    if guarantor_balance is not None and guarantor_balance >= guarantor_threshold:
-        return 100, "Guarantor", None
+    # Guarantor provided
+    if guarantor_balance >= 6 * emi:
+        return 100, "Guarantor"
 
-    # Case 3: Both fail
-    if guarantor_balance is not None:
-        rejection_reason = (
-            f"Neither applicant nor guarantor meets required bank balance thresholds.\n"
-            f"Applicant required: PKR {applicant_threshold:,.0f} | Current: PKR {applicant_balance:,.0f}\n"
-            f"Guarantor required: PKR {guarantor_threshold:,.0f} | Current: PKR {guarantor_balance:,.0f}"
-        )
-    else:
-        rejection_reason = (
-            f"Applicant bank balance below required threshold.\n"
-            f"Required minimum: PKR {applicant_threshold:,.0f} | Current: PKR {applicant_balance:,.0f}"
-        )
-
-    return 0, "Applicant", rejection_reason
-
+    # Guarantor does not meet full threshold → scale proportionally
+    score = min((guarantor_balance / (6 * emi)) * 100, 100)
+    return score, "Guarantor (Below Threshold)"
 
 def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
@@ -267,18 +255,25 @@ def dti_score(outstanding, emi, net_salary, tenure):
     monthly_obligation = (outstanding / tenure) + emi
     ratio = monthly_obligation / net_salary
 
-    if ratio <= 0.2:
+    if ratio <= 0.4:
         score = 100
-    elif ratio <= 0.3:
+    elif ratio <= 0.6:
         score = 80
-    elif ratio <= 0.4:
+    elif ratio <= 0.8:
         score = 60
-    elif ratio <= 0.5:
+    elif ratio <= 1.0:
         score = 40
     else:
         score = 20
 
     return score, ratio
+
+def financial_feasibility_score(bike_price, down_payment, emi, tenure):
+    """Score based on EMI × Tenure + Down Payment covering bike price"""
+    if tenure <= 0 or bike_price <= 0:
+        return 0
+    total_covered = emi * tenure + down_payment
+    return min(total_covered / bike_price, 1) * 100
 
 def calculate_min_emi(bike_price, down_payment, tenure):
     """Minimum EMI needed to cover bike price"""
@@ -521,7 +516,7 @@ with tabs[0]:
         guarantor_valid, female_guarantor_valid,
         phone_number and validate_phone(phone_number),
         street_address, area_address, city, state_province, country,
-        gender, electricity_bill == "Yes", pdc_option == "Yes"
+        gender, electricity_bill == "Yes"
     ])
 
     st.session_state.applicant_valid = info_complete
@@ -628,53 +623,28 @@ with tabs[2]:
         st.subheader("🎯 Results Summary")
 
         if net_salary > 0 and tenure > 0:
-            # --- Hard Rejection: Bank Balance Thresholds ---
-            applicant_threshold = 3 * emi
-            guarantor_threshold = 6 * emi
+            # --- Calculate Scores ---
+            inc = income_score(net_salary, gender)
+            bal, bal_source = bank_balance_score_custom(applicant_bank_balance, guarantor_bank_balance, emi)
+            sal = salary_consistency_score(salary_consistency)
+            emp = employer_type_score(employer_type)
+            job = job_tenure_score(job_years)
+            ag = age_score(age)
+            dep = dependents_score(dependents)
+            res = residence_score(residence)
+            dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
+            feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
-            applicant_ok = applicant_bank_balance >= applicant_threshold
-            guarantor_ok = (guarantor_bank_balance or 0) >= guarantor_threshold
-
-            if not applicant_ok and not guarantor_ok:
-                st.error(
-                    f"🚫 **Application Rejected: Insufficient Bank Balances.**\n\n"
-                    f"Applicant required ≥ PKR {applicant_threshold:,.0f} (current: {applicant_bank_balance:,.0f})\n\n"
-                    f"Guarantor required ≥ PKR {guarantor_threshold:,.0f} (current: {guarantor_bank_balance or 0:,.0f})"
-                )
-                st.stop()  # stop further execution of Results tab
-
-            # --- Calculate Individual Scores ---
-            net_salary_score = income_score(net_salary, gender)
-            bank_balance_score, bal_source, bal_reject_reason = bank_balance_score_custom(
-                applicant_bank_balance, guarantor_bank_balance, emi
-            )
-            salary_consistency_score_val = salary_consistency_score(salary_consistency)
-            employer_type_score_val = employer_type_score(employer_type)
-            job_tenure_score_val = job_tenure_score(job_years)
-            age_score_val = age_score(age)
-            dependants_score_val = dependents_score(dependents)
-            residence_score_val = residence_score(residence)
-            dti_score_val, ratio = dti_score(outstanding, emi, net_salary, tenure)
-
-            # --- Final Decision Logic ---
-            if age_score_val == -1:
+            # --- Final Decision ---
+            if ag == -1:
                 decision = "Reject"
                 decision_display = "❌ Reject (Underage)"
             else:
-                # --- Updated Weighted Final Score (No Financial Feasibility) ---
                 final_score = (
-                    net_salary_score * 0.40 +
-                    bank_balance_score * 0.30 +
-                    salary_consistency_score_val * 0.04 +
-                    employer_type_score_val * 0.05 +
-                    age_score_val * 0.04 +
-                    dependants_score_val * 0.04 +
-                    residence_score_val * 0.05 +
-                    dti_score_val * 0.04 +
-                    job_tenure_score_val * 0.04
+                    inc * 0.40 + bal * 0.30 + sal * 0.0343 + emp * 0.0343 +
+                    job * 0.0343 + ag * 0.0343 + dep * 0.0343 + res * 0.0429 +
+                    dti * 0.0429 + feasibility * 0.0429
                 )
-
-                # --- Decision Thresholds ---
                 if final_score >= 75:
                     decision = "Approved"
                     decision_display = "✅ Approve"
@@ -685,33 +655,28 @@ with tabs[2]:
                     decision = "Reject"
                     decision_display = "❌ Reject"
 
-            # --- Display Detailed Scores ---
+            # --- Display Scores ---
             st.markdown("### 🔹 Detailed Scores")
-            st.write(f"Income Score: {net_salary_score:.1f}")
-            st.write(f"Bank Balance Score ({bal_source}): {bank_balance_score:.1f}")
-            st.write(f"Salary Consistency: {salary_consistency_score_val:.1f}")
-            st.write(f"Employer Type Score: {employer_type_score_val:.1f}")
-            st.write(f"Job Tenure Score: {job_tenure_score_val:.1f}")
-            st.write(f"Age Score: {age_score_val:.1f}")
-            st.write(f"Dependents Score: {dependants_score_val:.1f}")
-            st.write(f"Residence Score: {residence_score_val:.1f}")
+            st.write(f"Income Score: {inc:.1f}")
+            st.write(f"Bank Balance Score ({bal_source}): {bal:.1f}")
+            st.write(f"Salary Consistency: {sal:.1f}")
+            st.write(f"Employer Type Score: {emp:.1f}")
+            st.write(f"Job Tenure Score: {job:.1f}")
+            st.write(f"Age Score: {ag:.1f}")
+            st.write(f"Dependents Score: {dep:.1f}")
+            st.write(f"Residence Score: {res:.1f}")
             st.write(f"Debt-to-Income Ratio: {ratio:.2f}")
-            st.write(f"Debt-to-Income Score: {dti_score_val:.1f}")
+            st.write(f"Debt-to-Income Score: {dti:.1f}")
+            st.write(f"Financial Feasibility Score: {feasibility:.1f}")
             st.write(f"EMI used for scoring: {emi}")
             st.write(f"Final Score: {final_score:.1f}")
             st.subheader(f"🏆 Decision: {decision_display}")
 
-            if bal_reject_reason:
-                st.markdown("---")
-                st.error(f"**⚠️ Bank Balance Rejection Reason:**\n\n{bal_reject_reason}")
-
-            # --- Financial Summary Section ---
             if decision in ["Approved", "Review", "Reject"]:
                 st.markdown("### 💰 Applicant Financial Plan")
                 remaining_price = bike_price - down_payment
                 total_payment = emi * tenure
                 break_even = down_payment + total_payment
-
                 st.write(f"**Bike Price:** {bike_price:,.0f}")
                 st.write(f"**Down Payment:** {down_payment:,.0f}")
                 st.write(f"**Remaining Bike Price after Down Payment:** {remaining_price:,.0f}")
@@ -720,9 +685,11 @@ with tabs[2]:
                 st.write(f"**Total EMI over Tenure:** {total_payment:,.0f}")
                 st.write(f"**Total Paid Towards Bike (Down Payment + EMIs):** {break_even:,.0f}")
 
-                # --- Save Applicant Button ---
+
+                # --- Save Applicant Button ONLY if Approved ---
                 if st.button("💾 Save Applicant to Database"):
                     try:
+                        # Build a dictionary with all required fields
                         applicant_data = {
                             "first_name": first_name,
                             "last_name": last_name,
@@ -764,7 +731,6 @@ with tabs[2]:
                         st.success("✅ Applicant saved successfully!")
                     except Exception as e:
                         st.error(f"❌ Failed to save applicant: {e}")
-
 
 
 
