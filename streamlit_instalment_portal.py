@@ -166,38 +166,27 @@ def income_score(net_salary, gender):
     if gender == "F":
         base *= 1.1
     return min(base, 100)
-
+    
 def bank_balance_score_custom(applicant_balance, guarantor_balance, emi):
-    """
-    Bank Balance Scoring Logic:
-    1. If applicant_balance >= 3×EMI → score = 100
-    2. Else:
-       a. If guarantor_balance is not provided → score proportional to applicant_balance
-       b. If guarantor_balance is provided and >= 6×EMI → score = 100
-       c. Else → score proportional to guarantor_balance
-    Returns:
-        score (0-100), source_used (str)
-    """
-    if emi <= 0:
-        return 0, None
+    # Initialize scores
+    applicant_score = 0
+    guarantor_score = 0
 
-    # Case 1: Applicant meets threshold
-    if applicant_balance >= 3 * emi:
-        return 100, "Applicant"
+    # Applicant logic: balance >= 3x EMI → score 100
+    if applicant_balance is not None and applicant_balance >= 3 * emi:
+        applicant_score = 100
 
-    # Applicant does not meet threshold
-    if not guarantor_balance:
-        # No guarantor provided → score based on applicant
-        score = min((applicant_balance / (3 * emi)) * 100, 100)
-        return score, "Applicant (Below Threshold, No Guarantor)"
+    # Guarantor logic: balance >= 6x EMI → score 100
+    if guarantor_balance is not None and guarantor_balance >= 6 * emi:
+        guarantor_score = 100
 
-    # Guarantor provided
-    if guarantor_balance >= 6 * emi:
-        return 100, "Guarantor"
+    # Final bank balance score:
+    # If either meets their respective condition → 100, else 0
+    if applicant_score == 100 or guarantor_score == 100:
+        return 100
+    else:
+        return 0
 
-    # Guarantor does not meet full threshold → scale proportionally
-    score = min((guarantor_balance / (6 * emi)) * 100, 100)
-    return score, "Guarantor (Below Threshold)"
 
 def salary_consistency_score(months):
     return min((months / 6) * 100, 100)
