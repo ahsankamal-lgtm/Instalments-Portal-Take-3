@@ -634,20 +634,21 @@ with tabs[2]:
     else:
         st.subheader("🎯 Results Summary")
 
-        if net_salary > 0 and tenure > 0
+        if net_salary > 0 and tenure > 0:
+            # --- Hard Rejection: Bank Balance Thresholds ---
             applicant_threshold = 3 * emi
             guarantor_threshold = 6 * emi
 
             applicant_ok = applicant_bank_balance >= applicant_threshold
             guarantor_ok = (guarantor_bank_balance or 0) >= guarantor_threshold
 
-        if not applicant_ok and not guarantor_ok:
-        st.error(
-                f"🚫 **Application Rejected: Insufficient Bank Balances.**\n\n"
-                f"Applicant required ≥ PKR {applicant_threshold:,.0f} (current: {applicant_bank_balance:,.0f})\n\n"
-                f"Guarantor required ≥ PKR {guarantor_threshold:,.0f} (current: {guarantor_bank_balance or 0:,.0f})"
-            )
-            st.stop()  # stop further execution of Results tab
+            if not applicant_ok and not guarantor_ok:
+                st.error(
+                    f"🚫 **Application Rejected: Insufficient Bank Balances.**\n\n"
+                    f"Applicant required ≥ PKR {applicant_threshold:,.0f} (current: {applicant_bank_balance:,.0f})\n\n"
+                    f"Guarantor required ≥ PKR {guarantor_threshold:,.0f} (current: {guarantor_bank_balance or 0:,.0f})"
+                )
+                st.stop()  # stop further execution of Results tab
 
         
             # --- Calculate Scores ---
