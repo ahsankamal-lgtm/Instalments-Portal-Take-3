@@ -620,7 +620,6 @@ with tabs[2]:
             dep = dependents_score(dependents)
             res = residence_score(residence)
             dti, ratio = dti_score(outstanding, emi, net_salary, tenure)
-            feasibility = financial_feasibility_score(bike_price, down_payment, emi, tenure)
 
             # --- Final Decision ---
             final_score = 0  # ✅ Prevent NameError if rejected early
