@@ -635,14 +635,11 @@ with tabs[2]:
             applicant_ok = applicant_bank_balance >= applicant_threshold
             guarantor_ok = (guarantor_bank_balance or 0) >= guarantor_threshold
 
-            # ❌ Reject if EITHER fails (OR condition)
-            if not applicant_ok or not guarantor_ok:
+            if not applicant_ok and not guarantor_ok:
                 st.error(
                     f"🚫 **Application Rejected: Insufficient Bank Balances.**\n\n"
-                    f"Applicant required ≥ PKR {applicant_threshold:,.0f} "
-                    f"(current: {applicant_bank_balance:,.0f})\n\n"
-                    f"Guarantor required ≥ PKR {guarantor_threshold:,.0f} "
-                    f"(current: {guarantor_bank_balance or 0:,.0f})"
+                    f"Applicant required ≥ PKR {applicant_threshold:,.0f} (current: {applicant_bank_balance:,.0f})\n\n"
+                    f"Guarantor required ≥ PKR {guarantor_threshold:,.0f} (current: {guarantor_bank_balance or 0:,.0f})"
                 )
                 st.stop()  # stop further execution of Results tab
 
