@@ -249,13 +249,13 @@ def dti_score(outstanding, emi, net_salary, tenure):
     monthly_obligation = (outstanding / tenure) + emi
     ratio = monthly_obligation / net_salary
 
-    if ratio <= 0.01:
+    if ratio <= 0.1:
         score = 100
-    elif ratio <= 0.02:
+    elif ratio <= 0.2:
         score = 80
-    elif ratio <= 0.03:
+    elif ratio <= 0.3:
         score = 60
-    elif ratio <= 0.05:
+    elif ratio <= 0.5:
         score = 40
     else:
         score = 20
