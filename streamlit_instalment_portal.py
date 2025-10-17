@@ -690,9 +690,14 @@ with tabs[2]:
 
                 # Display messages
                 if messages:
-                    st.markdown("**Application Rejected:**")
+                    st.markdown("### ⚠️ Application Rejected: Bank Balance Criteria Not Met")
                     for msg in messages:
-                        st.markdown(f"- {msg}")
+                        st.markdown(
+                            f'<div style="background-color: #fff3cd; border-left: 6px solid #ffeb3b; '
+                            f'padding: 10px; border-radius: 8px; margin-bottom: 8px;">'
+                            f'⚠️ <b>{msg}</b></div>',
+                            unsafe_allow_html=True
+                        )
 
             # --- Financial Plan ---
             if decision in ["Approved", "Review", "Reject"]:
