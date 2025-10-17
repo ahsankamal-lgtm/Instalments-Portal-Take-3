@@ -677,7 +677,7 @@ with tabs[2]:
                 # Applicant condition
                 if applicant_bank_balance is not None and applicant_bank_balance < 3 * emi:
                     messages.append(
-                        f"❗ Applicant bank balance Rs. {applicant_bank_balance:,.0f} "
+                        f"Applicant bank balance Rs. {applicant_bank_balance:,.0f} "
                         f"< required bank balance Rs. {3 * emi:,.0f} (3×EMI)"
                     )
 
@@ -690,7 +690,7 @@ with tabs[2]:
 
                 # Display messages
                 if messages:
-                    st.markdown("### ⚠️ Application Rejected: Bank Balance Criteria Not Met")
+                    st.markdown("Bank Balance Criteria Not Met")
                     for msg in messages:
                         st.markdown(
                             f'<div style="background-color: #fff3cd; border-left: 6px solid #ffeb3b; '
