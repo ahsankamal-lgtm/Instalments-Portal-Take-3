@@ -684,7 +684,7 @@ with tabs[2]:
                 # Guarantor condition
                 if guarantor_bank_balance is not None and guarantor_bank_balance < 6 * emi:
                     messages.append(
-                        f"❗ Guarantor bank balance Rs. {guarantor_bank_balance:,.0f} "
+                        f" Guarantor bank balance Rs. {guarantor_bank_balance:,.0f} "
                         f"< required guarantor bank balance Rs. {6 * emi:,.0f} (6×EMI)"
                     )
 
