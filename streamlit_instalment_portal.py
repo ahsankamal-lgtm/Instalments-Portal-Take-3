@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import re
 import urllib.parse
@@ -30,7 +32,7 @@ def save_to_db(data: dict):
 
     # Columns in the exact order we will pass values
     columns = [
-        "name", "cnic", "license_no",
+        "applicant_type", "name", "cnic", "license_no",
         "phone_number", "gender",
         "guarantors", "female_guarantor", "electricity_bill", "pdc_option",  
         "education", "occupation", "designation",
@@ -48,6 +50,7 @@ def save_to_db(data: dict):
 
     # Values in the same order as `columns`
     values = (
+        data["applicant_type"],
         full_name, data["cnic"], data["license_no"],
         data["phone_number"], data["gender"],
         data["guarantors"], data["female_guarantor"], data["electricity_bill"], data["pdc_option"],
@@ -77,6 +80,7 @@ def fetch_all_applicants():
     query = """
     SELECT 
         id, 
+        applicant_type,
         name, 
         cnic, 
         license_no,
@@ -421,6 +425,12 @@ tabs = st.tabs(["📋 Applicant Information", "📊 Evaluation", "🎯 Results",
 with tabs[0]:
     st.subheader("Applicant Information")
 
+    applicant_type = st.selectbox(
+        "Applicant Type",
+        ["Employee", "Businessman"],
+        key="applicant_type"
+    )
+
     first_name = st.text_input("First Name")
     last_name = st.text_input("Last Name")
 
@@ -523,6 +533,19 @@ with tabs[1]:
     else:
         st.subheader("Evaluation Inputs")
 
+        # Get applicant type from previous tab (default to employee if not set)
+        applicant_type = st.session_state.get("applicant_type", "Employee")
+
+        # Dynamic labels based on applicant type
+        if applicant_type == "Businessman":
+            salary_label = "Net Profit (PKR)"
+            consistency_label = "Months with Revenue Generated (0–6)"
+            tenure_label = "Business Years"
+        else:
+            salary_label = "Net Salary (PKR)"
+            consistency_label = "Months with Salary Credit (0–6)"
+            tenure_label = "Job Tenure (Years)"
+
         # ✅ Smooth, lag-free number input (shows formatted value below)
         def formatted_number_input(label, key, optional=False):
             raw_key = f"{key}_raw"
@@ -544,7 +567,7 @@ with tabs[1]:
             return num
 
         # 💰 Financial Inputs
-        net_salary = formatted_number_input("Net Salary (PKR)", key="net_salary")
+        net_salary = formatted_number_input(salary_label, key="net_salary")
         applicant_bank_balance = formatted_number_input(
             "Applicant's Average 6M Bank Balance (PKR)", key="applicant_bank_balance"
         )
@@ -553,10 +576,10 @@ with tabs[1]:
         )
 
         # 📅 Other Inputs
-        salary_consistency = st.number_input("Months with Salary Credit (0–6)", min_value=0, max_value=6, step=1)
+        salary_consistency = st.number_input(consistency_label, min_value=0, max_value=6, step=1)
         employer_type = st.selectbox("Employer Type", ["Govt", "MNC", "Private Limited", "SME", "Startup", "Self-employed"])
         age = st.number_input("Age", min_value=18, max_value=70, step=1)
-        job_years = st.number_input("Job Tenure (Years)", min_value=0, step=1)
+        job_years = st.number_input(tenure_label, min_value=0, step=1)
         if job_years > age:
             st.error("❌ Job tenure cannot exceed age. Please correct the values.")
         dependents = st.number_input("Number of Dependents", min_value=0, step=1)
@@ -573,7 +596,6 @@ with tabs[1]:
         }
 
         selected_plan = st.selectbox("Financing Plan", list(financing_plans.keys()))
-
 
         # ✅ Calculate plan values
         plan = financing_plans[selected_plan]
@@ -598,6 +620,7 @@ with tabs[1]:
 
         # 💡 Minimum EMI info
         st.info(f"💡 EMI to be used for scoring: {emi:,}")
+
 
 
 # -------------------
@@ -750,7 +773,9 @@ with tabs[2]:
                             "tenure": tenure,
                             "emi": emi,
                             "outstanding": outstanding,
-                            "decision": decision
+                            "decision": decision,
+                            "applicant_type": st.session_state.get("applicant_type", "Employee"),
+
                         }
 
                         save_to_db(applicant_data)
